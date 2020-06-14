@@ -6,52 +6,54 @@
     <field name="inherit_id" ref="base.view_res_partner_filter" />
     <field name="arch" type="xml">
       <filter name="inactive" position="before">
-        <filter string="Tax ID" name="vat" domain="[('is_company','=',True)]" />
-        <filter string="Person Number" name="personnumber" domain="[('is_company','=',False)]"/>
-        <filter string="City" name="city" domain="[('is_company','=',True)]"/>
-        <filter string="Fellowship" name="is_fellowship" domain="[('is_fellowship','=',True)]"/>
-        <filter string="Accommodator" name="is_accommodator" domain="[('is_accommodator','=',True)]"/>
+        <!--
+             <filter string="Tax ID" name="vat" domain="[('is_company','=',True)]" />
+             <filter string="Person Number" name="personnumber" domain="[('is_company','=',False)]"/>
+             <filter string="City" name="city" domain="[('is_company','=',True)]"/>
+        -->
+        <filter string="Company" name="is_company" domain="[('insurance_company_type','=','company')]" />
+        <filter string="Fellowship" name="is_fellowship" domain="[('insurance_company_type','=','fellowship')]" />
+        <filter string="Accommodator" name="is_accommodator" domain="[('insurance_company_type','=','accomodator')]" />
       </filter>
     </field>
   </record>
-  
   <record id="res_partner_view_tree_inherit_menu" model="ir.ui.view">
     <field name="name">res.partner.view.tree.inherit.menu</field>
     <field name="model">res.partner</field>
     <field name="inherit_id" ref="base.view_partner_tree" />
     <field name="arch" type="xml">
       <field name="display_name" position="before">
-        <field name="company_type" />
+        <field name="insurance_company_type" />
       </field>
-      <field name="phone" position="before" >
-        <field name="org_prn"  />
+      <field name="phone" position="before">
+        <field name="org_prn" />
         <field name="city" />
       </field>
     </field>
   </record>
-  
   <record id="view_partners_form_crm_insurance" model="ir.ui.view">
     <field name="name">view.res.partner.form.crm.insurance.inherited</field>
     <field name="model">res.partner</field>
     <field name="inherit_id" ref="base.view_partner_form" />
     <field name="arch" type="xml">
-      <field name="vat" position="before" >
+      <field name="company_type" position="replace">
+        <field name="company_type" invisible="1" />
+        <field name="insurance_company_type" options="{'horizontal': true}" class="oe_edit_only" widget="radio" groups="base.group_no_one" />
+      </field>
+      <field name="vat" position="before">
         <field name="personnumber" placeholder="10 or 12 digital" attrs="{'invisible': [('company_type', '=', 'company')]}" />
-        <field name="is_accommodator" attrs="{'invisible': [('company_type', '=', 'company')]}"/>
-        <field name="liability_insurance_permission" widget="many2many_tags" attrs="{'invisible': [('company_type', '!=', 'company')]}"/>
-        <field name="liability_insurance" widget="many2many_tags" attrs="{'invisible': [('company_type', '=', 'company')]}"/>
-<!--
-        <field name="have_property_insurance" />
--->
-        <field name="is_fellowship" attrs="{'invisible': [('company_type', '!=', 'company')]}" />
+        <field name="liability_insurance_permission" widget="many2many_tags" attrs="{'invisible': [('company_type', '!=', 'company')]}" />
+        <field name="liability_insurance" widget="many2many_tags" attrs="{'invisible': [('company_type', '=', 'company')]}" />
         <field name="url_financial_supervisory" widget="url" attrs="{'invisible': [('company_type', '!=', 'company')]}" />
       </field>
-      <field name="vat" position="attributes" >
-          <attribute name="attrs">{'readonly': [('parent_id','!=',False)], 'invisible': [('company_type','!=','company')]}</attribute>
+      <field name="vat" position="attributes">
+        <attribute name="attrs">{'readonly': [('parent_id','!=',False)], 'invisible': [('company_type','!=','company')]}</attribute>
       </field>
+<!--
       <field name="lang" position="after">
         <field name="membership_ids" widget="many2many_tags" placeholder="MembershipID" />
       </field>
+-->
       <div name="button_box" position="inside">
         <button class="oe_stat_button" name="accommodator_button" type="object" icon="fa-group" context="{'partner_id': active_id, 'partner_name': name}" attrs="{'invisible': [('company_type', '!=', 'company')]}">
           <field name="count_accommodator" widget="statinfo" />
@@ -65,26 +67,46 @@
         <button class="oe_stat_button" name="property_insurance_button" type="object" icon="fa-group" context="{'partner_id': active_id, 'partner_name': name}" attrs="{'invisible': [('company_type', '!=', 'company')]}">
           <field name="count_property_insurance" widget="statinfo" />
         </button>
-<!--
-        <button class="oe_stat_button" name="fellowship_button" type="object" icon="fa-group" context="{'partner_id': active_id, 'partner_name': name}" attrs="{'invisible': [('company_type', '!=', 'company')]}">
-          <field name="count_fellowship" widget="statinfo" />
-        </button>
--->
-        <button class="oe_stat_button" name="company_button" type="object" icon="fa-group" context="{'partner_id': active_id, 'partner_name': name}" attrs="{'invisible': ['|',('company_type', '!=', 'company'), ('is_fellowship', '=', False)]}">
+        <button class="oe_stat_button" name="company_button" type="object" icon="fa-group" context="{'partner_id': active_id, 'partner_name': name}" attrs="{'invisible': [('insurance_company_type', 'in', ['fellowship','person'])]}">
           <field name="count_company" widget="statinfo" />
         </button>
       </div>
     </field>
   </record>
+
 <!--
-  
+        <record model="ir.actions.act_window.view" id="action_membership_members_view_tree">
+            <field name="sequence" eval="2"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="membership_members_tree"/>
+            <field name="act_window_id" ref="action_membership_members"/>
+        </record>
+
+        <record model="ir.actions.act_window.view" id="action_membership_members_view_form">
+            <field name="sequence" eval="3"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="base.view_partner_form"/>
+            <field name="act_window_id" ref="action_membership_members"/>
+        </record>
+         <record model="ir.actions.act_window.view" id="action_membership_members_view_kanban">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">kanban</field>
+            <field name="view_id" ref="base.res_partner_kanban_view"/>
+            <field name="act_window_id" ref="action_membership_members"/>
+        </record>
+        <menuitem name="Members" id="menu_membership" sequence="0" parent="menu_association" action="action_membership_members"/>
+-->
+        
+    
+
   <record id="action_all_form" model="ir.actions.act_window">
     <field name="name">All</field>
     <field name="res_model">res.partner</field>
     <field name="view_type">form</field>
     <field name="view_mode">kanban,tree,form</field>
     <field name="domain"></field>
-    <field name="view_id" ref="	base.res_partner_kanban_view" />
+    <field name="view_id" ref="base.res_partner_kanban_view" />
+    <field name="act_window_id" ref="membership.action_membership_members"/>
     <field name="search_view_id" ref="base.view_res_partner_filter"/>
   </record>
   
@@ -93,8 +115,9 @@
     <field name="res_model">res.partner</field>
     <field name="view_type">form</field>
     <field name="view_mode">kanban,tree,form</field>
-    <field name="domain">[("is_fellowship","=", True),("is_company","=",True)]</field>
+    <field name="domain">[('insurance_company_type','=', 'fellowship')]</field>
     <field name="view_id" ref="base.res_partner_kanban_view" />
+    <field name="act_window_id" ref="membership.action_membership_members"/>
     <field name="search_view_id" ref="base.view_res_partner_filter"/>
   </record>
   
@@ -103,8 +126,9 @@
     <field name="res_model">res.partner</field>
     <field name="view_type">form</field>
     <field name="view_mode">kanban,tree,form</field>
-    <field name="domain">[("is_accommodator","=", True),("is_company","=",False)]</field>
+    <field name="domain">[('insurance_company_type','=', 'accomodator')]</field>
     <field name="view_id" ref="base.res_partner_kanban_view" />
+    <field name="act_window_id" ref="membership.action_membership_members"/>
     <field name="search_view_id" ref="base.view_res_partner_filter"/>
   </record>
   
@@ -113,45 +137,34 @@
     <field name="res_model">res.partner</field>
     <field name="view_type">form</field>
     <field name="view_mode">kanban,tree,form</field>
-    <field name="domain">[("is_company","=", True)]</field>
+    <field name="domain">[('insurance_company_type','=', 'company')]</field>
     <field name="view_id" ref="base.res_partner_kanban_view" />
+    <field name="act_window_id" ref="membership.action_membership_members"/>
     <field name="search_view_id" ref="base.view_res_partner_filter"/>
   </record>
   
-  <menuitem
-        id="crm_menu_membership"
-        name="Membership"
-        parent="crm.crm_menu_root"
-        sequence="0"/>
-        
-   <menuitem id="res_partner_menu_all"
+  <menuitem id="res_partner_menu_all"
         name="All"
-        parent="crm_menu_membership"
+        parent="membership.menu_membership"
         action="action_all_form"
         sequence="99"/>
         
   <menuitem id="res_partner_menu_fellowship"
         name="Fellowship"
-        parent="crm_menu_membership"
+        parent="membership.menu_membership"
         action="action_fellowship_form"
         sequence="2"/>
         
   <menuitem id="res_partner_menu_company"
         name="Company"
-        parent="crm_menu_membership"
+        parent="membership.menu_membership"
         action="action_company_form"
         sequence="3"/>
         
   <menuitem id="res_partner_menu_accommodator"
         name="Accommodator"
-        parent="crm_menu_membership"
+        parent="membership.menu_membership"
         action="action_accommodator_form"
         sequence="4"/>
-        
-  
-        
--->
-  
-
 
 </odoo>

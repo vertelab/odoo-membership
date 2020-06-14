@@ -1,6 +1,6 @@
 {
-    'name':'membership_insurance',
-    'description': 'new template for company insurance',
+    'name':'Membership Insurance',
+    'description': 'Fields for administer members in insurance industry',
     'version':'1.0',
     'author':'Vertel AB',
 
@@ -10,8 +10,9 @@
         'data/insurance.permission.csv',
         'security/ir.model.access.csv'
     ],
-    'category': 'crm',
-    'depends': ['crm'],
-    'application': True,
+    'category': 'membership',
+    'depends': ['base'],
+    'sequence': 5,
+    'application': False,
 }
 
