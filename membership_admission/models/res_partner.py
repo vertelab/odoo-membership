@@ -48,7 +48,7 @@ class res_partner(models.Model):
     def start_admission(self):
         for partner in self:
             partner.membership_recruitment_status_id = self.env['membership.recruitment.status'].search([])[0]
-        action = self.env.ref("membership_status.action_admission_form")
+        action = self.env.ref("membership_admission.action_admission_form")
         return action
  
  
