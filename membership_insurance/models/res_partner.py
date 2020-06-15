@@ -20,10 +20,9 @@
 ##############################################################################
 
 from odoo import models, fields, api, _
+
 import logging
-
 _logger = logging.getLogger(__name__)
-
 
 class insurance_permission(models.Model):
     _name = 'insurance.permission'
@@ -41,179 +40,109 @@ class res_partner(models.Model):
     liability_insurance = fields.Many2many(comodel_name='insurance.license', string='Insurance License')
     liability_insurance_permission = fields.Many2many(comodel_name='insurance.permission', string='Insurance Permission')
     
-    # ~ have_life_insurance = fields.Boolean(string='Life Insurance', default=False, help='This is life insurance')
-    # ~ have_property_insurance=fields.Boolean(string='Property Insurance', default=False, help='This is property insurance')
-    # ~ insurance_permission_ids = fields.Many2many(comodel_name='res.partner', string='Permission')
-    # ~ membership_ids = fields.Many2many(comodel_name='res.partner', relation='partner_member_rel', column1='parent_id',column2='member_id', string='Membership ID')
-    # ~ count_fellowship = fields.Integer(string='Fellowship', compute ='_compute_count_fellowship')
-    count_company = fields.Integer(string='Company', compute ='_compute_count_company')
-    count_accommodator = fields.Integer(string='Accommodators', compute ='_compute_count_accommodator')
-    count_life_insurance = fields.Integer(string='Life Insurance', compute ='_compute_count_life_insurance')
-    count_property_insurance = fields.Integer(string='Property Insurance', compute ='_compute_count_property_insurance')
-    count_life_protperty_insurance = fields.Integer(string='Life/Property Insurance', compute ='_compute_life_protperty_insurance')
+    def _compute_count_company(self):
+        if self.insurance_company_type == 'fellowship':
+            self.count_company                      = self.env['res.partner'].search_count([('id', 'child_of', self.id),('insurance_company_type', '=', 'company')])
+            self.count_co_life_permission           = self.env['res.partner'].search_count([('id', 'child_of', self.id),('insurance_company_type', '=', 'company'),('liability_insurance', '=', self.env.ref('membership_insurance.crm_insurance_life').id)])
+            self.count_co_property_permission       = self.env['res.partner'].search_count([('id', 'child_of', self.id),('insurance_company_type', '=', 'company'),('liability_insurance', '=', self.env.ref('membership_insurance.crm_insurance_property').id)])
+            self.count_co_property_life_permission  = self.env['res.partner'].search_count([('id', 'child_of', self.id),('insurance_company_type', '=', 'company'),('liability_insurance', '=', self.env.ref('membership_insurance.crm_insurance_property_permission').id),('liability_insurance', '=', self.env.ref('membership_insurance.crm_insurance_life_permission').id)])
+
+        if self.insurance_company_type in ['fellowship','company']:
+    
+            self.count_ac_life_licence = self.env['res.partner'].search_count([('id', 'child_of', self.id),('insurance_company_type', '=', 'accomodator'),('liability_insurance', '=', self.env.ref('membership_insurance.crm_insurance_life_permission').id)])
+            self.count_ac_property_licence = self.env['res.partner'].search_count([('id', 'child_of', self.id),('insurance_company_type', '=', 'accomodator'),('liability_insurance', '=', self.env.ref('membership_insurance.crm_insurance_property_permission').id)])
+            self.count_ac_property_life_licence = self.env['res.partner'].search_count([('id', 'child_of', self.id),('insurance_company_type', '=', 'accomodator'),('liability_insurance', '=', self.env.ref('membership_insurance.crm_insurance_property_permission').id),('liability_insurance', '=', self.env.ref('membership_insurance.crm_insurance_life_permission').id)])
+
+            self.count_accommodator         = self.env['res.partner'].search_count([('id', 'child_of', self.id),('insurance_company_type', '=', 'accomodator')])
+
+            self.count_ac_life = self.env['res.partner'].search_count([('id', 'child_of', self.id),('liability_insurance', '=', self.env.ref('membership_insurance.crm_insurance_life').id)])
+            self.count_ac_property = self.env['res.partner'].search_count([('id', 'child_of', self.id),('liability_insurance', '=', self.env.ref('membership_insurance.crm_insurance_property').id)])
+    
+    count_company               = fields.Integer(string='Company', compute ='_compute_count_company')
+    count_co_life_permission    = fields.Integer(string='Company Life Permission', compute ='_compute_count_company')
+    count_co_property_permission    = fields.Integer(string='Company Property Permission', compute ='_compute_count_company')
+    count_co_property_life_permission    = fields.Integer(string='Company Property/Life Permission', compute ='_compute_count_company')
+
+    count_ac_life_licence    = fields.Integer(string='Accomodator Life Licence', compute ='_compute_count_company')
+    count_ac_property_licence    = fields.Integer(string='Accomodator Property Licence', compute ='_compute_count_company')
+    count_ac_property_life_licence    = fields.Integer(string='Accomodator Property/Life Licence', compute ='_compute_count_company')
+
+    count_accommodator   = fields.Integer(string='Accommodators', compute ='_compute_count_company')
+    count_ac_life        = fields.Integer(string='Accomodator Life', compute ='_compute_count_company')
+    count_ac_property    = fields.Integer(string='Accomodator Property', compute ='_compute_count_company')
+    count_ac_property_life    = fields.Integer(string='Accomodator Property/Life', compute ='_compute_count_company')
+    
     vat = fields.Char(string='Tax ID', help="The Tax Identification Number. Complete it if the contact is subjected to government taxes. Used in some legal statements.")
     personnumber = fields.Char(string='Person Number', help="This is person number")
-    org_prn = fields.Char(string="Org/Person Number", compute ='_compute_org_prn')
-    # ~ company_type = fields.Selection(selection_add=[('fellowship', 'Fellowship'), ('accommodator', 'Accommodator')])
-    url_financial_supervisory = fields.Text(string = 'Finansinspektionen')
-    
-    insurance_company_type = fields.Selection(string='Company Type',
-        selection=[('person', 'Individual'),('fellowship', 'Fellowship'),('company', 'Company'),('accomodator', 'Accomodator')],
-        inverse='_insurance_write_company_type')
-    revenue = fields.Float(string='Revenue')
 
-    @api.onchange('insurance_company_type')
-    def onchange_insurance_company_type(self):
-        self.is_company = (self.insurance_company_type not in ['person','accomodator'])
-        self.company_type = 'company' if self.is_company else 'person'
-
-
-    def _insurance_write_company_type(self):
-        for partner in self:
-            partner.is_company = (partner.insurance_company_type not in ['person','accomodator'])
-            partner.company_type = 'company' if partner.is_company else 'person'
-
-
-
-
-
-    
     @api.one
     def _compute_org_prn(self):
         if self.company_type == 'company':
             self.org_prn = self.vat
         elif self.company_type == 'person':
             self.org_prn = self.personnumber
+    org_prn = fields.Char(string="Org/Person Number", compute ='_compute_org_prn')
     
-    def _compute_count_company(self):
-        self.count_company = self.env['res.partner'].search_count([('id', 'child_of', self.id),('insurance_company_type', '=', 'fellowship')])
+    url_financial_supervisory = fields.Text(string = 'Finansinspektionen')
     
-    def _compute_count_accommodator(self):
-        self.count_accommodator = self.env['res.partner'].search_count([('id', 'child_of', self.id),('insurance_company_type', '=', 'accomodator')])
-    
-    def _compute_count_life_insurance(self):
-        self.count_life_insurance = self.env['res.partner'].search_count([('id', 'child_of', self.id),('liability_insurance', '=', self.env.ref('membership_insurance.crm_insurance_life').id)])
-    
-    def _compute_count_property_insurance(self):
-        self.count_property_insurance = self.env['res.partner'].search_count([('id', 'child_of', self.id),('liability_insurance', '=', self.env.ref('membership_insurance.crm_insurance_property').id)])
-    
-    def _compute_life_protperty_insurance(self):
-        self.count_life_protperty_insurance = self.env['res.partner'].search_count([('id', 'child_of', self.id),('liability_insurance', '=', self.env.ref('membership_insurance.crm_insurance_life').id),('liability_insurance', '=', self.env.ref('membership_insurance.crm_insurance_property').id)])
-        
-    def _compute_count_life_permission(self):
-        self.count_life_permission = self.env['res.partner'].search_count([('id', 'child_of', self.id),('liability_insurance_permission', '=', self.env.ref('membership_insurance.crm_insurance_life_permission').id)])
-    
-    def _compute_count_property_permission(self):
-        self.count_property_permission = self.env['res.partner'].search_count([('id', 'child_of', self.id),('liability_insurance_permission', '=', self.env.ref('membership_insurance.crm_insurance_property_permission').id)])
-    
-    def _compute_life_protperty_permission(self):
-        self.count_life_protperty_insurance_permission = self.env['res.partner'].search_count([('id', 'child_of', self.id),('liability_insurance_permission', '=', self.env.ref('membership_insurance.crm_insurance_life_permission').id),('liability_insurance_permission', '=', self.env.ref('membership_insurance.crm_insurance_property_permission').id)])
+    @api.onchange('insurance_company_type')
+    def onchange_insurance_company_type(self):
+        self.is_company = (self.insurance_company_type not in ['person','accomodator'])
+        self.company_type = 'company' if self.is_company else 'person'
+    def _insurance_write_company_type(self):
+        for partner in self:
+            partner.is_company = (partner.insurance_company_type not in ['person','accomodator'])
+            partner.company_type = 'company' if partner.is_company else 'person'
+    insurance_company_type = fields.Selection(string='Company Type',
+        selection=[('person', 'Individual'),('fellowship', 'Fellowship'),('company', 'Company'),('accomodator', 'Accomodator')],
+        inverse='_insurance_write_company_type')
+    revenue = fields.Integer(string='Revenue',help="Revenue in tkr")
+    revenue_property = fields.Integer(string='Revenue Propery')
+    revenue_life = fields.Integer(string='Revenue Life')
+
+    @api.multi
+    def _action_button(self,domain):
+        partner_ids = self.ids
+        partner_ids.append(self.env.user.partner_id.id)
+        action = self.env['ir.actions.act_window'].for_xml_id('contacts', 'action_contacts')
+        action['context'] = {
+            'default_partner_ids': partner_ids,
+        }
+        action['domain'] = domain
+        return action
         
     @api.multi
     def company_button(self):
-        partner_ids = self.ids
-        partner_ids.append(self.env.user.partner_id.id)
-        action = self.env['ir.actions.act_window'].for_xml_id('contacts', 'action_contacts')
-        action['context'] = {
-            'default_partner_ids': partner_ids,
-        }
-        action['domain'] = [('id', 'child_of', self.id),('insurance_company_type', '=', 'company')]
-        return action
+        return self._action_button([('id', 'child_of', self.id),('insurance_company_type', '=', 'company')])
 
     @api.multi
     def fellowship_button(self):
-        action = self.env['ir.actions.act_window'].for_xml_id('contacts', 'action_contacts')
-        action['domain'] = [('id', 'child_of', self.id),('insurance_company_type', '=', 'fellowship')]
-        return action
+        return self._action_button([('id', 'child_of', self.id),('insurance_company_type', '=', 'fellowship')])
 
-        
-    # ~ @api.multi
-    # ~ def fellowship_button(self):
-        # ~ partner_ids = self.ids
-        # ~ partner_ids.append(self.env.user.partner_id.id)
-        # ~ action = self.env['ir.actions.act_window'].for_xml_id('contacts', 'action_contacts')
-        # ~ action['context'] = {
-            # ~ 'default_partner_ids': partner_ids,
-        # ~ }
-        # ~ action['domain'] = [('id', 'child_of', self.id),('is_fellowship','=', True)]
-        # ~ return action
-    
     @api.multi
     def accommodator_button(self):
-        partner_ids = self.ids
-        partner_ids.append(self.env.user.partner_id.id)
-        action = self.env['ir.actions.act_window'].for_xml_id('contacts', 'action_contacts')
-        action['context'] = {
-            'default_partner_ids': partner_ids,
-        }
-        action['domain'] = [('id', 'child_of', self.id),('insurance_company_type', '=', 'accomodator')]
-        return action
+        return self._action_button([('id', 'child_of', self.id),('insurance_company_type', '=', 'accomodator')])
     
     @api.multi
     def life_insurance_button(self):
-        partner_ids = self.ids
-        partner_ids.append(self.env.user.partner_id.id)
-        action = self.env['ir.actions.act_window'].for_xml_id('contacts', 'action_contacts')
-        action['context'] = {
-            'default_partner_ids': partner_ids,
-        }
-        action['domain'] = [('id', 'child_of', self.id),('liability_insurance', '=', self.env.ref('membership_insurance.crm_insurance_life').id)]
-        return action
-        
+        return self._action_button([('id', 'child_of', self.id),('liability_insurance', '=', self.env.ref('membership_insurance.crm_insurance_life').id)])
+
     @api.multi
     def property_insurance_button(self):
-        partner_ids = self.ids
-        partner_ids.append(self.env.user.partner_id.id)
-        action = self.env['ir.actions.act_window'].for_xml_id('contacts', 'action_contacts')
-        action['context'] = {
-            'default_partner_ids': partner_ids,
-        }
-        action['domain'] = [('id', 'child_of', self.id),('liability_insurance', '=', self.env.ref('membership_insurance.crm_insurance_property').id)]
-        return action
-        
+        return self._action_button([('id', 'child_of', self.id),('liability_insurance', '=', self.env.ref('membership_insurance.crm_insurance_property').id)])
+
     @api.multi
     def life_protperty_insurance_button(self):
-        partner_ids = self.ids
-        partner_ids.append(self.env.user.partner_id.id)
-        action = self.env['ir.actions.act_window'].for_xml_id('contacts', 'action_contacts')
-        action['context'] = {
-            'default_partner_ids': partner_ids,
-        }
-        action['domain'] = [('id', 'child_of', self.id),('liability_insurance', '=', self.env.ref('membershipinsurance.crm_insurance_life').id),('liability_insurance', '=', self.env.ref('membership_insurance.crm_insurance_property').id)]
-        return action
+        return self._action_button([('id', 'child_of', self.id),('liability_insurance', '=', self.env.ref('membership_insurance.crm_insurance_life').id),('liability_insurance', '=', self.env.ref('membership_insurance.crm_insurance_property').id)])
         
     @api.multi
     def life_permission_button(self):
-        partner_ids = self.ids
-        partner_ids.append(self.env.user.partner_id.id)
-        action = self.env['ir.actions.act_window'].for_xml_id('contacts', 'action_contacts')
-        action['context'] = {
-            'default_partner_ids': partner_ids,
-        }
-        action['domain'] = [('id', 'child_of', self.id),('liability_insurance_permission', '=', self.env.ref('membership_insurance.crm_insurance_life_permission').id)]
-        return action
+        return self._action_button([('id', 'child_of', self.id),('liability_insurance_permission', '=', self.env.ref('membership_insurance.crm_insurance_life_permission').id)])
         
     @api.multi
     def property_permission_button(self):
-        partner_ids = self.ids
-        partner_ids.append(self.env.user.partner_id.id)
-        action = self.env['ir.actions.act_window'].for_xml_id('contacts', 'action_contacts')
-        action['context'] = {
-            'default_partner_ids': partner_ids,
-        }
-        action['domain'] = [('id', 'child_of', self.id),('liability_insurance_permission', '=', self.env.ref('membership_insurance.crm_insurance_property_permission').id)]
-        return action
+        return self._action_button([('id', 'child_of', self.id),('liability_insurance_permission', '=', self.env.ref('membership_insurance.crm_insurance_property_permission').id)])
         
     @api.multi
     def life_protperty_permission_button(self):
-        partner_ids = self.ids
-        partner_ids.append(self.env.user.partner_id.id)
-        action = self.env['ir.actions.act_window'].for_xml_id('contacts', 'action_contacts')
-        action['context'] = {
-            'default_partner_ids': partner_ids,
-        }
-        action['domain'] = [('id', 'child_of', self.id),('liability_insurance_permission', '=', self.env.ref('membership_insurance.crm_insurance_life_permission').id),('liability_insurance_permission', '=', self.env.ref('membership_insurance.crm_insurance_property_permission').id)]
-        return action
-        
-    
-   
+        return self._action_button([('id', 'child_of', self.id),('liability_insurance_permission', '=', self.env.ref('membership_insurance.crm_insurance_life_permission').id),('liability_insurance_permission', '=', self.env.ref('membership_insurance.crm_insurance_property_permission').id)])

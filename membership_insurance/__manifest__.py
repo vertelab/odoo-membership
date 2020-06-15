@@ -11,7 +11,7 @@
         'security/ir.model.access.csv'
     ],
     'category': 'membership',
-    'depends': ['base'],
+    'depends': ['crm','membership'],
     'sequence': 5,
     'application': False,
 }
