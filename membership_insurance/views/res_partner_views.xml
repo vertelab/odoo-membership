@@ -38,7 +38,7 @@
     <field name="arch" type="xml">
       <field name="company_type" position="replace">
         <field name="company_type" invisible="1" />
-        <field name="insurance_company_type" options="{'horizontal': true}" class="oe_edit_only" widget="radio" groups="base.group_no_one" />
+        <field name="insurance_company_type" options="{'horizontal': true}" widget="radio" />  <!-- class="oe_edit_only"  -->
       </field>
       <field name="vat" position="before">
         <field name="personnumber" placeholder="10 or 12 digital" attrs="{'invisible': [('company_type', '=', 'company')]}" />
