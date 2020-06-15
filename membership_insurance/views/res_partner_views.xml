@@ -45,6 +45,7 @@
         <field name="liability_insurance_permission" widget="many2many_tags" attrs="{'invisible': [('company_type', '!=', 'company')]}" />
         <field name="liability_insurance" widget="many2many_tags" attrs="{'invisible': [('company_type', '=', 'company')]}" />
         <field name="url_financial_supervisory" widget="url" attrs="{'invisible': [('company_type', '!=', 'company')]}" />
+        <field name="revenue" />
       </field>
       <field name="vat" position="attributes">
         <attribute name="attrs">{'readonly': [('parent_id','!=',False)], 'invisible': [('company_type','!=','company')]}</attribute>

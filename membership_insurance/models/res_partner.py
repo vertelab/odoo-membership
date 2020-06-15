@@ -60,6 +60,7 @@ class res_partner(models.Model):
     insurance_company_type = fields.Selection(string='Company Type',
         selection=[('person', 'Individual'),('fellowship', 'Fellowship'),('company', 'Company'),('accomodator', 'Accomodator')],
         inverse='_insurance_write_company_type')
+    revenue = fields.Float(string='Revenue')
 
     @api.onchange('insurance_company_type')
     def onchange_insurance_company_type(self):
