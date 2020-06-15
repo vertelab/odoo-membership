@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    Odoo, Open Source Management Solution, third party addon
-#    Copyright (C) 2004-2020 Vertel AB (<http://vertel.se>).
+#    Copyright (C) 2004-2019 Vertel AB (<http://vertel.se>).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -20,11 +20,11 @@
 ##############################################################################
 
 {
-    'name': 'Membership Admission',
+    'name': 'Membership Recruitment Status',
     'version': '0.1',
     'category': 'base',
     'description': """
-    Admission of new members
+    Check the status of new members
 """,
     'author': 'Vertel AB',
     'license': 'AGPL-3',
