@@ -42,9 +42,9 @@
       </field>
       <field name="vat" position="before">
         <field name="personnumber" placeholder="10 or 12 digital" attrs="{'invisible': [('company_type', '=', 'company')]}" />
-        <field name="liability_insurance_permission" widget="many2many_tags" attrs="{'invisible': [('company_type', '!=', 'company')]}" />
-        <field name="liability_insurance" widget="many2many_tags" attrs="{'invisible': [('company_type', '=', 'company')]}" />
-        <field name="url_financial_supervisory" widget="url" attrs="{'invisible': [('company_type', '!=', 'company')]}" />
+        <field name="liability_insurance_permission" widget="many2many_tags" attrs="{'invisible': [('insurance_company_type', '=', 'person')]}" />
+        <field name="liability_insurance" widget="many2many_tags" attrs="{'invisible': [('insurance_company_type', '=', 'person')]}" />
+        <field name="url_financial_supervisory" widget="url" attrs="{'invisible': [('insurance_company_type', '=', 'person')]}" />
         <field name="revenue" />
       </field>
       <field name="vat" position="attributes">
