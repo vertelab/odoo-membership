@@ -4,10 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 12.0-20191002\n"
+"Project-Id-Version: Odoo Server 12.0-20190808\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-13 17:00+0000\n"
-"PO-Revision-Date: 2020-06-13 17:01+0000\n"
+"POT-Creation-Date: 2020-06-16 09:59+0000\n"
+"PO-Revision-Date: 2020-06-16 10:00+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -18,28 +18,9 @@ msgstr ""
 "X-Generator: Poedit 2.0.6\n"
 
 #. module: membership_invoice
-#: model:ir.actions.act_window,name:membership_invoice.action_accommodator_form
-#: model:ir.ui.menu,name:membership_invoice.res_partner_menu_accommodator
-msgid "Accommodator"
-msgstr "Förmedlare"
-
-#. module: membership_invoice
-#: model:ir.actions.act_window,name:membership_invoice.action_all_form
-#: model:ir.ui.menu,name:membership_invoice.res_partner_menu_all
-msgid "All"
-msgstr "Alla"
-
-#. module: membership_invoice
-#: model:ir.actions.act_window,name:membership_invoice.action_company_form
-#: model:ir.ui.menu,name:membership_invoice.res_partner_menu_company
-msgid "Company"
-msgstr "Bolag"
-
-#. module: membership_invoice
-#: model:ir.actions.act_window,name:membership_invoice.action_fellowship_form
-#: model:ir.ui.menu,name:membership_invoice.res_partner_menu_fellowship
-msgid "Fellowship"
-msgstr "Sammanslutning"
+#: model:ir.model,name:membership_invoice.model_res_partner
+msgid "Contact"
+msgstr "Kontakt"
 
 #. module: membership_invoice
 #: model:ir.model.fields,field_description:membership_invoice.field_product_product__membership_product_ids
@@ -48,6 +29,23 @@ msgid "Membership Products"
 msgstr "Medlemsprodukter"
 
 #. module: membership_invoice
+#: model:ir.model,name:membership_invoice.model_product_product
+msgid "Product"
+msgstr "Produkt"
+
+#. module: membership_invoice
 #: model:ir.model,name:membership_invoice.model_product_template
 msgid "Product Template"
 msgstr "Produktmall"
+
+#. module: membership_invoice
+#: model:ir.model.fields,field_description:membership_invoice.field_product_product__membership_code
+#: model:ir.model.fields,field_description:membership_invoice.field_product_template__membership_code
+msgid "Python Code"
+msgstr "Pythonkod"
+
+#. module: membership_invoice
+#: model:ir.model.fields,help:membership_invoice.field_product_product__membership_code
+#: model:ir.model.fields,help:membership_invoice.field_product_template__membership_code
+msgid "Write Python code that holds advanced calcultations for amount and quatity"
+msgstr "Pytonkod som beräknar summa och antal"

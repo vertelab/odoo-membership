@@ -4,10 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 12.0-20191002\n"
+"Project-Id-Version: Odoo Server 12.0-20190808\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-13 16:39+0000\n"
-"PO-Revision-Date: 2020-06-13 16:54+0000\n"
+"POT-Creation-Date: 2020-06-16 09:43+0000\n"
+"PO-Revision-Date: 2020-06-16 09:49+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -18,16 +18,53 @@ msgstr ""
 "X-Generator: Poedit 2.0.6\n"
 
 #. module: membership_insurance
-#: model_terms:ir.ui.view,arch_db:membership_insurance.view_partners_form_crm_insurance
+#: model_terms:ir.ui.view,arch_db:membership_insurance.view_partner_form
 msgid "10 or 12 digital"
 msgstr "10 eller 12 siffror"
 
 #. module: membership_insurance
-#: model:ir.model.fields,field_description:membership_insurance.field_res_partner__is_accommodator
-#: model:ir.model.fields,field_description:membership_insurance.field_res_users__is_accommodator
+#: model:ir.actions.act_window,name:membership_insurance.action_accommodator_form
+#: model:ir.ui.menu,name:membership_insurance.res_partner_menu_accommodator
 #: model_terms:ir.ui.view,arch_db:membership_insurance.res_partner_view_search_inherit_taxid
+#: selection:res.partner,insurance_company_type:0
 msgid "Accommodator"
 msgstr "Förmedlare"
+
+#. module: membership_insurance
+#: model:ir.model.fields,field_description:membership_insurance.field_res_partner__count_ac_life
+#: model:ir.model.fields,field_description:membership_insurance.field_res_users__count_ac_life
+msgid "Accommodator Life"
+msgstr "Livförmedlare"
+
+#. module: membership_insurance
+#: model:ir.model.fields,field_description:membership_insurance.field_res_partner__count_ac_life_licence
+#: model:ir.model.fields,field_description:membership_insurance.field_res_users__count_ac_life_licence
+msgid "Accommodator Life Licence"
+msgstr "Licensierade Livförmedlare"
+
+#. module: membership_insurance
+#: model:ir.model.fields,field_description:membership_insurance.field_res_partner__count_ac_property
+#: model:ir.model.fields,field_description:membership_insurance.field_res_users__count_ac_property
+msgid "Accommodator Property"
+msgstr "Sakförmedlare"
+
+#. module: membership_insurance
+#: model:ir.model.fields,field_description:membership_insurance.field_res_partner__count_ac_property_licence
+#: model:ir.model.fields,field_description:membership_insurance.field_res_users__count_ac_property_licence
+msgid "Accommodator Property Licence"
+msgstr "Licensierade Sakförmedlare"
+
+#. module: membership_insurance
+#: model:ir.model.fields,field_description:membership_insurance.field_res_partner__count_ac_property_life
+#: model:ir.model.fields,field_description:membership_insurance.field_res_users__count_ac_property_life
+msgid "Accommodator Property/Life"
+msgstr "Liv/Sakförmedlare"
+
+#. module: membership_insurance
+#: model:ir.model.fields,field_description:membership_insurance.field_res_partner__count_ac_property_life_licence
+#: model:ir.model.fields,field_description:membership_insurance.field_res_users__count_ac_property_life_licence
+msgid "Accommodator Property/Life Licence"
+msgstr "Licensierade Liv/Sakförmedlare"
 
 #. module: membership_insurance
 #: model:ir.model.fields,field_description:membership_insurance.field_res_partner__count_accommodator
@@ -36,9 +73,10 @@ msgid "Accommodators"
 msgstr "Förmedlare"
 
 #. module: membership_insurance
-#: model:ir.model.fields,field_description:membership_insurance.field_res_member__active
-msgid "Active"
-msgstr "Aktiv"
+#: model:ir.actions.act_window,name:membership_insurance.action_all_form
+#: model:ir.ui.menu,name:membership_insurance.res_partner_menu_all
+msgid "All"
+msgstr "Alla"
 
 #. module: membership_insurance
 #. openerp-web
@@ -49,15 +87,38 @@ msgid "An error occured with this latest posts block. If the problem persists, p
 msgstr ""
 
 #. module: membership_insurance
-#: model_terms:ir.ui.view,arch_db:membership_insurance.res_partner_view_search_inherit_taxid
-msgid "City"
-msgstr "Stad"
-
-#. module: membership_insurance
+#: model:ir.actions.act_window,name:membership_insurance.action_company_form
 #: model:ir.model.fields,field_description:membership_insurance.field_res_partner__count_company
 #: model:ir.model.fields,field_description:membership_insurance.field_res_users__count_company
+#: model:ir.ui.menu,name:membership_insurance.res_partner_menu_company
+#: model_terms:ir.ui.view,arch_db:membership_insurance.res_partner_view_search_inherit_taxid
+#: selection:res.partner,insurance_company_type:0
 msgid "Company"
 msgstr "Bolag"
+
+#. module: membership_insurance
+#: model:ir.model.fields,field_description:membership_insurance.field_res_partner__count_co_life_permission
+#: model:ir.model.fields,field_description:membership_insurance.field_res_users__count_co_life_permission
+msgid "Company Life Permission"
+msgstr "Bolag med Livtillstånd"
+
+#. module: membership_insurance
+#: model:ir.model.fields,field_description:membership_insurance.field_res_partner__count_co_property_permission
+#: model:ir.model.fields,field_description:membership_insurance.field_res_users__count_co_property_permission
+msgid "Company Property Permission"
+msgstr "Bolag med Saktillstånd"
+
+#. module: membership_insurance
+#: model:ir.model.fields,field_description:membership_insurance.field_res_partner__count_co_property_life_permission
+#: model:ir.model.fields,field_description:membership_insurance.field_res_users__count_co_property_life_permission
+msgid "Company Property/Life Permission"
+msgstr "Bolag med Liv/Saktillstånd"
+
+#. module: membership_insurance
+#: model:ir.model.fields,field_description:membership_insurance.field_res_partner__insurance_company_type
+#: model:ir.model.fields,field_description:membership_insurance.field_res_users__insurance_company_type
+msgid "Company Type"
+msgstr "Företagtyp"
 
 #. module: membership_insurance
 #: model:ir.model,name:membership_insurance.model_res_partner
@@ -65,30 +126,43 @@ msgid "Contact"
 msgstr "Kontakt"
 
 #. module: membership_insurance
+#: model_terms:ir.ui.view,arch_db:membership_insurance.view_partner_form
+msgid "Count companies"
+msgstr "Antal bolag"
+
+#. module: membership_insurance
+#: model_terms:ir.ui.view,arch_db:membership_insurance.view_partner_form
+msgid "Count employed accomodators"
+msgstr "Antal förmedlare"
+
+#. module: membership_insurance
+#: model_terms:ir.ui.view,arch_db:membership_insurance.view_partner_form
+msgid "Count licenced accomodators"
+msgstr "Antal licenserade förmedlare"
+
+#. module: membership_insurance
 #: model:ir.model.fields,field_description:membership_insurance.field_insurance_license__create_uid
 #: model:ir.model.fields,field_description:membership_insurance.field_insurance_permission__create_uid
-#: model:ir.model.fields,field_description:membership_insurance.field_res_member__create_uid
 msgid "Created by"
-msgstr ""
+msgstr "Skapad av"
 
 #. module: membership_insurance
 #: model:ir.model.fields,field_description:membership_insurance.field_insurance_license__create_date
 #: model:ir.model.fields,field_description:membership_insurance.field_insurance_permission__create_date
-#: model:ir.model.fields,field_description:membership_insurance.field_res_member__create_date
 msgid "Created on"
-msgstr ""
+msgstr "Skapad den"
 
 #. module: membership_insurance
 #: model:ir.model.fields,field_description:membership_insurance.field_insurance_license__display_name
 #: model:ir.model.fields,field_description:membership_insurance.field_insurance_permission__display_name
-#: model:ir.model.fields,field_description:membership_insurance.field_res_member__display_name
 msgid "Display Name"
 msgstr "Visningsnamn"
 
 #. module: membership_insurance
-#: model:ir.model.fields,field_description:membership_insurance.field_res_partner__is_fellowship
-#: model:ir.model.fields,field_description:membership_insurance.field_res_users__is_fellowship
+#: model:ir.actions.act_window,name:membership_insurance.action_fellowship_form
+#: model:ir.ui.menu,name:membership_insurance.res_partner_menu_fellowship
 #: model_terms:ir.ui.view,arch_db:membership_insurance.res_partner_view_search_inherit_taxid
+#: selection:res.partner,insurance_company_type:0
 msgid "Fellowship"
 msgstr "Sammanslutning"
 
@@ -101,70 +175,43 @@ msgstr ""
 #. module: membership_insurance
 #: model:ir.model.fields,field_description:membership_insurance.field_insurance_license__id
 #: model:ir.model.fields,field_description:membership_insurance.field_insurance_permission__id
-#: model:ir.model.fields,field_description:membership_insurance.field_res_member__id
 msgid "ID"
 msgstr ""
+
+#. module: membership_insurance
+#: selection:res.partner,insurance_company_type:0
+msgid "Individual"
+msgstr "Kontakt"
 
 #. module: membership_insurance
 #: model:ir.model.fields,field_description:membership_insurance.field_res_partner__liability_insurance
 #: model:ir.model.fields,field_description:membership_insurance.field_res_users__liability_insurance
 msgid "Insurance License"
-msgstr "Försäkringslicens"
+msgstr "Licens"
 
 #. module: membership_insurance
 #: model:ir.model.fields,field_description:membership_insurance.field_res_partner__liability_insurance_permission
 #: model:ir.model.fields,field_description:membership_insurance.field_res_users__liability_insurance_permission
 msgid "Insurance Permission"
-msgstr "Försäkringstillstånd"
+msgstr "Tillstånd"
 
 #. module: membership_insurance
 #: model:ir.model.fields,field_description:membership_insurance.field_insurance_license____last_update
 #: model:ir.model.fields,field_description:membership_insurance.field_insurance_permission____last_update
-#: model:ir.model.fields,field_description:membership_insurance.field_res_member____last_update
 msgid "Last Modified on"
-msgstr ""
+msgstr "Senast redigerad"
 
 #. module: membership_insurance
 #: model:ir.model.fields,field_description:membership_insurance.field_insurance_license__write_uid
 #: model:ir.model.fields,field_description:membership_insurance.field_insurance_permission__write_uid
-#: model:ir.model.fields,field_description:membership_insurance.field_res_member__write_uid
 msgid "Last Updated by"
-msgstr ""
+msgstr "Senast uppdaterad av"
 
 #. module: membership_insurance
 #: model:ir.model.fields,field_description:membership_insurance.field_insurance_license__write_date
 #: model:ir.model.fields,field_description:membership_insurance.field_insurance_permission__write_date
-#: model:ir.model.fields,field_description:membership_insurance.field_res_member__write_date
 msgid "Last Updated on"
-msgstr ""
-
-#. module: membership_insurance
-#: model:ir.model.fields,field_description:membership_insurance.field_res_partner__count_life_insurance
-#: model:ir.model.fields,field_description:membership_insurance.field_res_users__count_life_insurance
-msgid "Life Insurance"
-msgstr "Livförsäkring"
-
-#. module: membership_insurance
-#: model:ir.model.fields,field_description:membership_insurance.field_res_partner__count_life_protperty_insurance
-#: model:ir.model.fields,field_description:membership_insurance.field_res_users__count_life_protperty_insurance
-msgid "Life/Property Insurance"
-msgstr "Liv/sak-försäkring"
-
-#. module: membership_insurance
-#: model:ir.model,name:membership_insurance.model_res_member
-msgid "Member"
-msgstr "Medlem"
-
-#. module: membership_insurance
-#: model:ir.model.fields,field_description:membership_insurance.field_res_partner__membership_ids
-#: model:ir.model.fields,field_description:membership_insurance.field_res_users__membership_ids
-msgid "Membership ID"
-msgstr "Medlemsid"
-
-#. module: membership_insurance
-#: model_terms:ir.ui.view,arch_db:membership_insurance.view_partners_form_crm_insurance
-msgid "MembershipID"
-msgstr "Medlemsid"
+msgstr "Senast uppdaterad"
 
 #. module: membership_insurance
 #: model:ir.model.fields,field_description:membership_insurance.field_insurance_license__name
@@ -187,47 +234,46 @@ msgid "Org/Person Number"
 msgstr "Org/personnummer"
 
 #. module: membership_insurance
-#: model:ir.model.fields,field_description:membership_insurance.field_res_member__partner_id
-msgid "Partner"
-msgstr "Partner"
-
-#. module: membership_insurance
 #: model:ir.model.fields,field_description:membership_insurance.field_res_partner__personnumber
 #: model:ir.model.fields,field_description:membership_insurance.field_res_users__personnumber
-#: model_terms:ir.ui.view,arch_db:membership_insurance.res_partner_view_search_inherit_taxid
 msgid "Person Number"
-msgstr "Peronsnummer"
+msgstr "Personnummer"
 
 #. module: membership_insurance
-#: model:ir.model.fields,field_description:membership_insurance.field_res_partner__count_property_insurance
-#: model:ir.model.fields,field_description:membership_insurance.field_res_users__count_property_insurance
-msgid "Property Insurance"
-msgstr "Sakförsäkring"
+#: model:ir.model.fields,field_description:membership_insurance.field_res_partner__revenue
+#: model:ir.model.fields,field_description:membership_insurance.field_res_users__revenue
+msgid "Revenue"
+msgstr "Omsättning"
+
+#. module: membership_insurance
+#: model:ir.model.fields,field_description:membership_insurance.field_res_partner__revenue_life
+#: model:ir.model.fields,field_description:membership_insurance.field_res_users__revenue_life
+msgid "Revenue Life"
+msgstr "Omsättning liv"
+
+#. module: membership_insurance
+#: model:ir.model.fields,field_description:membership_insurance.field_res_partner__revenue_property
+#: model:ir.model.fields,field_description:membership_insurance.field_res_users__revenue_property
+msgid "Revenue Propery"
+msgstr "Omsättning sak"
+
+#. module: membership_insurance
+#: model:ir.model.fields,help:membership_insurance.field_res_partner__revenue
+#: model:ir.model.fields,help:membership_insurance.field_res_users__revenue
+msgid "Revenue in tkr"
+msgstr "Omsättning i tkr"
 
 #. module: membership_insurance
 #: model:ir.model.fields,field_description:membership_insurance.field_res_partner__vat
 #: model:ir.model.fields,field_description:membership_insurance.field_res_users__vat
-#: model_terms:ir.ui.view,arch_db:membership_insurance.res_partner_view_search_inherit_taxid
 msgid "Tax ID"
-msgstr ""
+msgstr "Momsregistreringsnummer"
 
 #. module: membership_insurance
 #: model:ir.model.fields,help:membership_insurance.field_res_partner__vat
 #: model:ir.model.fields,help:membership_insurance.field_res_users__vat
 msgid "The Tax Identification Number. Complete it if the contact is subjected to government taxes. Used in some legal statements."
 msgstr ""
-
-#. module: membership_insurance
-#: model:ir.model.fields,help:membership_insurance.field_res_partner__is_accommodator
-#: model:ir.model.fields,help:membership_insurance.field_res_users__is_accommodator
-msgid "This is an accommodator"
-msgstr "Detta är en förmedlare"
-
-#. module: membership_insurance
-#: model:ir.model.fields,help:membership_insurance.field_res_partner__is_fellowship
-#: model:ir.model.fields,help:membership_insurance.field_res_users__is_fellowship
-msgid "This is fellowship of companies."
-msgstr "Detta är en sammanslutning av företag"
 
 #. module: membership_insurance
 #: model:ir.model.fields,help:membership_insurance.field_res_partner__personnumber
@@ -238,9 +284,9 @@ msgstr "Detta är ett personnummer"
 #. module: membership_insurance
 #: model:ir.model,name:membership_insurance.model_insurance_license
 msgid "insurance.license"
-msgstr ""
+msgstr "Licens"
 
 #. module: membership_insurance
 #: model:ir.model,name:membership_insurance.model_insurance_permission
 msgid "insurance.permission"
-msgstr ""
+msgstr "Tillstånd"
