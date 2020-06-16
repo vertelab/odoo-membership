@@ -37,27 +37,17 @@
     <field name="inherit_id" ref="crm.view_partners_form_crm1" />
     <field name="arch" type="xml">
       <button name="%(crm.crm_lead_opportunities)d" position="before">
-        <button class="oe_stat_button" name="company_button" type="object" icon="fa-industry" context="{'partner_id': active_id, 'partner_name': name}" attrs="{'invisible': [('insurance_company_type', 'not in', ['fellowship'])]}">
+        <button class="oe_stat_button" name="company_button" type="object" icon="fa-industry" context="{'partner_id': active_id, 'partner_name': name}">
           <field name="count_company" widget="statinfo" />
         </button>
         <button class="oe_stat_button" name="accommodator_button" type="object" icon="fa-group" context="{'partner_id': active_id, 'partner_name': name}" attrs="{'invisible': [('company_type', '!=', 'company')]}">
           <field name="count_accommodator" widget="statinfo" />
         </button>
-        <!--
-             <button class="oe_stat_button" name="life_insurance_button" type="object" icon="fa-heart" context="{'partner_id': active_id, 'partner_name': name}" attrs="{'invisible': [('company_type', '!=', 'company')]}">
-             <field name="count_life_insurance" widget="statinfo" />
-             </button>
-             <button class="oe_stat_button" name="property_insurance_button" type="object" icon="fa-diamond" context="{'partner_id': active_id, 'partner_name': name}" attrs="{'invisible': [('company_type', '!=', 'company')]}">
-             <field name="count_property_insurance" widget="statinfo" />
-             </button>
-             <button class="oe_stat_button" name="life_protperty_insurance_button" type="object" icon="fa-heart-o" context="{'partner_id': active_id, 'partner_name': name}" attrs="{'invisible': [('company_type', '!=', 'company')]}">
-             <field name="count_life_protperty_insurance" widget="statinfo" />
-             </button>
-        -->
+
       </button>
     </field>
   </record>
-  <record id="view_partners_form_crm_insurance" model="ir.ui.view">
+  <record id="view_partner_form" model="ir.ui.view">
     <field name="name">partner.form.insurance.inherited</field>
     <field name="model">res.partner</field>
     <field name="inherit_id" ref="base.view_partner_form" />
@@ -68,8 +58,10 @@
         <!-- class="oe_edit_only"  -->
       </field>
       <field name="child_ids" position="attributes">
-        <attribute name="context">{'search_default_is_company':False,'default_parent_id': active_id, 'default_street': street, 'default_street2': street2, 'default_city': city, 'default_state_id': state_id, 'default_zip': zip, 'default_country_id': country_id, 'default_supplier': supplier, 'default_customer': customer, 'default_lang': lang, 'default_user_id': user_id}
-        </attribute>
+        <attribute name="context">{'search_default_is_company':False,'default_parent_id': active_id, 'default_street': street, 'default_street2': street2, 'default_city': city, 'default_state_id': state_id, 'default_zip': zip, 'default_country_id': country_id, 'default_supplier': supplier, 'default_customer': customer, 'default_lang': lang, 'default_user_id': user_id}</attribute>
+      </field>
+      <field name="parent_id" position="attributes">
+        <attribute name="attrs">{'invisible': [('insurance_company_type','in', ['fellowship'])]}</attribute>
       </field>
       <!--
            attrs=mode="kanban" context="{'default_parent_id': active_id, 'default_street': street, 'default_street2': street2, 'default_city': city, 'default_state_id': state_id, 'default_zip': zip, 'default_country_id': country_id, 'default_supplier': supplier, 'default_customer': customer, 'default_lang': lang, 'default_user_id': user_id}">
@@ -81,8 +73,8 @@
             <field name="count_co_property_permission" />
             <field name="count_co_property_life_permission" />
           </group>
-          </group>
-          <group>
+        </group>
+        <group>
           <group string="Count licenced accomodators" name="licenced_ac" priority="2" attrs="{'invisible': [('insurance_company_type', 'not in', ['fellowship','company'])]}">
             <field name="count_ac_life_licence" />
             <field name="count_ac_property_licence" />
@@ -107,35 +99,13 @@
       <field name="vat" position="attributes">
         <attribute name="attrs">{'readonly': [('parent_id','!=',False)], 'invisible': [('company_type','!=','company')]}</attribute>
       </field>
-      <!--
-           <field name="lang" position="after">
-           <field name="membership_ids" widget="many2many_tags" placeholder="MembershipID" />
-           </field>
-      -->
+
+      <button name="company_button" position="attributes">
+        <attribute name="attrs">{'invisible': [('insurance_company_type', 'not in', ['fellowship'])]}</attribute>
+      </button>
     </field>
   </record>
-  <!--
-       <record model="ir.actions.act_window.view" id="action_membership_members_view_tree">
-       <field name="sequence" eval="2"/>
-       <field name="view_mode">tree</field>
-       <field name="view_id" ref="membership_members_tree"/>
-       <field name="act_window_id" ref="action_membership_members"/>
-       </record>
-       
-       <record model="ir.actions.act_window.view" id="action_membership_members_view_form">
-       <field name="sequence" eval="3"/>
-       <field name="view_mode">form</field>
-       <field name="view_id" ref="base.view_partner_form"/>
-       <field name="act_window_id" ref="action_membership_members"/>
-       </record>
-       <record model="ir.actions.act_window.view" id="action_membership_members_view_kanban">
-       <field name="sequence" eval="1"/>
-       <field name="view_mode">kanban</field>
-       <field name="view_id" ref="base.res_partner_kanban_view"/>
-       <field name="act_window_id" ref="action_membership_members"/>
-       </record>
-       <menuitem name="Members" id="menu_membership" sequence="0" parent="menu_association" action="action_membership_members"/>
-  -->
+
   <record id="action_all_form" model="ir.actions.act_window">
     <field name="name">All</field>
     <field name="res_model">res.partner</field>
