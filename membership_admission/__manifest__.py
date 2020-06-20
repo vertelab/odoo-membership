@@ -20,8 +20,9 @@
 ##############################################################################
 
 {
-    'name': 'Membership Recruitment Status',
+    'name': 'Membership Admission',
     'version': '0.1',
+    'summary': 'Administera admissions',
     'category': 'base',
     'description': """
     Check the status of new members
