@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright 2020 Vertel AB.
+     License GPL-3.0 or later (https://www.gnu.org/licenses/lgpl.html).-->
+<odoo>
+  <record id="import_fi_wizard" model="ir.ui.view">
+    <field name="name">import.fi.wizard</field>
+    <field name="model">import.fi.wizard</field>
+    <field name="arch" type="xml">
+      <form string="Import File from FI">
+        <field name="state" invisible="1" />
+        <field name="fname" invisible="1" />
+        <group states="choose">
+          <group>
+            <field name="import_file" />
+          </group>
+          <group>
+            <field name="datas" filename="fname" attrs="{'invisible': [('id', '=', False)]}" />
+          </group>
+        </group>
+        <group states="get">
+          <p>Import Successful!</p>
+        </group>
+        <footer states="choose">
+          <button name="action_import" string="Import" type="object" class="oe_highlight" />
+          or
+          <button string="Cancel" class="oe_link" special="cancel" />
+        </footer>
+        <footer states="get">
+          <button string="Close" class="oe_link" special="cancel" />
+        </footer>
+      </form>
+    </field>
+  </record>
+  <record id="action_import_fi" model="ir.actions.act_window">
+    <field name="name">Import FI</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">import.fi.wizard</field>
+    <field name="view_type">form</field>
+    <field name="view_mode">form</field>
+    <field name="target">new</field>
+  </record>
+  <menuitem action="action_import_fi" id="menu_action_import_fi" parent="membership.menu_membership" />
+  
+  <record id="import_fi_company_tree" model="ir.ui.view">
+    <field name="name">import.fi.company.tree</field>
+    <field name="model">import.fi.company</field>
+    <field name="arch" type="xml">
+      <tree string="Import File from FI">
+        <field name="name" />
+        <field name="org_nr" />
+        <field name="main_type" />
+        <field name="permit" />
+      </tree>
+    </field>
+    </record>
+  <record id="import_fi_company_form" model="ir.ui.view">
+    <field name="name">import.fi.company.form</field>
+    <field name="model">import.fi.company</field>
+    <field name="arch" type="xml">
+      <form string="Import File from FI">
+        <field name="name" />
+        <field name="org_nr" />
+        <field name="main_type" />
+        <field name="other_type" />
+        <field name="permit_1" />
+        <field name="permit_2" />
+        <field name="permit_3" />
+        <field name="etc" />
+      </form>
+    </field>
+  </record>
+  
+  <record id="action_import_fi_company" model="ir.actions.act_window">
+    <field name="name">Import FI Company</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">import.fi.company</field>
+    <field name="view_type">form</field>
+    <field name="view_mode">form,tree</field>
+  </record>
+  <menuitem action="action_import_fi_company" id="menu_action_import_fi_company" parent="membership.menu_membership" />
+
+</odoo>

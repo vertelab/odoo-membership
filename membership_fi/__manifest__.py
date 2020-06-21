@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    Odoo, Open Source Management Solution, third party addon
-#    Copyright (C) 2004-2019 Vertel AB (<http://vertel.se>).
+#    Copyright (C) 2004-2020 Vertel AB (<http://vertel.se>).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -20,19 +20,19 @@
 ##############################################################################
 
 {
-    'name': 'Membership Admission',
+    'name': 'Membership Finansinspektionen',
     'version': '0.1',
-    'summary': 'Administera admissions',
-    'category': 'base',
+    'summary': 'Read data from Finansinspekttionen to manage local data',
+    'category': 'membership',
     'description': """
-    Check the status of new members
+    Check 
 """,
     'author': 'Vertel AB',
     'license': 'AGPL-3',
     'website': 'http://www.vertel.se',
     'depends': ['membership'],
     'data': [
-        'views/membership_status_view.xml','security/ir.model.access.csv',
+        'wizard/import_fi.xml',
     ],
     'application': False,
     'installable': True,
