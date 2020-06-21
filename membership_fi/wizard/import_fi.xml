@@ -51,6 +51,9 @@
         <field name="org_nr" />
         <field name="main_type" />
         <field name="permit" />
+        <field name="member_id" invisible="1" />
+        <button name="new_member" string="New" type="object" attrs="{'invisible': [('member_id','!=',False)]}"/>
+        <button name="update_member" string="Update" type="object" attrs="{'invisible': [('member_id','=',False)]}"/>
       </tree>
     </field>
     </record>
@@ -71,6 +74,7 @@
     </field>
   </record>
   
+<!--
   <record id="action_import_fi_company" model="ir.actions.act_window">
     <field name="name">Import FI Company</field>
     <field name="type">ir.actions.act_window</field>
@@ -79,5 +83,6 @@
     <field name="view_mode">form,tree</field>
   </record>
   <menuitem action="action_import_fi_company" id="menu_action_import_fi_company" parent="membership.menu_membership" />
+-->
 
 </odoo>

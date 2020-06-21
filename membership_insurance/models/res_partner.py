@@ -49,11 +49,11 @@ class res_partner(models.Model):
 
         if self.insurance_company_type in ['fellowship','company']:
     
-            self.count_ac_life_licence = self.env['res.partner'].search_count([('id', 'child_of', self.id),('insurance_company_type', '=', 'Accommodator'),('liability_insurance', '=', self.env.ref('membership_insurance.crm_insurance_life_permission').id)])
-            self.count_ac_property_licence = self.env['res.partner'].search_count([('id', 'child_of', self.id),('insurance_company_type', '=', 'Accommodator'),('liability_insurance', '=', self.env.ref('membership_insurance.crm_insurance_property_permission').id)])
-            self.count_ac_property_life_licence = self.env['res.partner'].search_count([('id', 'child_of', self.id),('insurance_company_type', '=', 'Accommodator'),('liability_insurance', '=', self.env.ref('membership_insurance.crm_insurance_property_permission').id),('liability_insurance', '=', self.env.ref('membership_insurance.crm_insurance_life_permission').id)])
+            self.count_ac_life_licence = self.env['res.partner'].search_count([('id', 'child_of', self.id),('insurance_company_type', '=', 'accommodator'),('liability_insurance', '=', self.env.ref('membership_insurance.crm_insurance_life_permission').id)])
+            self.count_ac_property_licence = self.env['res.partner'].search_count([('id', 'child_of', self.id),('insurance_company_type', '=', 'accommodator'),('liability_insurance', '=', self.env.ref('membership_insurance.crm_insurance_property_permission').id)])
+            self.count_ac_property_life_licence = self.env['res.partner'].search_count([('id', 'child_of', self.id),('insurance_company_type', '=', 'accommodator'),('liability_insurance', '=', self.env.ref('membership_insurance.crm_insurance_property_permission').id),('liability_insurance', '=', self.env.ref('membership_insurance.crm_insurance_life_permission').id)])
 
-            self.count_accommodator         = self.env['res.partner'].search_count([('id', 'child_of', self.id),('insurance_company_type', '=', 'Accommodator')])
+            self.count_accommodator         = self.env['res.partner'].search_count([('id', 'child_of', self.id),('insurance_company_type', '=', 'accommodator')])
 
             self.count_ac_life = self.env['res.partner'].search_count([('id', 'child_of', self.id),('liability_insurance', '=', self.env.ref('membership_insurance.crm_insurance_life').id)])
             self.count_ac_property = self.env['res.partner'].search_count([('id', 'child_of', self.id),('liability_insurance', '=', self.env.ref('membership_insurance.crm_insurance_property').id)])
@@ -83,18 +83,16 @@ class res_partner(models.Model):
             self.org_prn = self.personnumber
     org_prn = fields.Char(string="Org/Person Number", compute ='_compute_org_prn')
     
-    url_financial_supervisory = fields.Text(string = 'Finansinspektionen')
-    
     @api.onchange('insurance_company_type')
     def onchange_insurance_company_type(self):
-        self.is_company = (self.insurance_company_type not in ['person','Accommodator'])
+        self.is_company = (self.insurance_company_type not in ['person','accommodator'])
         self.company_type = 'company' if self.is_company else 'person'
     def _insurance_write_company_type(self):
         for partner in self:
-            partner.is_company = (partner.insurance_company_type not in ['person','Accommodator'])
+            partner.is_company = (partner.insurance_company_type not in ['person','accommodator'])
             partner.company_type = 'company' if partner.is_company else 'person'
     insurance_company_type = fields.Selection(string='Company Type',
-        selection=[('person', 'Individual'),('fellowship', 'Fellowship'),('company', 'Company'),('Accommodator', 'Accommodator')],
+        selection=[('person', 'Individual'),('fellowship', 'Fellowship'),('company', 'Company'),('accommodator', 'Accommodator')],
         inverse='_insurance_write_company_type')
     revenue = fields.Integer(string='Revenue',help="Revenue in tkr")
     revenue_property = fields.Integer(string='Revenue Propery')
@@ -121,7 +119,7 @@ class res_partner(models.Model):
 
     @api.multi
     def accommodator_button(self):
-        return self._action_button([('id', 'child_of', self.id),('insurance_company_type', '=', 'Accommodator')])
+        return self._action_button([('id', 'child_of', self.id),('insurance_company_type', '=', 'accommodator')])
     
     @api.multi
     def life_insurance_button(self):

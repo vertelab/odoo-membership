@@ -11,6 +11,9 @@ import base64
 from io import StringIO
 import csv
 
+import requests
+from bs4 import BeautifulSoup
+
 class ImportFIWizard(models.TransientModel):
     """ This wizard is used with the template (xlsx.template) to import
     xlsx template back to active record """
@@ -105,15 +108,27 @@ class ImportFICompany(models.TransientModel):
     permit_3 = fields.Char(string='Permit 3', size=64, trim=True, )
     etc = fields.Char(string='Etc', size=64, trim=True, )
     permit = fields.Text()
-    member_id = fields.Many2one(comodel_name="res.partber")
+    member_id = fields.Many2one(comodel_name="res.partner")
     
     def add_new(self,rec):
         _logger.warn("keys %s" % rec.keys())
         permit_list = list(rec.values())[4:]
         permit = ';'.join([str(p) for p in permit_list])
-        member = self.env['res.partner'].search([('org_nr','=',rec['Org.nummer'])])
+        member = self.env['res.partner'].search([('company_registry','=',rec['Org.nummer'])])
         return self.env['import.fi.company'].create({'name':rec['Namn'], 'org_nr': rec['Org.nummer'], 'main_type':rec['Huvudverksamhet'],
                     'other_type': rec['Övriga verksamheter'], 'permit_1':rec['Tillstånd 1'], 'permit_2':rec['Tillstånd 2'], 
-                    'permit_3':rec['Tillstånd 3'], 'etc':rec['et.c.'],'permit':permit,'member_id': member.id if member else None})
+                    'permit_3':rec['Tillstånd 3'], 'etc':rec['et.c.'],'permit':permit,'member_id': member.id if len(member) == 1 else None})
          
+    def new_member(self):
+        _logger.warn("https://www.fi.se/sv/vara-register/foretagsregistret/?query=%s" % self.org_nr)
+        page = requests.get("https://www.fi.se/sv/vara-register/foretagsregistret/?query=%s" % self.org_nr)
+        soup = BeautifulSoup(page.content, 'html.parser')
+        for atag in soup.findAll('a'):
+            if "details" in atag.get('href'):
+                _logger.warn('atag %s' % atag)
+                new_partner = self.env['res.partner'].create({'name':self.name,'company_registry':self.org_nr,'url_financial_supervisory': "https://www.fi.se/sv/vara-register/foretagsregistret/%s" % atag['href'],'insurance_company_type': 'company'})
+                # ~ new_partner.fi_scrape_company()
+    
+    def update_member(self):
+        pass
         

@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<odoo>
+  <!--
+       <record id="view_res_partner_filter" model="ir.ui.view">
+       <field name="name">res.partner.view.search.fi</field>
+       <field name="model">res.partner</field>
+       <field name="inherit_id" ref="base.view_res_partner_filter" />
+       <field name="arch" type="xml">
+       <filter name="inactive" position="before">
+       <filter string="Company" name="is_company" domain="[('insurance_company_type','=','company')]" />
+       <filter string="Fellowship" name="is_fellowship" domain="[('insurance_company_type','=','fellowship')]" />
+       <filter string="Accommodator" name="is_accommodator" domain="[('insurance_company_type','=','accomodator')]" />
+       </filter>
+       </field>
+       </record>
+  -->
+  <record id="view_partner_form" model="ir.ui.view">
+    <field name="name">partner.form.fi</field>
+    <field name="model">res.partner</field>
+    <field name="inherit_id" ref="base.view_partner_form" />
+    <field name="arch" type="xml">
+      <field name="vat" position="before">
+        <field name="url_financial_supervisory" widget="url" attrs="{'invisible': [('insurance_company_type', '=', 'person')]}" />
+      </field>
+    </field>
+  </record>
+  <record id="ir_actions_server_fi_scrape" model="ir.actions.server">
+    <field name="name">Scrape Company from FI</field>
+    <field name="model_id" ref="base.model_res_partner" />
+    <field name="binding_model_id" ref="base.model_res_partner" />
+    <field name="state">code</field>
+    <field name="code">action = record.fi_scrape_company()</field>
+  </record>
+</odoo>

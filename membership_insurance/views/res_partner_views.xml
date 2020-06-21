@@ -13,7 +13,7 @@
         -->
         <filter string="Company" name="is_company" domain="[('insurance_company_type','=','company')]" />
         <filter string="Fellowship" name="is_fellowship" domain="[('insurance_company_type','=','fellowship')]" />
-        <filter string="Accommodator" name="is_accommodator" domain="[('insurance_company_type','=','accomodator')]" />
+        <filter string="Accommodator" name="is_accommodator" domain="[('insurance_company_type','=','accommodator')]" />
       </filter>
     </field>
   </record>
@@ -75,12 +75,12 @@
           </group>
         </group>
         <group>
-          <group string="Count licenced accomodators" name="licenced_ac" priority="2" attrs="{'invisible': [('insurance_company_type', 'not in', ['fellowship','company'])]}">
+          <group string="Count licenced accommodators" name="licenced_ac" priority="2" attrs="{'invisible': [('insurance_company_type', 'not in', ['fellowship','company'])]}">
             <field name="count_ac_life_licence" />
             <field name="count_ac_property_licence" />
             <field name="count_ac_property_life_licence" />
           </group>
-          <group string="Count employed accomodators" name="employed" priority="3" attrs="{'invisible': [('insurance_company_type', 'not in', ['fellowship','company'])]}">
+          <group string="Count employed accommodators" name="employed" priority="3" attrs="{'invisible': [('insurance_company_type', 'not in', ['fellowship','company'])]}">
             <field name="count_ac_life" />
             <field name="count_ac_property" />
             <field name="count_ac_property_life" />
@@ -91,10 +91,9 @@
         <field name="personnumber" placeholder="10 or 12 digital" attrs="{'invisible': [('company_type', '=', 'company')]}" />
         <field name="liability_insurance_permission" widget="many2many_tags" attrs="{'invisible': [('insurance_company_type', '=', 'person')]}" />
         <field name="liability_insurance" widget="many2many_tags" attrs="{'invisible': [('insurance_company_type', '=', 'person')]}" />
-        <field name="url_financial_supervisory" widget="url" attrs="{'invisible': [('insurance_company_type', '=', 'person')]}" />
-        <field name="revenue" attrs="{'invisible': [('insurance_company_type', 'in', ['person','accomodator'])]}" />
-        <field name="revenue_property" attrs="{'invisible': [('insurance_company_type', 'in', ['person','accomodator'])]}" />
-        <field name="revenue_life" attrs="{'invisible': [('insurance_company_type', 'in', ['person','accomodator'])]}" />
+        <field name="revenue" attrs="{'invisible': [('insurance_company_type', 'in', ['person','accommodator'])]}" />
+        <field name="revenue_property" attrs="{'invisible': [('insurance_company_type', 'in', ['person','accommodator'])]}" />
+        <field name="revenue_life" attrs="{'invisible': [('insurance_company_type', 'in', ['person','accommodator'])]}" />
       </field>
       <field name="vat" position="attributes">
         <attribute name="attrs">{'readonly': [('parent_id','!=',False)], 'invisible': [('company_type','!=','company')]}</attribute>
@@ -131,7 +130,7 @@
     <field name="res_model">res.partner</field>
     <field name="view_type">form</field>
     <field name="view_mode">kanban,tree,form</field>
-    <field name="domain">[('insurance_company_type','=', 'accomodator')]</field>
+    <field name="domain">[('insurance_company_type','=', 'accommodator')]</field>
     <field name="view_id" ref="base.res_partner_kanban_view" />
     <field name="act_window_id" ref="membership.action_membership_members" />
     <field name="search_view_id" ref="base.view_res_partner_filter" />
