@@ -33,6 +33,11 @@ class res_partner(models.Model):
     
     @api.multi
     def fi_scrape_company(self):
+        rek_status = self.env['membership.recruitment.status'].search([])
+        if len(rek_status) == 0:
+            rek_status = None
+        else:
+            rek_status = rek_status[0]
         for partner in self:
             page = requests.get(self.url_financial_supervisory)
             soup = BeautifulSoup(page.content, 'html.parser')
@@ -49,7 +54,7 @@ class res_partner(models.Model):
                             'name':name,'parent_id':partner.id,
                             'url_financial_supervisory': "https://fi.se/%s" % atag['href'],
                             'insurance_company_type': 'accommodator',
-                            'membership_recruitment_status_id' :self.env['membership.recruitment.status'].search([])[0],
+                            'membership_recruitment_status_id' : rek_status,
                         })
                 
                     #TODO  tag missing members

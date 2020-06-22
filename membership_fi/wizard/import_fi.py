@@ -123,16 +123,24 @@ class ImportFICompany(models.TransientModel):
         _logger.warn("https://www.fi.se/sv/vara-register/foretagsregistret/?query=%s" % self.org_nr)
         page = requests.get("https://www.fi.se/sv/vara-register/foretagsregistret/?query=%s" % self.org_nr)
         soup = BeautifulSoup(page.content, 'html.parser')
+        rek_status = self.env['membership.recruitment.status'].search([])
+        if len(rek_status) == 0:
+            rek_status = None
+        else:
+            rek_status = rek_status[0]
         for atag in soup.findAll('a'):
-            if "details" in atag.get('href'):
-                _logger.warn('atag %s' % atag)
-                new_partner = self.env['res.partner'].create({
-                        'name':self.name,
-                        'company_registry':self.org_nr,
-                        'url_financial_supervisory': "https://www.fi.se/sv/vara-register/foretagsregistret/%s" % atag['href'],
-                        'insurance_company_type': 'company',
-                        'membership_recruitment_status_id' :self.env['membership.recruitment.status'].search([])[0],
-                            })
+            if len(atag.text.strip()) > 0:
+                _logger.warn("atag %s" % atag)
+                if "details" in atag.get('href'):
+                    _logger.warn('atag %s' % atag)
+                    new_partner = self.env['res.partner'].create({
+                            'name':self.name,
+                            'company_registry':self.org_nr,
+                            'url_financial_supervisory': "https://www.fi.se/sv/vara-register/foretagsregistret/%s" % atag['href'],
+                            'insurance_company_type': 'company',
+                            'membership_recruitment_status_id' :rek_status,
+                                })
+                    self.member_id = new_partner.id
                 # ~ new_partner.fi_scrape_company()
     
     def update_member(self):
