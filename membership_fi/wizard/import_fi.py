@@ -126,7 +126,13 @@ class ImportFICompany(models.TransientModel):
         for atag in soup.findAll('a'):
             if "details" in atag.get('href'):
                 _logger.warn('atag %s' % atag)
-                new_partner = self.env['res.partner'].create({'name':self.name,'company_registry':self.org_nr,'url_financial_supervisory': "https://www.fi.se/sv/vara-register/foretagsregistret/%s" % atag['href'],'insurance_company_type': 'company'})
+                new_partner = self.env['res.partner'].create({
+                        'name':self.name,
+                        'company_registry':self.org_nr,
+                        'url_financial_supervisory': "https://www.fi.se/sv/vara-register/foretagsregistret/%s" % atag['href'],
+                        'insurance_company_type': 'company',
+                        'membership_recruitment_status_id' :self.env['membership.recruitment.status'].search([])[0],
+                            })
                 # ~ new_partner.fi_scrape_company()
     
     def update_member(self):

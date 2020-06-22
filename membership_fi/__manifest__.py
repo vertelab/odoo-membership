@@ -30,7 +30,7 @@
     'author': 'Vertel AB',
     'license': 'AGPL-3',
     'website': 'http://www.vertel.se',
-    'depends': ['membership_insurance','l10n_se'],
+    'depends': ['membership_insurance','membership_admission','l10n_se'],
     'data': [
         'wizard/import_fi.xml',
         'views/res_partner_views.xml',

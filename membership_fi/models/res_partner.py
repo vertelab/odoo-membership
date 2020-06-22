@@ -45,6 +45,11 @@ class res_partner(models.Model):
                     _logger.warn("atag name %s" % name)
                     child = self.env['res.partner'].search([('parent_id', '=', partner.id),('name','=',name)])
                     if not child:
-                        self.env['res.partner'].create({'name':name,'parent_id':partner.id,'url_financial_supervisory': "https://fi.se/%s" % atag['href'],'insurance_company_type': 'accommodator'})
+                        self.env['res.partner'].create({
+                            'name':name,'parent_id':partner.id,
+                            'url_financial_supervisory': "https://fi.se/%s" % atag['href'],
+                            'insurance_company_type': 'accommodator',
+                            'membership_recruitment_status_id' :self.env['membership.recruitment.status'].search([])[0],
+                        })
                 
-            
+                    #TODO  tag missing members
