@@ -127,7 +127,7 @@ class ImportFICompany(models.TransientModel):
         if len(rek_status) == 0:
             rek_status = None
         else:
-            rek_status = rek_status[0]
+            rek_status = rek_status[0].id
         for atag in soup.findAll('a'):
             if len(atag.text.strip()) > 0:
                 _logger.warn("atag %s" % atag)

@@ -37,7 +37,7 @@ class res_partner(models.Model):
         if len(rek_status) == 0:
             rek_status = None
         else:
-            rek_status = rek_status[0]
+            rek_status = rek_status[0].id
         for partner in self:
             page = requests.get(self.url_financial_supervisory)
             soup = BeautifulSoup(page.content, 'html.parser')
