@@ -1,22 +1,24 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
+#	* membership_insurance
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 12.0-20200608\n"
+"Project-Id-Version: Odoo Server 12.0-20190808\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-16 05:54+0000\n"
-"PO-Revision-Date: 2020-06-16 05:54+0000\n"
+"POT-Creation-Date: 2020-06-25 14:11+0000\n"
+"PO-Revision-Date: 2020-06-25 14:11+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
+
 #. module: membership_insurance
 #: model_terms:ir.ui.view,arch_db:membership_insurance.view_partner_form
 msgid "10 or 12 digital"
-msgstr "10 eller 12 siffror"
+msgstr ""
 
 #. module: membership_insurance
 #: model:ir.actions.act_window,name:membership_insurance.action_accommodator_form
@@ -122,18 +124,30 @@ msgid "Contact"
 msgstr "Kontakt"
 
 #. module: membership_insurance
+#: model:ir.model.fields,field_description:membership_insurance.field_res_partner__count_man
+#: model:ir.model.fields,field_description:membership_insurance.field_res_users__count_man
+msgid "Count Man"
+msgstr ""
+
+#. module: membership_insurance
+#: model:ir.model.fields,field_description:membership_insurance.field_res_partner__count_woman
+#: model:ir.model.fields,field_description:membership_insurance.field_res_users__count_woman
+msgid "Count Woman"
+msgstr ""
+
+#. module: membership_insurance
 #: model_terms:ir.ui.view,arch_db:membership_insurance.view_partner_form
 msgid "Count companies"
 msgstr "Antal bolag"
 
 #. module: membership_insurance
 #: model_terms:ir.ui.view,arch_db:membership_insurance.view_partner_form
-msgid "Count employed accomodators"
+msgid "Count employed accommodators"
 msgstr "Antal förmedlare"
 
 #. module: membership_insurance
 #: model_terms:ir.ui.view,arch_db:membership_insurance.view_partner_form
-msgid "Count licenced accomodators"
+msgid "Count licenced accommodators"
 msgstr "Antal licenserade förmedlare"
 
 #. module: membership_insurance
@@ -156,6 +170,8 @@ msgstr "Visningsnamn"
 
 #. module: membership_insurance
 #: model:ir.actions.act_window,name:membership_insurance.action_fellowship_form
+#: model:ir.model.fields,field_description:membership_insurance.field_res_partner__fellowship_id
+#: model:ir.model.fields,field_description:membership_insurance.field_res_users__fellowship_id
 #: model:ir.ui.menu,name:membership_insurance.res_partner_menu_fellowship
 #: model_terms:ir.ui.view,arch_db:membership_insurance.res_partner_view_search_inherit_taxid
 #: selection:res.partner,insurance_company_type:0
@@ -163,10 +179,16 @@ msgid "Fellowship"
 msgstr "Sammanslutning"
 
 #. module: membership_insurance
-#: model:ir.model.fields,field_description:membership_insurance.field_res_partner__url_financial_supervisory
-#: model:ir.model.fields,field_description:membership_insurance.field_res_users__url_financial_supervisory
-msgid "Finansinspektionen"
-msgstr ""
+#: model_terms:ir.ui.view,arch_db:membership_insurance.res_partner_view_search_inherit_taxid
+#: selection:res.partner,gender:0
+msgid "Female"
+msgstr "Kvinna"
+
+#. module: membership_insurance
+#: model:ir.model.fields,field_description:membership_insurance.field_res_partner__gender
+#: model:ir.model.fields,field_description:membership_insurance.field_res_users__gender
+msgid "Gender"
+msgstr "Kön"
 
 #. module: membership_insurance
 #: model:ir.model.fields,field_description:membership_insurance.field_insurance_license__id
@@ -178,6 +200,12 @@ msgstr ""
 #: selection:res.partner,insurance_company_type:0
 msgid "Individual"
 msgstr "Kontakt"
+
+#. module: membership_insurance
+#: model:ir.model.fields,field_description:membership_insurance.field_res_partner__insurance_company_id
+#: model:ir.model.fields,field_description:membership_insurance.field_res_users__insurance_company_id
+msgid "Insurance Company"
+msgstr "Försäkringsbolag"
 
 #. module: membership_insurance
 #: model:ir.model.fields,field_description:membership_insurance.field_res_partner__liability_insurance
@@ -210,6 +238,17 @@ msgid "Last Updated on"
 msgstr "Senast uppdaterad"
 
 #. module: membership_insurance
+#: model_terms:ir.ui.view,arch_db:membership_insurance.res_partner_view_search_inherit_taxid
+#: selection:res.partner,gender:0
+msgid "Male"
+msgstr "Man"
+
+#. module: membership_insurance
+#: model_terms:ir.ui.view,arch_db:membership_insurance.view_member_tree
+msgid "Members"
+msgstr "Medlemmar"
+
+#. module: membership_insurance
 #: model:ir.model.fields,field_description:membership_insurance.field_insurance_license__name
 #: model:ir.model.fields,field_description:membership_insurance.field_insurance_permission__name
 msgid "Name"
@@ -226,8 +265,9 @@ msgstr ""
 #. module: membership_insurance
 #: model:ir.model.fields,field_description:membership_insurance.field_res_partner__org_prn
 #: model:ir.model.fields,field_description:membership_insurance.field_res_users__org_prn
-msgid "Org/Person Number"
-msgstr "Org/personnummer"
+#: model_terms:ir.ui.view,arch_db:membership_insurance.view_member_tree
+msgid "Org/pers-nummer"
+msgstr ""
 
 #. module: membership_insurance
 #: model:ir.model.fields,field_description:membership_insurance.field_res_partner__personnumber
@@ -286,3 +326,4 @@ msgstr "Licens"
 #: model:ir.model,name:membership_insurance.model_insurance_permission
 msgid "insurance.permission"
 msgstr "Tillstånd"
+
