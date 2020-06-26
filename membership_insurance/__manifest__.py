@@ -8,6 +8,7 @@
         'views/res_partner_views.xml',
         'data/insurance.license.csv',
         'data/insurance.permission.csv',
+        'data/insurance_data.xml',
         'security/ir.model.access.csv'
     ],
     'category': 'membership',

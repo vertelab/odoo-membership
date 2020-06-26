@@ -33,12 +33,19 @@ class insurance_license(models.Model):
     _name = 'insurance.license'
     
     name = fields.Char(string="Name")
+    
+class insurance_role(models.Model):
+    _name = 'insurance.role'
+    
+    name = fields.Char(string="Role")
 
 class res_partner(models.Model):
     _inherit = 'res.partner'
 
     liability_insurance = fields.Many2many(comodel_name='insurance.license', string='Insurance License')
     liability_insurance_permission = fields.Many2many(comodel_name='insurance.permission', string='Insurance Permission')
+    company_role = fields.Many2one(comodel_name='insurance.role',string='Role') 
+    
     
     def _compute_count_company(self):
         if self.insurance_company_type == 'fellowship':

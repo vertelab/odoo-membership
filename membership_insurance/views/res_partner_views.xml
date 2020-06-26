@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <odoo>
+        
   <record id="res_partner_view_search_inherit_taxid" model="ir.ui.view">
     <field name="name">res.partner.view.search.inherit.taxid</field>
     <field name="model">res.partner</field>
@@ -103,6 +104,7 @@
       </div>
       <field name="vat" position="before">
         <field name="personnumber" placeholder="10 or 12 digital" attrs="{'invisible': [('company_type', '=', 'company')]}" />
+        <field name="company_role" widget="many2one_tag" attrs="{'invisible': [('insurance_company_type', '!=', 'person'),('insurance_company_type', '!=', 'accommodator'),]}" />
         <field name="gender" widget='radio' options="{'horizontal': true}" attrs="{'invisible': [('company_type', '=', 'company')]}"/>
         <field name="liability_insurance_permission" widget="many2many_tags" attrs="{'invisible': [('insurance_company_type', '=', 'person')]}" />
         <field name="liability_insurance" widget="many2many_tags" attrs="{'invisible': [('insurance_company_type', '=', 'person')]}" />
@@ -110,10 +112,19 @@
         <field name="revenue_property" attrs="{'invisible': [('insurance_company_type', 'in', ['person','accommodator'])]}" />
         <field name="revenue_life" attrs="{'invisible': [('insurance_company_type', 'in', ['person','accommodator'])]}" />
       </field>
+      
       <field name="vat" position="attributes">
         <attribute name="attrs">{'readonly': [('parent_id','!=',False)], 'invisible': [('company_type','!=','company')]}</attribute>
       </field>
-
+      <field name="function" position="attributes">
+        <attribute name="invisible">1</attribute>
+      </field>
+      <field name="title" position="attributes">
+        <attribute name="invisible">1</attribute>
+      </field>
+      <field name="website" position="attributes">
+        <attribute name="invisible">1</attribute>
+      </field>
       <button name="company_button" position="attributes">
         <attribute name="attrs">{'invisible': [('insurance_company_type', 'not in', ['fellowship'])]}</attribute>
       </button>
@@ -181,4 +192,6 @@
   <menuitem id="res_partner_menu_fellowship" name="Fellowship" parent="membership.menu_membership" action="action_fellowship_form" sequence="2" />
   <menuitem id="res_partner_menu_company" name="Company" parent="membership.menu_membership" action="action_company_form" sequence="3" />
   <menuitem id="res_partner_menu_accommodator" name="Accommodator" parent="membership.menu_membership" action="action_accommodator_form" sequence="4" />
+  
+ 
 </odoo>
