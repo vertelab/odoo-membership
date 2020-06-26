@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 12.0-20190808\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-26 08:30+0000\n"
-"PO-Revision-Date: 2020-06-26 08:30+0000\n"
+"POT-Creation-Date: 2020-06-26 13:01+0000\n"
+"PO-Revision-Date: 2020-06-26 13:01+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -85,6 +85,11 @@ msgid "An error occured with this latest posts block. If the problem persists, p
 msgstr ""
 
 #. module: membership_insurance
+#: model_terms:ir.ui.view,arch_db:membership_insurance.view_partners_form_insurance
+msgid "City"
+msgstr "Stad"
+
+#. module: membership_insurance
 #: model:ir.actions.act_window,name:membership_insurance.action_company_form
 #: model:ir.model.fields,field_description:membership_insurance.field_res_partner__count_company
 #: model:ir.model.fields,field_description:membership_insurance.field_res_users__count_company
@@ -111,6 +116,11 @@ msgstr "Bolag med Saktillstånd"
 #: model:ir.model.fields,field_description:membership_insurance.field_res_users__count_co_property_life_permission
 msgid "Company Property/Life Permission"
 msgstr "Bolag med Liv/Saktillstånd"
+
+#. module: membership_insurance
+#: model_terms:ir.ui.view,arch_db:membership_insurance.view_partners_form_insurance
+msgid "Company Registry"
+msgstr "Organisationsnummer"
 
 #. module: membership_insurance
 #: model:ir.model.fields,field_description:membership_insurance.field_res_partner__insurance_company_type
@@ -209,7 +219,7 @@ msgstr "Kontakt"
 #: model:ir.model.fields,field_description:membership_insurance.field_res_partner__insurance_company_id
 #: model:ir.model.fields,field_description:membership_insurance.field_res_users__insurance_company_id
 msgid "Insurance Company"
-msgstr "Försäkringsbolag"
+msgstr "Bolag"
 
 #. module: membership_insurance
 #: model:ir.model.fields,field_description:membership_insurance.field_res_partner__liability_insurance
@@ -330,6 +340,11 @@ msgstr ""
 #: model:ir.model.fields,help:membership_insurance.field_res_users__personnumber
 msgid "This is person number"
 msgstr "Detta är ett personnummer"
+
+#. module: membership_insurance
+#: model_terms:ir.ui.view,arch_db:membership_insurance.view_partners_form_insurance
+msgid "ZIP"
+msgstr "Postnummer"
 
 #. module: membership_insurance
 #: model:ir.model,name:membership_insurance.model_insurance_license
