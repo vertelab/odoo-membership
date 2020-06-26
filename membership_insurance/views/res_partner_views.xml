@@ -43,27 +43,7 @@
         </tree>
     </field>
   </record>
-  
-  <record id="view_partners_form_insurance" model="ir.ui.view">
-        <field name="name">view.res.partner.form.insurance</field>
-        <field name="model">res.partner</field>
-        <field name="inherit_id" ref="base.view_partner_form"/>
-        <field name="arch" type="xml">
-            <field name="company_registry" position="replace">
-                <field name="company_registry" string="Company Registry" attrs="{'invisible': [('is_company','=',False)]}"/>
-            </field>
-            <field name="state_id" position="replace"/>
-            <field name="zip" position="replace"/>
-            <field name="city" position="replace">
-                <field name="zip" placeholder="ZIP" style="width: 20%"/>                        
-                <field name="city" placeholder="City" style="width: 40%" />
-                <field name="state_id" invisible="1" />
-            </field>
-        </field>
-  </record>
-        
-        
-  
+
   <record id="view_partners_form_crm1" model="ir.ui.view">
     <field name="name">partner.form.insurance.crm.inherit</field>
     <field name="model">res.partner</field>
