@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<odoo>
+    <record id="crm_insurance_vd" model="insurance.role">
+        <field name="name">VD</field>
+    </record>
+    
+    <record id="crm_insurance_admin" model="insurance.role">
+        <field name="name">Administratör</field>
+    </record>
+    
+    <record id="crm_insurance_acc" model="insurance.role">
+        <field name="name">Förmedlare</field>
+    </record>
+    
+    <record id="crm_insurance_other" model="insurance.role">
+        <field name="name">Annat</field>
+    </record>
+</odoo>

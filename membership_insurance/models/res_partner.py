@@ -33,12 +33,19 @@ class insurance_license(models.Model):
     _name = 'insurance.license'
     
     name = fields.Char(string="Name")
+    
+class insurance_role(models.Model):
+    _name = 'insurance.role'
+    
+    name = fields.Char(string="Role")
 
 class res_partner(models.Model):
     _inherit = 'res.partner'
 
     liability_insurance = fields.Many2many(comodel_name='insurance.license', string='Insurance License')
     liability_insurance_permission = fields.Many2many(comodel_name='insurance.permission', string='Insurance Permission')
+    company_role = fields.Many2one(comodel_name='insurance.role',string='Role') 
+    
     
     def _compute_count_company(self):
         if self.insurance_company_type == 'fellowship':
@@ -74,6 +81,30 @@ class res_partner(models.Model):
     
     vat = fields.Char(string='Tax ID', help="The Tax Identification Number. Complete it if the contact is subjected to government taxes. Used in some legal statements.")
     personnumber = fields.Char(string='Person Number', help="This is person number")
+    
+    def _fellowship(self):
+        for partner in self:
+            if partner.insurance_company_type in ['accommodator','company']:
+                if partner.insurance_company_type == 'company':
+                    partner.fellowship_id = partner.parent_id
+                elif partner.insurance_company_type == 'accommodator':
+                    partner.fellowship_id = partner.parent_id.parent_id
+                    partner.insurance_company_id = partner.parent_id
+   
+            
+    fellowship_id =  fields.Many2one(comodel_name='res.partner', compute = '_fellowship') 
+    insurance_company_id = fields.Many2one(comodel_name='res.partner', compute = '_fellowship') 
+    
+    
+    def _compute_gender(self):
+        self.count_man = self.env['res.partner'].search_count([('id', 'child_of', self.id),('gender', '=', 'man')])
+        self.count_woman = self.env['res.partner'].search_count([('id', 'child_of', self.id),('gender', '=', 'woman')])
+    gender = fields.Selection([('man', 'Male'), ('woman', 'Female')])
+    
+    count_man = fields.Integer(String='Male', compute = '_compute_gender')
+    count_woman = fields.Integer(String='Female', compute = '_compute_gender')
+    
+        
 
     @api.one
     def _compute_org_prn(self):
@@ -81,7 +112,7 @@ class res_partner(models.Model):
             self.org_prn = self.vat
         elif self.company_type == 'person':
             self.org_prn = self.personnumber
-    org_prn = fields.Char(string="Org/Person Number", compute ='_compute_org_prn')
+    org_prn = fields.Char(string="Org/pers-nummer", compute ='_compute_org_prn')
     
     @api.onchange('insurance_company_type')
     def onchange_insurance_company_type(self):

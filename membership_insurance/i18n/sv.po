@@ -209,7 +209,7 @@ msgstr "Sakförsäkring"
 #: model:ir.model.fields,field_description:membership_insurance.field_res_users__vat
 #: model_terms:ir.ui.view,arch_db:membership_insurance.res_partner_view_search_inherit_taxid
 msgid "Tax ID"
-msgstr ""
+msgstr "Momsregistreringsnummer"
 
 #. module: membership_insurance
 #: model:ir.model.fields,help:membership_insurance.field_res_partner__vat
