@@ -9,7 +9,7 @@
     'description': """
 This module extends the invoicing capabilities for membership-module
     """,
-    'depends': ['membership'],
+    'depends': ['membership','l10n_se'],
     'data': [
         
         'views/partner_views.xml',

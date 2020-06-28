@@ -13,6 +13,7 @@ This module extends the invoicing capabilities for membership-module
     'data': [
         
         'views/partner_views.xml',
+        'views/res_config_settings_views.xml',
         # ~ 'views/product_views.xml',
         
     ],

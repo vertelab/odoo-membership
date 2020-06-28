@@ -14,61 +14,64 @@ _logger = logging.getLogger(__name__)
 
 class res_partner(models.Model):
     _inherit = 'res.partner'
-
-
-    def fortnox_get_access_code(self):
-        # ~ Authorization_code="31bcb6c6-cc64-8fe4-68cb-2acbaf8a5128"
-        # ~ Access_token = "7909a2c5-b810-4d62-84c6-bb0df1f84c1f"
-        # ~ Client_secret = "m4uufTy3n1"        
-        Access_token=self.env['ir.config_parameter'].sudo().get_param('fortnox.access.token')
-        if not Access_token:
-            Authorization_code=self.env['ir.config_parameter'].sudo().get_param('fortnox.authorization.code')
-            if not Authorization_code:
-                raise Warning("You have to set up Authorization_token for FortNox, you get that when you activate Odoo in your FortNox-account")
-            Client_secret=self.env['ir.config_parameter'].sudo().get_param('fortnox.client.secret')
-            if not Client_secret:
-                raise Warning("You have to set up Client_secret for FortNox, you get that when you activate Odoo in your FortNox-account")
-            try:
-                _logger.warn('Authorization-code %s Client Secret %s' % (Authorization_code,Client_secret))
-
-                r = requests.post(
-                    url="https://api.fortnox.se/3/customers",    
-                    headers = {
-                        "Authorization-Code": Authorization_code,
-                        "Client-Secret": Client_secret,
-                        "Content-Type":"application/json",
-                        "Accept":"application/json",
-                    },
-                )
-                _logger.warn('Response HTTP Status Code : {status_code}'.format(status_code=r.status_code))
-                _logger.warn('Response HTTP Response Body : {content}'.format(content=r.content))
-                auth_rec = eval(r.content)
-                Access_token = auth_rec.get('Authorization',{}).get('AccessToken')
-                self.env['ir.config_parameter'].sudo().set_param('fortnox.access.token',Access_token)
-            except requests.exceptions.RequestException as e:
-                _logger.warn('HTTP Request failed %s' % e)
-
+    
+    @api.multi
     def fortnox_update(self):
+        # Customer (POST https://api.fortnox.se/3/customers)
+        for partner in self:
+            if not partner.commercial_partner_id.ref:
+                r = self.fortnox_request('post',"https://api.fortnox.se/3/customers",
+                    data={
+                        "Customer": {
+                            # ~ "@url": "https://api.fortnox.se/3/customers/115",
+                            "Address1": partner.street,
+                            "Address2": partner.street2,
+                            "City": partner.city,
+                            "Comments": partner.comment,
+                            "Country": "Sverige",
+                            "CountryCode": "SE",
+                            "Currency": "SEK",
+                            "CustomerNumber": "115",
+                            "Email": partner.email,
+                            "Name": partner.commercial_partner_id.name,
+                            "OrganisationNumber": partner.commercial_partner_id.company_registry,
+                            "OurReference": partner.commercial_partner_id.user_id.name,
+                            "Phone1": partner.commercial_partner_id.phone,
+                            "Phone2": null,
+                            "PriceList": "A",
+                            "ShowPriceVATIncluded": false,
+                            "TermsOfPayment": partner.commercial_partner_id.property_payment_term_id.name,
+                            "Type": "COMPANY",
+                            "VATNumber": partner.commercial_partner_id.vat,
+                            "VATType": "SEVAT",
+                            "WWW": partner.commercial_partner_id.website,
+                            "YourReference": partner.name,
+                            "ZipCode": partner.zip,
+                        }
+                    })    
+                partner.commercial_partner_id.ref = r.content.get('CustomerNumber')
+                return r
+            
+    def fortnox_request(self,request_type,url,data=None):
         # Customer (POST https://api.fortnox.se/3/customers)
         Access_token=self.env['ir.config_parameter'].sudo().get_param('fortnox.access.token')
         Client_secret=self.env['ir.config_parameter'].sudo().get_param('fortnox.client.secret')
+        headers = {
+            "Access-Token": Access_token,
+            "Client-Secret": Client_secret,
+            "Content-Type":"application/json",
+            "Accept":"application/json",
+        }
 
         try:
-            r = requests.post(
-                url="https://api.fortnox.se/3/customers",    
-                headers = {
-                    "Access-Token": Access_token,
-                    "Client-Secret": Client_secret,
-                    "Content-Type":"application/json",
-                    "Accept":"application/json",
-                },
-                data = json.dumps({
-                    "Customer": {
-                        "Name": "Klara Norström"
-                    }
-                })
-            )
-            
+            if request_type == 'post':
+                r = requests.post(url=url,headers = headers,data = json.dumps(data))
+            if request_type == 'put':
+                r = requests.put(url=url,headers = headers,data = json.dumps(data))
+            if request_type == 'get':
+                r = requests.get(url=url,headers = headers)
+            if request_type == 'delete':
+                r = requests.get(url=url,headers = headers)
             _logger.warn('Response HTTP Status Code : {status_code}'.format(status_code=r.status_code))
             _logger.warn('Response HTTP Response Body : {content}'.format(content=r.content))
 
@@ -80,3 +83,4 @@ class res_partner(models.Model):
         except requests.exceptions.RequestException as e:
             _logger.warn('HTTP Request failed %s' % e)
             raise Warning('HTTP Request failed %s' % e)
+        return r.content
