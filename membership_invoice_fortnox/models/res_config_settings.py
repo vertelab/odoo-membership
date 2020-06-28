@@ -11,8 +11,6 @@ class ResConfigSettings(models.TransientModel):
     fortnox_client_secret = fields.Char('Client Secret',config_parameter='fortnox.client.secret',help="You get this code from your Odoo representative")
     fortnox_access_token = fields.Char('Access Token',config_parameter='fortnox.access.token',help="With autorization code and client secret you generate this code ones")
 
-
-
     @api.model
     def get_values(self):
         res = super(ResConfigSettings, self).get_values()
@@ -23,11 +21,7 @@ class ResConfigSettings(models.TransientModel):
         super(ResConfigSettings, self).set_values()
     
     @api.model
-    def fortnox_get_access_token(self):
-        # ~ Authorization_code="31bcb6c6-cc64-8fe4-68cb-2acbaf8a5128"
-        # ~ Access_token = "7909a2c5-b810-4d62-84c6-bb0df1f84c1f"
-        # ~ Client_secret = "m4uufTy3n1"  
-        raise Warning("get access token")      
+    def fortnox_get_access_token(self):  
         Access_token=self.env['ir.config_parameter'].sudo().get_param('fortnox.access.token')
         if not Access_token:
             Authorization_code=self.env['ir.config_parameter'].sudo().get_param('fortnox.authorization.code')
@@ -55,7 +49,8 @@ class ResConfigSettings(models.TransientModel):
                 self.env['ir.config_parameter'].sudo().set_param('fortnox.access.token',Access_token)
             except requests.exceptions.RequestException as e:
                 _logger.warn('HTTP Request failed %s' % e)
-    
+        else:
+            _logger.warn('Access Token already fetched')
     @api.model
     def fortnox_request(self,request_type,url,data=None):
         # Customer (POST https://api.fortnox.se/3/customers)
