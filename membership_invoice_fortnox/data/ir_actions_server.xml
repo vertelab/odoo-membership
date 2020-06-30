@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<odoo>
+  <record id="ir_actions_server_fortnox_update_partner" model="ir.actions.server">
+    <field name="name">Fortnox Update</field>
+    <field name="model_id" ref="base.model_res_partner" />
+    <field name="binding_model_id" ref="base.model_res_partner" />
+    <field name="state">code</field>
+    <field name="code">
+  for partner in records:
+      partner.fortnox_update()
+    </field>
+  </record>
+  <record id="ir_actions_server_fortnox_create_invoice" model="ir.actions.server">
+    <field name="name">Fortnox Create</field>
+    <field name="model_id" ref="account.model_account_invoice" />
+    <field name="binding_model_id" ref="account.model_account_invoice" />
+    <field name="state">code</field>
+    <field name="code">
+  for invoice in records:
+      invoice.fortnox_create()
+    </field>
+  </record>
+</odoo>
