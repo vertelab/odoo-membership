@@ -17,29 +17,29 @@ class res_partner(models.Model):
     
     @api.multi
     def fortnox_update(self):
-        # Customer (POST https://api.fortnox.se/3/customers)
+        # Customer (PUT https://api.fortnox.se/3/customers)
         for partner in self:
             if not partner.commercial_partner_id.ref:
-                r = self.fortnox_request('post',"https://api.fortnox.se/3/customers",
+                url = "https://api.fortnox.se/3/customers"
+                """ r = response """
+                r = partner.fortnox_request('post', url,
                     data={
                         "Customer": {
-                            # ~ "@url": "https://api.fortnox.se/3/customers/115",
                             "Address1": partner.street,
                             "Address2": partner.street2,
                             "City": partner.city,
                             "Comments": partner.comment,
-                            "Country": "Sverige",
                             "CountryCode": "SE",
                             "Currency": "SEK",
-                            "CustomerNumber": "115",
+                            # ~ "CustomerNumber": partner.commercial_partner_id.id,
                             "Email": partner.email,
                             "Name": partner.commercial_partner_id.name,
                             "OrganisationNumber": partner.commercial_partner_id.company_registry,
                             "OurReference": partner.commercial_partner_id.user_id.name,
                             "Phone1": partner.commercial_partner_id.phone,
-                            "Phone2": null,
+                            "Phone2": None,
                             "PriceList": "A",
-                            "ShowPriceVATIncluded": false,
+                            "ShowPriceVATIncluded": False,
                             "TermsOfPayment": partner.commercial_partner_id.property_payment_term_id.name,
                             "Type": "COMPANY",
                             "VATNumber": partner.commercial_partner_id.vat,
@@ -48,9 +48,43 @@ class res_partner(models.Model):
                             "YourReference": partner.name,
                             "ZipCode": partner.zip,
                         }
-                    })    
-                partner.commercial_partner_id.ref = r.content.get('CustomerNumber')
-                return r
+                    })
+            if partner.commercial_partner_id.ref:
+                url = "https://api.fortnox.se/3/customers/%s" % partner.commercial_partner_id.ref
+                """ r = response """
+                r = partner.fortnox_request('put', url,
+                    data={
+                        "Customer": {
+                            "Address1": partner.street,
+                            "Address2": partner.street2,
+                            "City": partner.city,
+                            "Comments": partner.comment,
+                            "CountryCode": "SE",
+                            "Currency": "SEK",
+                            # ~ "CustomerNumber": partner.commercial_partner_id.id,
+                            "Email": partner.email,
+                            "Name": partner.commercial_partner_id.name,
+                            "OrganisationNumber": partner.commercial_partner_id.company_registry,
+                            "OurReference": partner.commercial_partner_id.user_id.name,
+                            "Phone1": partner.commercial_partner_id.phone,
+                            "Phone2": None,
+                            "PriceList": "A",
+                            "ShowPriceVATIncluded": False,
+                            "TermsOfPayment": partner.commercial_partner_id.property_payment_term_id.name,
+                            "Type": "COMPANY",
+                            "VATNumber": partner.commercial_partner_id.vat,
+                            "VATType": "SEVAT",
+                            "WWW": partner.commercial_partner_id.website,
+                            "YourReference": partner.name,
+                            "ZipCode": partner.zip,
+                        }
+                    })
+            
+            r = json.loads(r)
+            # ~ raise Warning(str(r))
+            partner.commercial_partner_id.ref = r["Customer"]["CustomerNumber"]
+    
+            return r  
             
     def fortnox_request(self,request_type,url,data=None):
         # Customer (POST https://api.fortnox.se/3/customers)
@@ -72,11 +106,11 @@ class res_partner(models.Model):
                 r = requests.get(url=url,headers = headers)
             if request_type == 'delete':
                 r = requests.get(url=url,headers = headers)
-            _logger.warn('Response HTTP Status Code : {status_code}'.format(status_code=r.status_code))
+            _logger.warn(' >>>>>>> Response HTTP Status Code : {status_code}'.format(status_code=r.status_code))
             _logger.warn('Response HTTP Response Body : {content}'.format(content=r.content))
 
-            raise Warning(r.content)
-            
+
+            # ~ if not r.status_code == 200: 
             if r.status_code in [403]:
                 raise Warning(r.content)
             

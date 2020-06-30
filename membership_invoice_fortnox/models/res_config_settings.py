@@ -1,13 +1,19 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import api, fields, models
+from odoo import api, fields, models 
+from odoo.exceptions import except_orm, Warning, RedirectWarning
+import requests
+import json
+
+import logging
+_logger = logging.getLogger(__name__)
 
 
 class ResConfigSettings(models.TransientModel):
     _inherit = 'res.config.settings'
 
-    fortnox_authorization_code = fields.Char('Authorization code',config_parameter='fortnox.authentication.code',help="You get this code from your FortNox Account when tou activate Odoo")
+    fortnox_authorization_code = fields.Char('Authorization code',config_parameter='fortnox.authorization.code',help="You get this code from your FortNox Account when tou activate Odoo")
     fortnox_client_secret = fields.Char('Client Secret',config_parameter='fortnox.client.secret',help="You get this code from your Odoo representative")
     fortnox_access_token = fields.Char('Access Token',config_parameter='fortnox.access.token',help="With autorization code and client secret you generate this code ones")
 
@@ -20,11 +26,11 @@ class ResConfigSettings(models.TransientModel):
     def set_values(self):
         super(ResConfigSettings, self).set_values()
     
-    @api.model
+    @api.multi
     def fortnox_get_access_token(self):  
         Access_token=self.env['ir.config_parameter'].sudo().get_param('fortnox.access.token')
         if not Access_token:
-            Authorization_code=self.env['ir.config_parameter'].sudo().get_param('fortnox.authorization.code')
+            Authorization_code=self.env['ir.config_parameter'].sudo().get_param('fortnox.authorization.code') 
             if not Authorization_code:
                 raise Warning("You have to set up Authorization_token for FortNox, you get that when you activate Odoo in your FortNox-account")
             Client_secret=self.env['ir.config_parameter'].sudo().get_param('fortnox.client.secret')
@@ -75,7 +81,7 @@ class ResConfigSettings(models.TransientModel):
             _logger.warn('Response HTTP Status Code : {status_code}'.format(status_code=r.status_code))
             _logger.warn('Response HTTP Response Body : {content}'.format(content=r.content))
 
-            raise Warning(r.content)
+            # ~ raise Warning(r.content)
             
             if r.status_code in [403]:
                 raise Warning(r.content)
