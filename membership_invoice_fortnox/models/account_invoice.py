@@ -12,7 +12,25 @@ import json
 import logging
 _logger = logging.getLogger(__name__)
 
+#FIXME: This part is not working yet. Have to be fixed, related to res_partner.py
 
+# ~ class AccountInvoiceSend(models.TransientModel):
+    # ~ _name = 'account.invoice.send'
+    # ~ _inherits = {'mail.compose.message':'composer_id'}
+    # ~ _description = 'Account Invoice Send'
+
+    # ~ is_fortnox = fields.Boolean('Fortnox', default=True)
+    
+    # ~ invoice_ids = fields.Many2many('account.invoice', 'account_invoice_account_invoice_send_rel', string='Invoices')
+    
+    
+    # ~ @api.multi
+    # ~ def send_and_print_action(self):
+        # ~ res = super(AccountInvoiceSend, self).send_and_print_action()
+        # ~ if self.is_fortnox:
+            # ~ for invoice in self.invoice_ids:
+                # ~ invoice.fortnox_create()
+        # ~ return res
 
 class account_invoice(models.Model):
     _inherit = 'account.invoice'
@@ -24,9 +42,9 @@ class account_invoice(models.Model):
             if not invoice.date_due:
                 raise Warning("Please select payment term")
             if not invoice.partner_id.commercial_partner_id.ref:
-                raise Warning("You have not updated this customer to the fortnox list.")
+                # ~ raise Warning("You have not updated this customer to the fortnox list.")
                 #invoice.partner_id.commercial_partner_id.fortnox_update()
-                ref = self.env['res.partner'].partner_id.commercial_partner_id.fortnox_update()
+                ref = invoice.partner_id.fortnox_update()
             InvoiceRows = []
             for line in invoice.invoice_line_ids:
                 InvoiceRows.append(
@@ -64,7 +82,7 @@ class account_invoice(models.Model):
             
             r = json.loads(r)
             # ~ if not r["Invoice"]["CustomerNumber"]:
-                # ~ raise Warning("You have not updated this customer to the fortnox list.")
+            raise Warning(str(r))
             invoice.ref = r["Invoice"]["CustomerNumber"]
             return r
             

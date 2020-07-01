@@ -14,6 +14,7 @@ This module extends the invoicing capabilities for membership-module
         
         'views/partner_views.xml',
         'views/res_config_settings_views.xml',
+        'views/account_invoice_send_view.xml',
         # ~ 'views/product_views.xml',
         'data/ir_actions_server.xml',
         

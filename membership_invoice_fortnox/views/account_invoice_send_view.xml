@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Copyright 2020 Vertel
+    License AGPL-3.0 or later (http://www.vertel.se).
+-->
+<!--
+#FIXME: related to account_invoice.py
+<odoo>
+    <record id="account_invoice_send_inherit_account_wizard_form_fortnox" model="ir.ui.view" >
+        <field name="name">account.invoice.send.form.inherited.fortnox</field>
+        <field name="model">account.invoice.send</field>
+        <field name="inherit_id" ref="account.account_invoice_send_wizard_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='option_email']" position='before'>
+                <div name="option_fortnox">
+                    <div name="option" class="text-left d-inline-block">
+                        <field name="is_fortnox" />
+                        <b><label for="is_fortnox"/></b>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>
+-->
+
+
