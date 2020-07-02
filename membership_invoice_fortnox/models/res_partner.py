@@ -9,21 +9,34 @@ import json
 
 import logging
 _logger = logging.getLogger(__name__)
-#FIXME: This part is not working yet. Have to be fixed, Realated to account_invoice.py
-class ResCompany(models.Model):
-    _inherit = "res.company"
-    
-    invoice_fortnox = fields.Boolean(string = "Send to Fortnox", default=True)
-    # ~ invoice_is_fortnox = fields.Boolean('Fortnox by default', default=True)
 
-class res_partner(models.Model):
+
+class Partner(models.Model):
     _inherit = 'res.partner'
+    
+    # ~ @api.model_create_multi
+    # ~ @api.returns('self', lambda value: value.id)
+    # ~ def create(self, vals_list):
+        # ~ records = super(Partner, self).create(vals_list)
+        # ~ # Synka till fortnox
+        # ~ records.fortnox_update()
+        # ~ return records
+        
+    # ~ @api.multi
+    # ~ def write(self, vals):
+        # ~ res = super(Partner, self).write(vals)
+        # ~ self.fortnox_update()
+        # ~ return res
+        
+        
+
 #FIXME:make fortnox_update auto-updating.
     @api.multi
     def fortnox_update(self):
         # Customer (PUT https://api.fortnox.se/3/customers)
         for partner in self:
             if not partner.commercial_partner_id.ref:
+                
                 url = "https://api.fortnox.se/3/customers"
                 """ r = response """
                 r = self.env['res.config.settings'].fortnox_request('post', url,
@@ -85,8 +98,10 @@ class res_partner(models.Model):
                     })
             
             r = json.loads(r)
-            raise Warning(str(r))
+            # ~ raise Warning(str(r))
             partner.commercial_partner_id.ref = r["Customer"]["CustomerNumber"]
+            
+            # ~ self.commercial_partner_id.signal_workflow('fortnox_update')
     
             return r  
             
@@ -114,7 +129,7 @@ class res_partner(models.Model):
             # ~ _logger.warn('Response HTTP Response Body : {content}'.format(content=r.content))
 
 
-            # ~ if not r.status_code == 200: 
+           
             # ~ if r.status_code in [403]:
                 # ~ raise Warning(r.content)
             
