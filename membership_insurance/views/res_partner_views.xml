@@ -60,6 +60,7 @@
       </button>
     </field>
   </record>
+  
   <record id="view_partner_form" model="ir.ui.view">
     <field name="name">partner.form.insurance.inherited</field>
     <field name="model">res.partner</field>
@@ -112,6 +113,24 @@
       </field>
       <field name="vat" position="attributes">
         <attribute name="attrs">{'readonly': [('parent_id','!=',False)], 'invisible': [('company_type','!=','company')]}</attribute>
+      </field>
+      <field name="street" position="attributes">
+        <attribute name="attrs">{'readonly': [('type', '=', 'contact'),('parent_id','=', True),('insurance_company_type', '=', 'person')]}</attribute>
+      </field>
+      <field name="street2" position="attributes">
+        <attribute name="attrs">{'readonly': [('type', '=', 'contact'),('parent_id','=', True),('insurance_company_type', '=', 'person')]}</attribute>
+      </field>
+      <field name="city" position="attributes">
+        <attribute name="attrs">{'readonly': [('type', '=', 'contact'),('parent_id','=', True),('insurance_company_type', '=', 'person')]}</attribute>
+      </field>
+      <field name="state_id" position="attributes">
+        <attribute name="attrs">{'readonly': [('type', '=', 'contact'),('parent_id','=', True),('insurance_company_type', '=', 'person')]}</attribute>
+      </field>
+      <field name="zip" position="attributes">
+        <attribute name="attrs">{'readonly': [('type', '=', 'contact'),('parent_id','=', True),('insurance_company_type', '=', 'person')]}</attribute>
+      </field>
+      <field name="country_id" position="attributes">
+        <attribute name="attrs">{'readonly': [('type', '=', 'contact'),('parent_id','=', True),('insurance_company_type', '=', 'person')]}</attribute>
       </field>
       <field name="function" position="attributes">
         <attribute name="invisible">1</attribute>

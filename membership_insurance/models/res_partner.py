@@ -45,7 +45,7 @@ class res_partner(models.Model):
     liability_insurance = fields.Many2many(comodel_name='insurance.license', string='Insurance License')
     liability_insurance_permission = fields.Many2many(comodel_name='insurance.permission', string='Insurance Permission')
     company_role = fields.Many2one(comodel_name='insurance.role',string='Role') 
-    
+
     
     def _compute_count_company(self):
         if self.insurance_company_type == 'fellowship':
@@ -80,7 +80,8 @@ class res_partner(models.Model):
     count_ac_property_life    = fields.Integer(string='Accommodator Property/Life', compute ='_compute_count_company')
     
     vat = fields.Char(string='Tax ID', help="The Tax Identification Number. Complete it if the contact is subjected to government taxes. Used in some legal statements.")
-    personnumber = fields.Char(string='Person Number', help="This is person number")
+    personnumber = fields.Char(string='Person Number',help="This is person number")
+
     
     def _fellowship(self):
         for partner in self:
