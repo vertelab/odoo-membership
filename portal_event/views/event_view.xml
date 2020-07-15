@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+    <record id="view_event_type_form" model="ir.ui.view">
+      <field name="name">event.type.view.form.inherit.portal.event</field>
+      <field name="model">event.type</field>
+      <field name="type">form</field>
+      <field name="inherit_id" ref='event.view_event_type_form' />
+      <field name="arch" type="xml">
+        <sheet position="inside">
+          <div class="row mt16 o_settings_container" name="event_type_tags">
+            <div class="col-12 col-lg-6 o_setting_box" name="event_type_tags_ids">
+              <div class="o_setting_right_pane">
+                <div class="row">
+                  <label for="event_type_tag_ids" />
+                </div>
+              </div>
+              <div class="o_setting_right_pane">
+                <field name="event_type_tag_ids" widget="many2many_tags" />
+              </div>
+              <div class="o_setting_right_pane">
+                <div class="row">
+                  <div class="col-lg-8 mt16 text-muted">Event tags.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </sheet>
+      </field>
+    </record>
+    <record id="view_partner_form" model="ir.ui.view">
+      <field name="name">partner.view.form.inherit.portal.event</field>
+      <field name="model">res.partner</field>
+      <field name="type">form</field>
+      <field name="inherit_id" ref='base.view_partner_form' />
+      <field name="arch" type="xml">
+        <field name="category_id" position="after">
+          <field name="event_type_tag_ids" widget="many2many_tags" />
+        </field>
+      </field>
+    </record>
+    <!-- Event Type Tag-->
+    <record id="view_event_type_tag_tree" model="ir.ui.view">
+      <field name="name">event.type.tag.tree</field>
+      <field name="model">event.type.tag</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name" />
+        </tree>
+      </field>
+    </record>
+    <record model="ir.actions.act_window" id="action_event_type_tag">
+      <field name="name">Event  categories Tag</field>
+      <field name="res_model">event.type.tag</field>
+    </record>
+    <menuitem name="Event Categories Tag" id="menu_event_type_tag" action="action_event_type_tag" parent="event.menu_event_configuration" />
+  </data>
+</openerp>

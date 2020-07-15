@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <template id="index" name="Events">
+    <t t-call="website.layout">
+      <div id="wrap">
+        <div class="container">
+          <div class="row mt8">
+            <div class="col-md-12">
+              <form id="mobile_mail_form" action="/formtesting/post" method="post">
+                  
+                <div class="form-group">
+                  <label for="event"></label>
+                  <span t-field='event.description' /> 
+                </div>
+                
+                <input type="hidden" t-att-value="event.id" name="event_id"/>
+                
+                <div class="form-group">
+                  <label for="mobile">Mobilnummer</label>
+                  <input type="text" class="form-control" name="mobile" id="mobile" placeholder="Ange mobilenummer" />
+                </div>
+                
+                <div class="form-group">
+                  <label for="email">Email</label>
+                  <input type="email" class="form-control" name = "email_from"  id="email_from" placeholder="Ange mailadress" />
+                </div>
+                
+                <button id="submit_btn" type="submit" class="btn btn-primary">Skicka</button>
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </t>
+  </template>
+</odoo>
