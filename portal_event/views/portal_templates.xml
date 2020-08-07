@@ -7,12 +7,12 @@
         <t t-foreach="request.env['event.type.tag'].search([])" t-as="tag">
           <div class="" >
             <t t-if="tag in request.env.user.partner_id.event_type_tag_ids">
-                <input type="checkbox" t-attf-id="tag.id" t-attf-name="tag.name" class="sst-field-of-interest-select" checked='1' >
+                <input type="checkbox" t-att-id="'%s'%tag.id" t-attf-name="tag.name" class="sst-field-of-interest-select" checked='1' >
                     <b t-raw="tag.name"> </b>
                 </input>
             </t>
             <t t-if="not tag in request.env.user.partner_id.event_type_tag_ids">
-                <input type="checkbox" t-attf-id="tag.id" t-attf-name="tag.name" class="sst-field-of-interest-select" >
+                <input type="checkbox" t-att-id="'%s'%tag.id" t-attf-name="tag.name" class="sst-field-of-interest-select" >
                     <b t-raw="tag.name"> </b>
                 </input>
             </t>

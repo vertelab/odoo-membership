@@ -11,6 +11,8 @@ from odoo.addons.payment.controllers.portal import PaymentProcessing
 from odoo.addons.portal.controllers.mail import _message_post_helper
 from odoo.addons.portal.controllers.portal import CustomerPortal, pager as portal_pager, get_records_pager
 from odoo.osv import expression
+import logging
+_logger = logging.getLogger(__name__)
 
 
 class CustomerPortal(CustomerPortal):
@@ -18,7 +20,7 @@ class CustomerPortal(CustomerPortal):
     @http.route('/portal_event/event_type_tags', type='json', auth='public')
     def attachment_remove(self, **post):
         
-        #list of 1 id
+        #list of changed id
         tag_id = post['id']
         
         partner = request.env.user
@@ -27,7 +29,8 @@ class CustomerPortal(CustomerPortal):
         
         l3 = []
         l1 = tag_ids
-        l2 =  tag_id
+        l2 =  [int(tag_id[0])]
+        
         for x in l1:
             if not x in l2:
                 l3.append(x)
@@ -35,34 +38,6 @@ class CustomerPortal(CustomerPortal):
             if not y in l1:
                 l3.append(y)
 
+        partner.event_type_tag_ids = [(6, 0, l3)]
+        
 
-        
-        
-        partner.event_type_tag_ids = (6, 0, l3)
-        
-        
-        
-        #request.env['event.type.tag'].search(['id'=l3[0]])
-        # ~ (1, ID, { values })    update the linked record with id = ID (write *values* on it)
-        
-        
-        
-        return error, error_message
-        
-    # ~ def _prepare_portal_layout_values(self):
-        # ~ values = super(CustomerPortal, self)._prepare_portal_layout_values()
-        # ~ partner = request.env.user.partner_id
-        
-        # ~ if request.httprequest.method == 'POST':
-            # ~ raise Warning(request.httprequest.environ)
-            
-        
-        # ~ return values
-
-    # ~ def Qaccount(self, redirect=None, **post):
-        # ~ #raise Warning(post)
-        # ~ response = super(CustomerPortal, self).account(redirect, post)
-        # ~ return response
-        
-    #/portal_event/<model("event.type.tags"):tag>/event_type_tags'     komplicerad länk
-    

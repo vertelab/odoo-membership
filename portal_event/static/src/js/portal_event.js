@@ -10,5 +10,3 @@ odoo.define('portal_event.portal_event', function (require) {
         })
     })
 })
-
-//~ 'id': this.id, 'checked': this.checked
