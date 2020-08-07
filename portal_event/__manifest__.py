@@ -7,7 +7,7 @@
     'summary': 'Adds some stuff to the portal',
     'website': 'https://www.vertel.se',
     'description': "",
-    'depends': ['portal', 'event',],
+    'depends': ['portal', 'event', 'base_automation'],
     'data': [
         'views/portal_templates.xml',
         'views/event_view.xml',
