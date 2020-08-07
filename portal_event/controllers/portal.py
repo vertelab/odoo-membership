@@ -30,19 +30,25 @@ class CustomerPortal(CustomerPortal):
         response = super(CustomerPortal, self).account(redirect, post)
         return response
         
-        
-# ~ @http.route('/portal_event/event_type_tags, type='json', auth='public')
-    # ~ def attachment_remove(self, tag_id, partner_id):
-        # ~ """Remove the given `attachment_id`, only if it is in a "pending" state.
+#/portal_event/<model("event.type.tags"):tag>/event_type_tags'     komplicerad länk
+@http.route('portal_event/event_type_tags', type='json', auth='public')
+def attachment_remove(self, **post):
+    
+    tag = post
+    
+    # ~ partner = request.env.user.partner_id
+    # ~ tag_ids = partner.event_type_tag_ids.mapped("id")
+    
+    # ~ l3 = []
+    # ~ l1 = tag_ids
+    # ~ l2 =  [tag.id]
+    # ~ for x in l1:
+        # ~ if not x in l2:
+            # ~ l3.append(x)
+    # ~ for y in l2:
+        # ~ if not y in l1:
+            # ~ l3.append(y)
 
-        # ~ The user must have access right on the attachment or provide a valid
-        # ~ `access_token`.
-        # ~ """
-       # ~ partner = request.env["res.partner"].sudo().browse(partner_id)
-       # ~ tag_ids = partner.event_type_tag_ids.mapped("id")
-       
-       
-       # ~ #TODO: XOR på två 
-       # ~ partner.event_type_tag_ids = (6, 0, tag_ids|tag_id)
-
-        # ~ return error, error_message
+    # ~ partner.event_type_tag_ids = (6, 0, l3)
+    
+    return error, error_message

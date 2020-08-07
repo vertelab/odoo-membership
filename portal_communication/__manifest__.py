@@ -1,18 +1,15 @@
 # -*- coding: utf-8 -*-
 
 {
-    'name': 'Portal event',
+    'name': 'Portal communication',
     'category': 'Website',
     'sequence': 166,
-    'summary': 'Adds some stuff to the portal',
+    'summary': 'Adds functionality to the portal for the user to list prefered ways of communication',
     'website': 'https://www.vertel.se',
     'description': "",
-    'depends': ['portal', 'event',],
+    'depends': ['portal',],
     'data': [
         'views/portal_templates.xml',
-        'views/event_view.xml',
-        'security/ir.model.access.csv',
-        'data/mail_template.xml'
     ],
     'application': True,
 }

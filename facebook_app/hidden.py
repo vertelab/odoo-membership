@@ -1,0 +1,7 @@
+my_app_id = '304703060582481'
+my_app_secret = 'd39b51919338f1162f0970fed8c3bcc3'
+my_access_token = 'EAAEVIDWwIFEBAHVJArapo1lotx0WmWZBzo5Gp15uk8lBY0Sb2YO0lLbzOo3fuSjCp0sZAGC0OqLnPSysQuNFzoxUmqZAAtZBDUcC2DdRn23TwcIoVsO35VlZCAZAb8DEp1ZCj31JeOdfoTMvuovbLfaSWi23y15ZCFrR1vdVEJtPwqXGeCDZCVTOkV0tJ2tkjkZAoZD'
+ad_account_id = 'act_2494566514175579'
+
+
+

@@ -1,29 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-  <template id="portal_my_details" inherit_id="portal.portal_my_details" name="Event Type Tags My Details">
-    <xpath expr="//input[@name='redirect']" position="inside">
-      <div t-attf-class="form-group #{error.get('event_type_tag_ids') and 'o_has_error' or ''} col-xl-6">
+  <template id="portal_layout" inherit_id="portal.portal_layout" name="Event Type Tags My Details">
+    <xpath expr="//div[@class='o_portal_my_details']" position="after">
+      <div class="col-xl-6">
         <h1>Fields of Interest</h1>
         <t t-foreach="request.env['event.type.tag'].search([])" t-as="tag">
-          <div class="" data-toggle="buttons">
-            <label class="btn btn-lg btn-success active">
-              <input type="radio" t-attf-name="'options_%s'%tag.id" id="option1" autocomplete="off" value="checked" />
-              <i class="fa fa-check" />
-              <t t-esc="tag.name"/>
-            </label>
-            <label class="btn btn-lg btn-danger">
-              <input type="radio" t-attf-name="'options_%s'%tag.id" id="option2" autocomplete="off" />
-              <i class="fa fa-warning" />
-              <t t-esc="tag.name"/>
-            </label>
+          <div class="" >
+            <t t-if="tag in request.env.user.partner_id.event_type_tag_ids">
+              <span class="btn btn-lg btn-success">
+                <button type="button" t-attf-name="'options_%s'%tag.id"  t-attf-id="'options_%s'%tag.id" class="o_toggle_button" />
+                <i class="fa fa-check" />
+                <t t-esc="tag.name" />
+              </span>
+            </t>
+            <t t-if="not tag in request.env.user.partner_id.event_type_tag_ids">
+                <a href="#" class="btn btn-primary fa fa-warning o_toggle_button"  t-attf-name="'options_%s'%tag.id"  t-attf-id="'options_%s'%tag.id" t-esc="tag.name" />
+            </t>
           </div>
         </t>
       </div>
     </xpath>
   </template>
   <template id="assets_frontend" inherit_id="website.assets_frontend" name="Event Type Tags">
-    <xpath expr="//link[last()]" position="after">
-      <link rel="stylesheet" type="text/scss" href="/portal_event/static/src/scss/events.scss" />
+    <xpath expr="." position="inside">
+        <script type="text/javascript" src="/portal_event/static/src/js/portal_event.js"/>
     </xpath>
   </template>
 </odoo>
+
+
+
+<!--
+t-attf-data-path="'/portal_event/%s/event_type_tags'%tag.id"-->
