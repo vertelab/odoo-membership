@@ -7,14 +7,14 @@
         <t t-foreach="request.env['event.type.tag'].search([])" t-as="tag">
           <div class="" >
             <t t-if="tag in request.env.user.partner_id.event_type_tag_ids">
-              <span class="btn btn-lg btn-success">
-                <button type="button" t-attf-name="'options_%s'%tag.id"  t-attf-id="'options_%s'%tag.id" class="o_toggle_button" />
-                <i class="fa fa-check" />
-                <t t-esc="tag.name" />
-              </span>
+                <input type="checkbox" t-attf-id="tag.id" t-attf-name="tag.name" class="sst-field-of-interest-select" checked='1' >
+                    <b t-raw="tag.name"> </b>
+                </input>
             </t>
             <t t-if="not tag in request.env.user.partner_id.event_type_tag_ids">
-                <a href="#" class="btn btn-primary fa fa-warning o_toggle_button"  t-attf-name="'options_%s'%tag.id"  t-attf-id="'options_%s'%tag.id" t-esc="tag.name" />
+                <input type="checkbox" t-attf-id="tag.id" t-attf-name="tag.name" class="sst-field-of-interest-select" >
+                    <b t-raw="tag.name"> </b>
+                </input>
             </t>
           </div>
         </t>
@@ -28,7 +28,3 @@
   </template>
 </odoo>
 
-
-
-<!--
-t-attf-data-path="'/portal_event/%s/event_type_tags'%tag.id"-->

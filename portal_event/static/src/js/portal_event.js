@@ -5,7 +5,7 @@ odoo.define('portal_event.portal_event', function (require) {
     $(function (){
         $('.sst-field-of-interest-select').click(function(){
             console.log(this)
-            ajax.rpc('/portal_event/event_type_tags',  {}) 
+            ajax.rpc('/portal_event/event_type_tags',  {'id': [this.id]}) 
                 .then(function(data){})
         })
     })
