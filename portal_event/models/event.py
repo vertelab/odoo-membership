@@ -26,11 +26,12 @@ _logger = logging.getLogger(__name__)
 
 class EventType(models.Model):
     _inherit = 'event.type'
-    event_type_tag_ids = fields.Many2many(comodel_name='event.type.tag',string='Tags')
+    event_type_tag_ids = fields.Many2many(comodel_name='event.type.tag',string='Taggar')
+    description = fields.Html('description')
 
 class ResPartner(models.Model):
     _inherit = 'res.partner'
-    event_type_tag_ids = fields.Many2many(comodel_name='event.type.tag',string='Interests',help='Field of interests')
+    event_type_tag_ids = fields.Many2many(comodel_name='event.type.tag',string='Intressen',help='Intresseområden')
     
 class EventTypeTag(models.Model):
     _name = 'event.type.tag'

@@ -3,7 +3,7 @@
   <template id="portal_layout" inherit_id="portal.portal_layout" name="Event Type Tags My Details">
     <xpath expr="//div[@class='o_portal_my_details']" position="after">
       <div class="col-xl-6">
-        <h1>Fields of Interest</h1>
+        <h1>Intresseområden</h1>
         <t t-foreach="request.env['event.type.tag'].search([])" t-as="tag">
           <div class="" >
             <t t-if="tag in request.env.user.partner_id.event_type_tag_ids">

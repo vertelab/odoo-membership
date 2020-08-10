@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
   <data>
+    <!--adds tags in event type-->
     <record id="view_event_type_form" model="ir.ui.view">
       <field name="name">event.type.view.form.inherit.portal.event</field>
       <field name="model">event.type</field>
@@ -20,7 +21,7 @@
               </div>
               <div class="o_setting_right_pane">
                 <div class="row">
-                  <div class="col-lg-8 mt16 text-muted">Event tags.</div>
+                  <div class="col-lg-8 mt16 text-muted">Eventtaggar.</div>
                 </div>
               </div>
             </div>
@@ -28,6 +29,37 @@
         </sheet>
       </field>
     </record>
+    
+    <!--adds description for event types-->
+    <record id="view_event_type_form_description" model="ir.ui.view">
+      <field name="name">event.type.view.form.inherit.event.description</field>
+      <field name="model">event.type</field>
+      <field name="type">form</field>
+      <field name="inherit_id" ref='event.view_event_type_form' />
+      <field name="arch" type="xml">
+        <sheet position="inside">
+          <div class="row mt16 o_settings_container" name="event_type_tags">
+            <div class="col-12 col-lg-6 o_setting_box" name="event_type_tags_ids">
+              <div class="o_setting_right_pane">
+                <div class="row">
+                  <label for="description" />
+                </div>
+              </div>
+              <div class="o_setting_right_pane">
+                <field name="description" widget="html" />
+              </div>
+              <div class="o_setting_right_pane">
+                <div class="row">
+                  <div class="col-lg-8 mt16 text-muted">Förklaring</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </sheet>
+      </field>
+    </record>
+    
+    <!--this is the view in contacts-->
     <record id="view_partner_form" model="ir.ui.view">
       <field name="name">partner.view.form.inherit.portal.event</field>
       <field name="model">res.partner</field>
@@ -39,6 +71,7 @@
         </field>
       </field>
     </record>
+    
     <!-- Event Type Tag-->
     <record id="view_event_type_tag_tree" model="ir.ui.view">
       <field name="name">event.type.tag.tree</field>

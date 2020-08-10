@@ -40,4 +40,3 @@ class CustomerPortal(CustomerPortal):
 
         partner.event_type_tag_ids = [(6, 0, l3)]
         
-
