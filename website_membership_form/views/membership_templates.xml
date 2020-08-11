@@ -10,7 +10,7 @@
                   
                 <div class="form-group">
                   <label for="event"></label>
-                  <span t-field='event.type.description' /> 
+                  <span t-field='event.event_type_id.description' /> 
                 </div>
                 
                 <input type="hidden" t-att-value="event.id" name="event_id"/>
