@@ -21,7 +21,7 @@
               </div>
               <div class="o_setting_right_pane">
                 <div class="row">
-                  <div class="col-lg-8 mt16 text-muted">Eventtaggar.</div>
+                  <div class="col-lg-8 mt16 text-muted">Event tags.</div>
                 </div>
               </div>
             </div>
@@ -50,13 +50,28 @@
               </div>
               <div class="o_setting_right_pane">
                 <div class="row">
-                  <div class="col-lg-8 mt16 text-muted">Förklaring</div>
+                  <div class="col-lg-8 mt16 text-muted">Description</div>
                 </div>
               </div>
             </div>
           </div>
         </sheet>
       </field>
+    </record>
+    
+    <!--adds description for event-->
+    <record id="view_event_form_description" model="ir.ui.view">
+      <field name="name">event.view.form.inherit.event.description</field>
+      <field name="model">event.event</field>
+      <field name="type">form</field>
+      <field name="inherit_id" ref='event.view_event_form' />
+      <field name="arch" type="xml">
+        <notebook position="inside">
+            <page name="description" string="Description">
+                <field name="description" widget="html" />
+            </page>
+        </notebook>
+    </field>
     </record>
     
     <!--this is the view in contacts-->
