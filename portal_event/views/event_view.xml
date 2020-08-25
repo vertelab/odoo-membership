@@ -21,7 +21,7 @@
               </div>
               <div class="o_setting_right_pane">
                 <div class="row">
-                  <div class="col-lg-8 mt16 text-muted">Event tags.</div>
+                  <div class="col-lg-8 mt16 text-muted">Eventtaggar.</div>
                 </div>
               </div>
             </div>
@@ -50,7 +50,7 @@
               </div>
               <div class="o_setting_right_pane">
                 <div class="row">
-                  <div class="col-lg-8 mt16 text-muted">Description</div>
+                  <div class="col-lg-8 mt16 text-muted">Beskrivning</div>
                 </div>
               </div>
             </div>
