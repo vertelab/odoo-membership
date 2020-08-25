@@ -3,11 +3,19 @@
   <template id="portal_layout" inherit_id="portal.portal_layout" name="Portal Communication My Details">
     <xpath expr="//div[@class='o_portal_my_details']" position="after">
       <div class="col-xl-6">
-        <h1>Tillåtna Kommunikationskanaler</h1>
-        <input type="checkbox" id="email_checkbox" name="email_checkbox" class="sst-communication-select"  t-att="{'checked': request.env.user.allow_email}"> Email Communication</input>
-        <input type="checkbox" id="sms_checkbox" name="sms_checkbox" class="sst-communication-select" t-att="{'checked': request.env.user.allow_sms}"> SMS Communication</input>
-        <input type="checkbox" id="facebook_checkbox" name="facebook_checkbox" class="sst-communication-select"  t-att="{'checked': request.env.user.allow_facebook}"> Facebook Communication</input>
-        <input type="checkbox" id="twitter_checkbox" name="twitter_checkbox" class="sst-communication-select"  t-att="{'checked': request.env.user.allow_twitter}"> Twitter Communication</input>
+        <h1>Kommunikationskanaler</h1>
+        <div>
+            <input type="checkbox" id="email_checkbox" name="email_checkbox" class="sst-communication-select"  t-att="{'checked': request.env.user.allow_email}"> Email</input>
+        </div>
+        <div>
+            <input type="checkbox" id="sms_checkbox" name="sms_checkbox" class="sst-communication-select" t-att="{'checked': request.env.user.allow_sms}"> SMS</input>
+        </div>
+        <div>
+            <input type="checkbox" id="facebook_checkbox" name="facebook_checkbox" class="sst-communication-select"  t-att="{'checked': request.env.user.allow_facebook}"> Facebook</input>
+        </div>
+        <div>
+            <input type="checkbox" id="twitter_checkbox" name="twitter_checkbox" class="sst-communication-select"  t-att="{'checked': request.env.user.allow_twitter}"> Twitter</input>
+        </div>
       </div>
     </xpath>
   </template>
