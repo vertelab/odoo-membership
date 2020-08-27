@@ -7,11 +7,8 @@
     <field name="inherit_id" ref="base.view_res_partner_filter" />
     <field name="arch" type="xml">
       <filter name="inactive" position="before">
-        <!--
-             <filter string="Tax ID" name="vat" domain="[('is_company','=',True)]" />
-             <filter string="Person Number" name="personnumber" domain="[('is_company','=',False)]"/>
-             <filter string="City" name="city" domain="[('is_company','=',True)]"/>
-        -->
+        <filter string="Tax ID" name="vat" domain="[('is_company','=',True)]" />
+        <filter string="Person Number" name="personnumber" domain="[('is_company','=',False)]"/>
         <filter string="Company" name="is_company" domain="[('insurance_company_type','=','company')]" />
         <filter string="Fellowship" name="is_fellowship" domain="[('insurance_company_type','=','fellowship')]" />
         <filter string="Accommodator" name="is_accommodator" domain="[('insurance_company_type','=','accommodator')]" />
@@ -20,6 +17,7 @@
       </filter>
     </field>
   </record>
+
   
   <record id="view_member_tree" model="ir.ui.view">
     <field name="name">member.tree</field>
@@ -27,14 +25,14 @@
     <field eval="99" name="priority"/>
     <field name="arch" type="xml">
         <tree string="Members">
+            <field name="status" />
             <field name="insurance_company_type" />
             <field name="fellowship_id" />
-            <field name="insurance_company_id" />
+            <field name="count_accommodator" />
             <field name="name" />
-            <field name="phone"/>
+            <field name="liability_insurance_permission" />
             <field name="email"/>
             <field name="user_id" invisible="1"/>
-            <field name="is_company" invisible="1"/>
             <field name="country_id" invisible="1"/>
             <field name="parent_id" invisible="1"/>
             <field name="active" invisible="1"/>
@@ -89,15 +87,15 @@
           </group>
         </group>
         <group>
-          <group string="Count licenced accommodators" name="licenced_ac" priority="2" attrs="{'invisible': [('insurance_company_type', 'not in', ['fellowship','company'])]}">
-            <field name="count_ac_life_licence" />
-            <field name="count_ac_property_licence" />
-            <field name="count_ac_property_life_licence" />
-          </group>
           <group string="Count employed accommodators" name="employed" priority="3" attrs="{'invisible': [('insurance_company_type', 'not in', ['fellowship','company'])]}">
             <field name="count_ac_life" />
             <field name="count_ac_property" />
             <field name="count_ac_property_life" />
+          </group>
+          <group string="Count licenced accommodators" name="licenced_ac" priority="2" attrs="{'invisible': [('insurance_company_type', 'not in', ['fellowship','company'])]}">
+            <field name="count_ac_life_licence" />
+            <field name="count_ac_property_licence" />
+            <field name="count_ac_property_life_licence" />
           </group>
         </group>
       </div>
@@ -106,31 +104,50 @@
         <field name="company_role" widget="many2one_tag" attrs="{'invisible': [('insurance_company_type', '!=', 'person'),('insurance_company_type', '!=', 'accommodator'),]}" />
         <field name="gender" widget='radio' options="{'horizontal': true}" attrs="{'invisible': [('company_type', '=', 'company')]}"/>
         <field name="liability_insurance_permission" widget="many2many_tags" attrs="{'invisible': [('insurance_company_type', '=', 'person')]}" />
-        <field name="liability_insurance" widget="many2many_tags" attrs="{'invisible': [('insurance_company_type', '=', 'person')]}" />
         <field name="revenue" attrs="{'invisible': [('insurance_company_type', 'in', ['person','accommodator'])]}" />
-        <field name="revenue_property" attrs="{'invisible': [('insurance_company_type', 'in', ['person','accommodator'])]}" />
-        <field name="revenue_life" attrs="{'invisible': [('insurance_company_type', 'in', ['person','accommodator'])]}" />
+      </field>
+<!--
+      <field name="company_registry" position="replace">
+          <field name="company_registry" attrs="{'invisible': [('is_company','=',False)]}"/>
+      </field>
+-->
+      <field name="category_id" position="after">
+          <field name="date_start" attrs="{'invisible': [('insurance_company_type', '=', 'person')]}"/>
+          <field name="date_end" attrs="{'invisible': [('insurance_company_type', '=', 'person')]}"/>
+          <field name="internal_notes"/>
       </field>
       <field name="vat" position="attributes">
         <attribute name="attrs">{'readonly': [('parent_id','!=',False)], 'invisible': [('company_type','!=','company')]}</attribute>
       </field>
+      <label for="street" position="before">
+        <field name="company_address" attrs="{'invisible':[('insurance_company_type', '!=', 'person'),('insurance_company_type', '!=', 'accommodator')]}" />
+      </label>
+      <label for="street" position="attributes">
+        <attribute name="attrs">{'invisible':[('insurance_company_type', '=', 'fellowship')]}</attribute>
+      </label>
       <field name="street" position="attributes">
-        <attribute name="attrs">{'readonly': [('type', '=', 'contact'),('parent_id','=', True),('insurance_company_type', '=', 'person')]}</attribute>
+        <attribute name="attrs">{'invisible':[('insurance_company_type', '=', 'fellowship')]}</attribute>
       </field>
       <field name="street2" position="attributes">
-        <attribute name="attrs">{'readonly': [('type', '=', 'contact'),('parent_id','=', True),('insurance_company_type', '=', 'person')]}</attribute>
+        <attribute name="attrs">{'invisible':[('insurance_company_type', '=', 'fellowship')]}</attribute>
       </field>
       <field name="city" position="attributes">
-        <attribute name="attrs">{'readonly': [('type', '=', 'contact'),('parent_id','=', True),('insurance_company_type', '=', 'person')]}</attribute>
+        <attribute name="attrs">{'invisible':[('insurance_company_type', '=', 'fellowship')]}</attribute>
       </field>
       <field name="state_id" position="attributes">
-        <attribute name="attrs">{'readonly': [('type', '=', 'contact'),('parent_id','=', True),('insurance_company_type', '=', 'person')]}</attribute>
+        <attribute name="attrs">{'invisible':[('insurance_company_type', '=', 'fellowship')]}</attribute>
       </field>
       <field name="zip" position="attributes">
-        <attribute name="attrs">{'readonly': [('type', '=', 'contact'),('parent_id','=', True),('insurance_company_type', '=', 'person')]}</attribute>
+        <attribute name="attrs">{'invisible':[('insurance_company_type', '=', 'fellowship')]}</attribute>
       </field>
       <field name="country_id" position="attributes">
-        <attribute name="attrs">{'readonly': [('type', '=', 'contact'),('parent_id','=', True),('insurance_company_type', '=', 'person')]}</attribute>
+        <attribute name="attrs">{'invisible':True}</attribute>
+      </field>
+      <field name="lang" position="attributes">
+        <attribute name="attrs">{'invisible':True}</attribute>
+      </field>
+      <field name="mobile" position="attributes">
+        <attribute name="attrs">{'invisible':[('insurance_company_type', '!=', 'person')]}</attribute>
       </field>
       <field name="function" position="attributes">
         <attribute name="invisible">1</attribute>
@@ -146,6 +163,18 @@
       </button>
     </field>
   </record>
+  
+  <record id="view_partner_form_sfm" model="ir.ui.view">
+      <field name="name">res.partner.sfm</field>
+      <field name="model">res.partner</field>
+      <field name="inherit_id" ref="base.view_partner_form" />
+      <field name="arch" type="xml">
+          <xpath expr="//page[@name='internal_notes']" position="attributes">                   
+            <attribute name="attrs">{'invisible': True}</attribute>               
+          </xpath>
+      </field>
+    </record>
+
 
   <record id="action_all_form" model="ir.actions.act_window">
     <field name="name">All</field>

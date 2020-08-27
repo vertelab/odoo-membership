@@ -20,7 +20,7 @@
 ##############################################################################
 
 from odoo import models, fields, api, _
-
+import time
 import logging
 _logger = logging.getLogger(__name__)
 
@@ -45,6 +45,12 @@ class res_partner(models.Model):
     liability_insurance = fields.Many2many(comodel_name='insurance.license', string='Insurance License')
     liability_insurance_permission = fields.Many2many(comodel_name='insurance.permission', string='Insurance Permission')
     company_role = fields.Many2one(comodel_name='insurance.role',string='Role') 
+    company_registry = fields.Char(string='Org.nr')
+    internal_notes = fields.Text(string='Internal notes')
+    date_start = fields.Datetime(string = "Date Start")
+    date_end = fields.Datetime(string = "Date End")
+    status = fields.Boolean(string="Aktive")
+    company_address = fields.Boolean(string="company address")
 
     
     def _compute_count_company(self):
@@ -110,7 +116,7 @@ class res_partner(models.Model):
     @api.one
     def _compute_org_prn(self):
         if self.company_type == 'company':
-            self.org_prn = self.vat
+            self.org_prn = self.company_registry
         elif self.company_type == 'person':
             self.org_prn = self.personnumber
     org_prn = fields.Char(string="Org/pers-nummer", compute ='_compute_org_prn')

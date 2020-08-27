@@ -120,7 +120,7 @@ msgstr "Bolag med Liv/Saktillstånd"
 #. module: membership_insurance
 #: model_terms:ir.ui.view,arch_db:membership_insurance.view_partners_form_insurance
 msgid "Company Registry"
-msgstr "Organisationsnummer"
+msgstr "Org.nr"
 
 #. module: membership_insurance
 #: model:ir.model.fields,field_description:membership_insurance.field_res_partner__insurance_company_type
