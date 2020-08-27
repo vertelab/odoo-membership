@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+    <record id="utm_campaign_view_form_date_description" model="ir.ui.view">
+      <field name="name">utm.campaign.view.form.inherit.date.description</field>
+      <field name="model">utm.campaign</field>
+      <field name="type">form</field>
+      <field name="inherit_id" ref='utm.utm_campaign_view_form' />
+      <field name="arch" type="xml">
+        <group id="top-group" position="after">
+          <group>
+              
+              
+            <label for="campaign_codes" string="Campaign Codes" />
+            <div class="o_row">
+              <field name="campaign_codes" widget="many2many_tags"/>
+            </div>
+            
+            
+            
+            <label for="start_date" string="Date" />
+            <div class="o_row">
+              <field name="start_date" />
+              <i class="fa fa-long-arrow-right mx-2" aria-label="Arrow icon" title="Arrow" />
+              <field name="end_date" />
+            </div>
+          </group>
+        </group>
+        <notebook position="inside">
+          <page name="description" string="Description">
+            <field name="description" />
+          </page>
+        </notebook>
+      </field>
+    </record>
+    <record id="utm_campaign_view_calendar" model="ir.ui.view">
+      <field name="name">utm.campaign.view.calendar</field>
+      <field name="model">utm.campaign</field>
+      <field name="type">calendar</field>
+      <field name="arch" type="xml">
+        <calendar date_start="start_date" date_stop="end_date" string="Campaign" mode="month">
+          <field name="user_id" avatar_field="image_128" />
+          <field name="stage_id" />
+          <field name="tag_ids" />
+        </calendar>
+      </field>
+    </record>
+    <record id="action_view_utm_stage" model="ir.actions.act_window">
+      <field name="name">UTM Stages</field>
+      <field name="res_model">utm.stage</field>
+      <field name="view_mode">kanban,calendar,tree,form</field>
+      <field name="help" type="html">
+        <p class="o_view_nocontent_smiling_face">Create a stage for your campaigns</p>
+        <p>Stages allow you to organize your workflow  (e.g. : plan, design, in progress,  done, …).</p>
+      </field>
+    </record>
+  </data>
+</odoo>
