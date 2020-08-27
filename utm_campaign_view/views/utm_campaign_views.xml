@@ -9,15 +9,10 @@
       <field name="arch" type="xml">
         <group id="top-group" position="after">
           <group>
-              
-              
             <label for="campaign_codes" string="Campaign Codes" />
             <div class="o_row">
-              <field name="campaign_codes" widget="many2many_tags"/>
+              <field name="campaign_codes" widget="many2many_tags" />
             </div>
-            
-            
-            
             <label for="start_date" string="Date" />
             <div class="o_row">
               <field name="start_date" />
@@ -45,14 +40,8 @@
         </calendar>
       </field>
     </record>
-    <record id="action_view_utm_stage" model="ir.actions.act_window">
-      <field name="name">UTM Stages</field>
-      <field name="res_model">utm.stage</field>
-      <field name="view_mode">kanban,calendar,tree,form</field>
-      <field name="help" type="html">
-        <p class="o_view_nocontent_smiling_face">Create a stage for your campaigns</p>
-        <p>Stages allow you to organize your workflow  (e.g. : plan, design, in progress,  done, …).</p>
-      </field>
+    <record id="mass_mailing.action_view_utm_campaigns" model="ir.actions.act_window">
+      <field name="view_mode">kanban,tree,form,calendar</field>
     </record>
   </data>
 </odoo>
