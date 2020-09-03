@@ -49,6 +49,8 @@ class res_partner(models.Model):
     date_start = fields.Datetime(string = "Date Start")
     date_end = fields.Datetime(string = "Date End")
     status = fields.Boolean(string="Aktive")
+    # ~ space = fields.Char('  ', readonly=True)
+    # ~ postnumber = fields.Char(string='ZIP')
     
 
 
@@ -185,3 +187,15 @@ class res_partner(models.Model):
     @api.multi
     def life_protperty_permission_button(self):
         return self._action_button([('id', 'child_of', self.id),('liability_insurance_permission', '=', self.env.ref('membership_insurance.crm_insurance_life_permission').id),('liability_insurance_permission', '=', self.env.ref('membership_insurance.crm_insurance_property_permission').id)])
+    
+    
+    def onchange_parent_id(self):
+        # return values in result, as this method is used by _fields_sync()
+        return {}
+        
+    
+    def _fields_sync(self, values):
+        """ Sync commercial fields and address fields from company and to children after create/update,
+        just as if those were all modeled as fields.related to the parent """
+        return 
+        

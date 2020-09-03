@@ -5,9 +5,15 @@
     <field name="name">res.partner.view.search.inherit.taxid</field>
     <field name="model">res.partner</field>
     <field name="inherit_id" ref="base.view_res_partner_filter" />
+    <field name="act_window_id" ref="membership.action_membership_members" />
+    <field name="search_view_id" ref="base.view_res_partner_filter" />
     <field name="arch" type="xml">
+      <field name="parent_id" position="after">
+          <field name="personnumber" domain="[('is_company','=',False)]" />
+          <field string="Org.Nr" name="vat" domain="[('insurance_company_type','=','company')]" />
+      </field>
       <filter name="inactive" position="before">
-        <filter string="Tax ID" name="vat" domain="[('is_company','=',True)]" />
+        <filter string="Org.Nr" name="company_registry" domain="[('insurance_company_type','=','company')]" />
         <filter string="Person Number" name="personnumber" domain="[('is_company','=',False)]"/>
         <filter string="Company" name="is_company" domain="[('insurance_company_type','=','company')]" />
         <filter string="Fellowship" name="is_fellowship" domain="[('insurance_company_type','=','fellowship')]" />
@@ -19,12 +25,73 @@
   </record>
 
   
-  <record id="view_member_tree" model="ir.ui.view">
+  <record id="view_member_tree_accommodator" model="ir.ui.view">
     <field name="name">member.tree</field>
     <field name="model">res.partner</field>
     <field eval="99" name="priority"/>
     <field name="arch" type="xml">
-        <tree string="Members">
+        <tree string="Accommodator ">
+            <field name="status" />
+            <field name="insurance_company_type" />
+            <field name="fellowship_id" />
+            <field name="insurance_company_id" />
+            <field name="name" />
+            <field name="liability_insurance_permission" widget="many2many_tags" />
+            <field name="email"/>
+            <field name="user_id" invisible="1"/>
+            <field name="country_id" invisible="1"/>
+            <field name="parent_id" invisible="1"/>
+            <field name="active" invisible="1"/>
+            <field name="personnumber" string="PersonNumber"/>
+            <field name="city" />
+        </tree>
+    </field>
+  </record>
+  <record id="view_member_tree_all" model="ir.ui.view">
+    <field name="name">member.tree</field>
+    <field name="model">res.partner</field>
+    <field eval="99" name="priority"/>
+    <field name="arch" type="xml">
+        <tree string="All ">
+            <field name="status" />
+            <field name="insurance_company_type" />
+            <field name="fellowship_id" />
+            <field name="insurance_company_id" />
+            <field name="name" />
+            <field name="liability_insurance_permission" widget="many2many_tags" />
+            <field name="email"/>
+            <field name="user_id" invisible="1"/>
+            <field name="country_id" invisible="1"/>
+            <field name="active" invisible="1"/>
+            <field name="org_prn" string="Org/pers-nummer"/>
+            <field name="city" />
+        </tree>
+    </field>
+  </record>
+  <record id="view_member_tree_fellowship" model="ir.ui.view">
+    <field name="name">member.tree</field>
+    <field name="model">res.partner</field>
+    <field eval="99" name="priority"/>
+    <field name="arch" type="xml">
+        <tree string="Fellowship">
+            <field name="status" />
+            <field name="insurance_company_type" />
+            <field name="count_company" />
+            <field name="count_accommodator" />
+            <field name="name" />
+            <field name="user_id" invisible="1"/>
+            <field name="country_id" invisible="1"/>
+            <field name="parent_id" invisible="1"/>
+            <field name="active" invisible="1"/>
+        </tree>
+    </field>
+  </record>
+  <record id="view_member_tree_company" model="ir.ui.view">
+    <field name="name">member.tree</field>
+    <field name="model">res.partner</field>
+    <field eval="99" name="priority"/>
+    <field name="arch" type="xml">
+        <tree string="Company">
             <field name="status" />
             <field name="insurance_company_type" />
             <field name="fellowship_id" />
@@ -36,7 +103,7 @@
             <field name="country_id" invisible="1"/>
             <field name="parent_id" invisible="1"/>
             <field name="active" invisible="1"/>
-            <field name="org_prn" string="Org/pers-nummer"/>
+            <field name="company_registry" string="Org.Nr"/>
             <field name="city" />
         </tree>
     </field>
@@ -113,32 +180,59 @@
           <field name="internal_notes"/>
       </field>
       <field name="vat" position="attributes">
-        <attribute name="attrs">{'readonly': [('parent_id','!=',False)], 'invisible': [('company_type','!=','company')], 'invisible': [('insurance_company_type', '=', 'fellowship')]}</attribute>
+        <attribute name="attrs">{'readonly': [('parent_id','!=',False)], 'invisible': [('insurance_company_type', '=', 'fellowship')]}</attribute>
       </field>
 <!--
       <field name="company_registry" position="replace">
           <field name="company_registry" attrs="{'invisible': [('insurance_company_type','=','fellowship')]}"/>
       </field>
+--> 
+      <field name="type" position="attributes">
+          <attribute name="attrs">{'invisible':[('insurance_company_type', 'in', ['fellowship','company'])]}</attribute>
+      </field>
+      <div class="o_address_format" position="replace">
+        <div class="o_address_format" attrs="{'invisible':[('insurance_company_type', '=', 'fellowship')]}">
+            <div attrs="{'invisible': [('type', '!=', 'contact')]}" class="oe_edit_only"></div>
+            <field name="street" placeholder="Street..." class="o_address_street"/>
+            <field name="street2" placeholder="Street 2..." class="o_address_street"/>
+            <field name="zip" placeholder="ZIP" class="o_address_zip" style="margin-right:10px"/>
+            <field name="city" placeholder="City" class="o_address_city" style="width:70%"/>
+            <field name="state_id" class="o_address_state" placeholder="State" options='{"no_open": True}'/>
+            <field name="country_id" placeholder="Country" class="o_address_country"/>
+        </div>
+      </div>
+      
+<!--
+          <attribute name="attrs">{'readonly': False}</attribute>
+      </div>
 -->
-
+      
       <label for="street" position="attributes">
         <attribute name="attrs">{'invisible':[('insurance_company_type', '=', 'fellowship')]}</attribute>
       </label>
-      <field name="street" position="attributes">
-        <attribute name="attrs">{'invisible':[('insurance_company_type', '=', 'fellowship')]}</attribute>
+<!--
+      <field name="street" position="replace">
+        <field name="street" attrs="{'invisible':[('insurance_company_type', '=', 'fellowship')],'readonly':False}" />
       </field>
-      <field name="street2" position="attributes">
-        <attribute name="attrs">{'invisible':[('insurance_company_type', '=', 'fellowship')]}</attribute>
+      <field name="street2" position="replace">
+        <field name="street2" attrs="{'invisible':[('insurance_company_type', '=', 'fellowship')],'readonly':False}" />
       </field>
-      <field name="city" position="attributes">
-        <attribute name="attrs">{'invisible':[('insurance_company_type', '=', 'fellowship')]}</attribute>
+      <field name="city" position="replace">
+        <field name="city" attrs="{'invisible':[('insurance_company_type', '=', 'fellowship')],'readonly':False}" />
       </field>
-      <field name="state_id" position="attributes">
-        <attribute name="attrs">{'invisible':[('insurance_company_type', '=', 'fellowship')]}</attribute>
+      <field name="state_id" position="replace">
+        <field name="state_id" attrs="{'invisible':[('insurance_company_type', '=', 'fellowship')],'readonly':False}" />
       </field>
       <field name="zip" position="attributes">
         <attribute name="attrs">{'invisible':[('insurance_company_type', '=', 'fellowship')]}</attribute>
+        <attribute name="field">style="margin-right:10px"</attribute>
       </field>
+-->
+<!--
+      <field name="zip" position="replace">
+        <field name="zip" placeholder="ZIP" class="o_address_zip" attrs="{'invisible':[('insurance_company_type', '=', 'fellowship')]}" style="margin-right:10px"/>
+      </field>
+-->
       <field name="country_id" position="attributes">
         <attribute name="attrs">{'invisible':True}</attribute>
       </field>
@@ -160,8 +254,9 @@
       <field name="website" position="attributes">
         <attribute name="invisible">1</attribute>
       </field>
+      
       <button name="company_button" position="attributes">
-        <attribute name="attrs">{'invisible': [('insurance_company_type', 'not in', ['fellowship'])]}</attribute>
+        <attribute name="attrs">{'invisible': [('insurance_company_type', 'not in', ['fellowship','company'])]}</attribute>
       </button>
     </field>
   </record>
@@ -182,8 +277,8 @@
       <field name="model">res.partner</field>
       <field name="inherit_id" ref="l10n_se.view_partners_form_se1" />
       <field name="arch" type="xml">
-          <field name="company_registry" position="attributes">
-            <attribute name="attrs">{'invisible': [('insurance_company_type','=','fellowship')]}</attribute>
+          <field name="company_registry" position="replace">
+            <field name="company_registry" string="Org.Nr" attrs="{'invisible': [('insurance_company_type','=','fellowship')]}" />
           </field>
       </field>
   </record>
@@ -199,7 +294,7 @@
     <field name="act_window_id" ref="membership.action_membership_members" />
     <field name="search_view_id" ref="base.view_res_partner_filter" />
     <field name="view_ids" eval="[(5, 0, 0),
-                (0, 0, {'view_mode': 'tree', 'view_id': ref('membership_insurance.view_member_tree')}),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('membership_insurance.view_member_tree_all')}),
                 (0, 0, {'view_mode': 'kanban', 'view_id': ref('base.res_partner_kanban_view')}),
                 (0, 0, {'view_mode': 'form', 'view_id': ref('base.view_partner_form')})]"/>
   </record>
@@ -213,7 +308,7 @@
     <field name="act_window_id" ref="membership.action_membership_members" />
     <field name="search_view_id" ref="base.view_res_partner_filter" />
     <field name="view_ids" eval="[(5, 0, 0),
-                (0, 0, {'view_mode': 'tree', 'view_id': ref('membership_insurance.view_member_tree')}),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('membership_insurance.view_member_tree_fellowship')}),
                 (0, 0, {'view_mode': 'form', 'view_id': ref('base.view_partner_form')})]"/>
   </record>
   <record id="action_accommodator_form" model="ir.actions.act_window">
@@ -226,7 +321,7 @@
     <field name="act_window_id" ref="membership.action_membership_members" />
     <field name="search_view_id" ref="base.view_res_partner_filter" />
     <field name="view_ids" eval="[(5, 0, 0),
-                (0, 0, {'view_mode': 'tree', 'view_id': ref('membership_insurance.view_member_tree')}),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('membership_insurance.view_member_tree_accommodator')}),
                 (0, 0, {'view_mode': 'form', 'view_id': ref('base.view_partner_form')})]"/>
   </record>
   <record id="action_company_form" model="ir.actions.act_window">
@@ -239,7 +334,7 @@
     <field name="act_window_id" ref="membership.action_membership_members" />
     <field name="search_view_id" ref="base.view_res_partner_filter" />
     <field name="view_ids" eval="[(5, 0, 0),
-                (0, 0, {'view_mode': 'tree', 'view_id': ref('membership_insurance.view_member_tree')}),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('membership_insurance.view_member_tree_company')}),
                 (0, 0, {'view_mode': 'form', 'view_id': ref('base.view_partner_form')})]"/>
   </record>
   
