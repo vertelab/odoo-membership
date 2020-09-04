@@ -31,7 +31,9 @@
     <field eval="99" name="priority"/>
     <field name="arch" type="xml">
         <tree string="Accommodator ">
+<!--
             <field name="status" />
+-->
             <field name="insurance_company_type" />
             <field name="fellowship_id" />
             <field name="insurance_company_id" />
@@ -53,7 +55,9 @@
     <field eval="99" name="priority"/>
     <field name="arch" type="xml">
         <tree string="All ">
+<!--
             <field name="status" />
+-->
             <field name="insurance_company_type" />
             <field name="fellowship_id" />
             <field name="insurance_company_id" />
@@ -74,7 +78,9 @@
     <field eval="99" name="priority"/>
     <field name="arch" type="xml">
         <tree string="Fellowship">
+<!--
             <field name="status" />
+-->
             <field name="insurance_company_type" />
             <field name="count_company" />
             <field name="count_accommodator" />
@@ -92,7 +98,9 @@
     <field eval="99" name="priority"/>
     <field name="arch" type="xml">
         <tree string="Company">
+<!--
             <field name="status" />
+-->
             <field name="insurance_company_type" />
             <field name="fellowship_id" />
             <field name="count_accommodator" />

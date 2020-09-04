@@ -48,7 +48,7 @@ class res_partner(models.Model):
     internal_notes = fields.Text(string='Internal notes')
     date_start = fields.Datetime(string = "Date Start")
     date_end = fields.Datetime(string = "Date End")
-    status = fields.Boolean(string="Aktive")
+    # ~ status = fields.Boolean(string="Aktive")
     # ~ space = fields.Char('  ', readonly=True)
     # ~ postnumber = fields.Char(string='ZIP')
     
