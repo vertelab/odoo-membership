@@ -75,6 +75,7 @@ class res_partner(models.Model):
 
             self.count_ac_life = self.env['res.partner'].search_count([('id', 'child_of', self.id),('liability_insurance', '=', self.env.ref('membership_insurance.crm_insurance_life').id)])
             self.count_ac_property = self.env['res.partner'].search_count([('id', 'child_of', self.id),('liability_insurance', '=', self.env.ref('membership_insurance.crm_insurance_property').id)])
+            self.count_ac_property_life = self.env['res.partner'].search_count([('id', 'child_of', self.id),('liability_insurance', '=', self.env.ref('membership_insurance.crm_insurance_property').id),('liability_insurance', '=', self.env.ref('membership_insurance.crm_insurance_life').id)])
     
     count_company               = fields.Integer(string='Company', compute ='_compute_count_company')
     count_co_life_permission    = fields.Integer(string='Company Life Permission', compute ='_compute_count_company')
