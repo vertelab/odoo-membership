@@ -20,7 +20,7 @@
     <field name="inherit_id" ref="base.view_partner_form" />
     <field name="arch" type="xml">
       <field name="vat" position="before">
-        <field name="url_financial_supervisory" widget="url" attrs="{'invisible': [('insurance_company_type', '=', 'person')]}" />
+        <field name="url_financial_supervisory" widget="url" attrs="{'invisible': [('insurance_company_type', 'in', ['person','fellowship'])]}" />
       </field>
     </field>
   </record>
