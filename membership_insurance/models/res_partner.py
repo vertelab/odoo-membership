@@ -21,7 +21,9 @@
 
 from odoo import models, fields, api, _
 import time
+import re
 import logging
+
 _logger = logging.getLogger(__name__)
 
 class insurance_permission(models.Model):
@@ -46,11 +48,12 @@ class res_partner(models.Model):
     liability_insurance_permission = fields.Many2many(comodel_name='insurance.permission', string='Insurance Permission')
     company_role = fields.Many2one(comodel_name='insurance.role',string='Role') 
     internal_notes = fields.Text(string='Internal notes')
-    date_start = fields.Datetime(string = "Date Start")
-    date_end = fields.Datetime(string = "Date End")
+    date_start = fields.Date(string = "Date Start")
+    date_end = fields.Date(string = "Date End")
     # ~ status = fields.Boolean(string="Aktive")
     # ~ space = fields.Char('  ', readonly=True)
     # ~ postnumber = fields.Char(string='ZIP')
+    # ~ company_registry = re.compile(r"^\d*[-]?\d*$")
     
 
 
@@ -117,14 +120,34 @@ class res_partner(models.Model):
     count_man = fields.Integer(String='Male', compute = '_compute_gender')
     count_woman = fields.Integer(String='Female', compute = '_compute_gender')
     
-        
+    # ~ @api.depends('personnumber')
+    # ~ def _match_personnumber(self):
+        # ~ for person in self:
+            # ~ if person.personnumber[6] == '-':
+                # ~ person.personnumber = person.personnumber[:6] + person.personnumber[7:]
+            # ~ elif person.personnumber[8] == '-':
+                # ~ person.personnumber = person.personnumber[2:8] + person.personnumber[9:]
+        # ~ personnumber = self.personnumber
+    
+    # ~ @api.depends('personnumber')
+    # ~ def _compute_personnumber(self):
+            # ~ if len(str(self.personnumber)) == 13:
+                # ~ for person in self:
+                    # ~ if person.personnumber and re.match('[2-7]{8}', person.personnumber):
+                        # ~ person.personnumber = "%s-%s" % (person.personnumber[2:7],person.personnumber[7:])
+            # ~ elif len(str(self.personnumber)) == 11:
+                # ~ for person in self:
+                    # ~ if person.personnumber and re.match('[0-5]{6}', person.personnumber):
+                        # ~ person.personnumber = "%s-%s" % (person.personnumber[0:5],person.personnumber[5:])
 
     @api.one
     def _compute_org_prn(self):
         if self.company_type == 'company':
             self.org_prn = self.company_registry
+            
         elif self.company_type == 'person':
             self.org_prn = self.personnumber
+            
     org_prn = fields.Char(string="Org/pers-nummer", compute ='_compute_org_prn')
     
     @api.onchange('insurance_company_type')
@@ -200,3 +223,4 @@ class res_partner(models.Model):
         just as if those were all modeled as fields.related to the parent """
         return 
         
+   
