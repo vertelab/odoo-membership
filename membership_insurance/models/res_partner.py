@@ -223,4 +223,10 @@ class res_partner(models.Model):
         just as if those were all modeled as fields.related to the parent """
         return 
         
-   
+    def merge_comment(self):
+        for contact in self.env['res.partner'].search([]):
+            _logger.warn(('%s test test ' ) %contact.comment)
+            if not contact.internal_notes and contact.comment:
+                
+                contact.internal_notes = contact.comment 
+            

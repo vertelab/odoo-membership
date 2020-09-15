@@ -185,7 +185,7 @@
       <field name="category_id" position="after">
           <field name="date_start" attrs="{'invisible': [('insurance_company_type', '=', 'person')]}"/>
           <field name="date_end" attrs="{'invisible': [('insurance_company_type', '=', 'person')]}"/>
-          <field name="comment"/>
+          <field name="internal_notes"/>
       </field>
       <field name="vat" position="attributes">
         <attribute name="attrs">{'readonly': [('parent_id','!=',False)], 'invisible': [('insurance_company_type', '=', 'fellowship')]}</attribute>
@@ -270,6 +270,11 @@
       <field name="arch" type="xml">
           <xpath expr="//page[@name='internal_notes']" position="replace" />                   
 <!--
+            <attribute name="attrs">{'invisible': True}</attribute>               
+          </xpath>
+-->
+<!--
+          <xpath expr="//page[@name='internal_notes']" position="attributes">                   
             <attribute name="attrs">{'invisible': True}</attribute>               
           </xpath>
 -->
