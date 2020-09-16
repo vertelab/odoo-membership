@@ -280,6 +280,25 @@
 -->
       </field>
   </record>
+  
+  <record id="view_res_company_form" model="ir.ui.view">
+    <field name="name">view.res.company.form.inherit</field>
+    <field name="model">res.company</field>
+    <field name="inherit_id" ref="base.view_company_form" />
+    <field name="arch" type="xml">
+      <div class="o_address_format" position="replace">
+        <div class="o_address_format" >
+            <div class="oe_edit_only"></div>
+            <field name="street" placeholder="Street..." class="o_address_street"/>
+            <field name="street2" placeholder="Street 2..." class="o_address_street"/>
+            <field name="zip" placeholder="ZIP" class="o_address_zip" style="margin-right:10px"/>
+            <field name="city" placeholder="City" class="o_address_city" style="width:70%"/>
+            <field name="state_id" class="o_address_state" placeholder="State" options='{"no_open": True}' attrs="{'invisible': True}"/>
+            <field name="country_id" placeholder="Country" class="o_address_country"/>
+        </div>
+      </div>
+    </field>
+  </record>
     
   <record id="view_org_nr_sfm" model="ir.ui.view">
       <field name="name">org.nr.sfm</field>

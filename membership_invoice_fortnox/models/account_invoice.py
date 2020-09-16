@@ -27,6 +27,7 @@ class AccountInvoiceSend(models.TransientModel):
         res = super(AccountInvoiceSend, self).send_and_print_action()
         if self.is_fortnox:
             for invoice in self.invoice_ids:
+                # ~ raise Warning(invoice)
                 invoice.fortnox_create()
         return res
 
