@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 12.0-20190808\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-26 13:01+0000\n"
-"PO-Revision-Date: 2020-06-26 13:01+0000\n"
+"POT-Creation-Date: 2020-09-17 12:20+0000\n"
+"PO-Revision-Date: 2020-09-17 12:20+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -18,12 +18,13 @@ msgstr ""
 #. module: membership_insurance
 #: model_terms:ir.ui.view,arch_db:membership_insurance.view_partner_form
 msgid "10 or 12 digital"
-msgstr ""
+msgstr "10 eller 12 siffror"
 
 #. module: membership_insurance
 #: model:ir.actions.act_window,name:membership_insurance.action_accommodator_form
 #: model:ir.ui.menu,name:membership_insurance.res_partner_menu_accommodator
 #: model_terms:ir.ui.view,arch_db:membership_insurance.res_partner_view_search_inherit_taxid
+#: model_terms:ir.ui.view,arch_db:membership_insurance.view_member_tree_accommodator
 #: selection:res.partner,insurance_company_type:0
 msgid "Accommodator"
 msgstr "Förmedlare"
@@ -73,8 +74,9 @@ msgstr "Förmedlare"
 #. module: membership_insurance
 #: model:ir.actions.act_window,name:membership_insurance.action_all_form
 #: model:ir.ui.menu,name:membership_insurance.res_partner_menu_all
+#: model_terms:ir.ui.view,arch_db:membership_insurance.view_member_tree_all
 msgid "All"
-msgstr "Alla"
+msgstr "Allt"
 
 #. module: membership_insurance
 #. openerp-web
@@ -85,7 +87,8 @@ msgid "An error occured with this latest posts block. If the problem persists, p
 msgstr ""
 
 #. module: membership_insurance
-#: model_terms:ir.ui.view,arch_db:membership_insurance.view_partners_form_insurance
+#: model_terms:ir.ui.view,arch_db:membership_insurance.view_partner_form
+#: model_terms:ir.ui.view,arch_db:membership_insurance.view_res_company_form
 msgid "City"
 msgstr "Stad"
 
@@ -95,6 +98,7 @@ msgstr "Stad"
 #: model:ir.model.fields,field_description:membership_insurance.field_res_users__count_company
 #: model:ir.ui.menu,name:membership_insurance.res_partner_menu_company
 #: model_terms:ir.ui.view,arch_db:membership_insurance.res_partner_view_search_inherit_taxid
+#: model_terms:ir.ui.view,arch_db:membership_insurance.view_member_tree_company
 #: selection:res.partner,insurance_company_type:0
 msgid "Company"
 msgstr "Bolag"
@@ -118,15 +122,10 @@ msgid "Company Property/Life Permission"
 msgstr "Bolag med Liv/Saktillstånd"
 
 #. module: membership_insurance
-#: model_terms:ir.ui.view,arch_db:membership_insurance.view_partners_form_insurance
-msgid "Company Registry"
-msgstr "Org.nr"
-
-#. module: membership_insurance
 #: model:ir.model.fields,field_description:membership_insurance.field_res_partner__insurance_company_type
 #: model:ir.model.fields,field_description:membership_insurance.field_res_users__insurance_company_type
 msgid "Company Type"
-msgstr "Företagtyp"
+msgstr "Bolagstyp"
 
 #. module: membership_insurance
 #: model:ir.model,name:membership_insurance.model_res_partner
@@ -161,6 +160,12 @@ msgid "Count licenced accommodators"
 msgstr "Antal licenserade förmedlare"
 
 #. module: membership_insurance
+#: model_terms:ir.ui.view,arch_db:membership_insurance.view_partner_form
+#: model_terms:ir.ui.view,arch_db:membership_insurance.view_res_company_form
+msgid "Country"
+msgstr "Land"
+
+#. module: membership_insurance
 #: model:ir.model.fields,field_description:membership_insurance.field_insurance_license__create_uid
 #: model:ir.model.fields,field_description:membership_insurance.field_insurance_permission__create_uid
 #: model:ir.model.fields,field_description:membership_insurance.field_insurance_role__create_uid
@@ -175,6 +180,18 @@ msgid "Created on"
 msgstr "Skapad den"
 
 #. module: membership_insurance
+#: model:ir.model.fields,field_description:membership_insurance.field_res_partner__date_end
+#: model:ir.model.fields,field_description:membership_insurance.field_res_users__date_end
+msgid "Date End"
+msgstr "Datum Utträde"
+
+#. module: membership_insurance
+#: model:ir.model.fields,field_description:membership_insurance.field_res_partner__date_start
+#: model:ir.model.fields,field_description:membership_insurance.field_res_users__date_start
+msgid "Date Start"
+msgstr "Datum Inträde"
+
+#. module: membership_insurance
 #: model:ir.model.fields,field_description:membership_insurance.field_insurance_license__display_name
 #: model:ir.model.fields,field_description:membership_insurance.field_insurance_permission__display_name
 #: model:ir.model.fields,field_description:membership_insurance.field_insurance_role__display_name
@@ -187,6 +204,7 @@ msgstr "Visningsnamn"
 #: model:ir.model.fields,field_description:membership_insurance.field_res_users__fellowship_id
 #: model:ir.ui.menu,name:membership_insurance.res_partner_menu_fellowship
 #: model_terms:ir.ui.view,arch_db:membership_insurance.res_partner_view_search_inherit_taxid
+#: model_terms:ir.ui.view,arch_db:membership_insurance.view_member_tree_fellowship
 #: selection:res.partner,insurance_company_type:0
 msgid "Fellowship"
 msgstr "Sammanslutning"
@@ -234,6 +252,12 @@ msgid "Insurance Permission"
 msgstr "Tillstånd"
 
 #. module: membership_insurance
+#: model:ir.model.fields,field_description:membership_insurance.field_res_partner__internal_notes
+#: model:ir.model.fields,field_description:membership_insurance.field_res_users__internal_notes
+msgid "Internal notes"
+msgstr "Anteckningar"
+
+#. module: membership_insurance
 #: model:ir.model.fields,field_description:membership_insurance.field_insurance_license____last_update
 #: model:ir.model.fields,field_description:membership_insurance.field_insurance_permission____last_update
 #: model:ir.model.fields,field_description:membership_insurance.field_insurance_role____last_update
@@ -261,11 +285,6 @@ msgid "Male"
 msgstr "Man"
 
 #. module: membership_insurance
-#: model_terms:ir.ui.view,arch_db:membership_insurance.view_member_tree
-msgid "Members"
-msgstr "Medlemmar"
-
-#. module: membership_insurance
 #: model:ir.model.fields,field_description:membership_insurance.field_insurance_license__name
 #: model:ir.model.fields,field_description:membership_insurance.field_insurance_permission__name
 msgid "Name"
@@ -280,16 +299,29 @@ msgid "No blog post was found. Make sure your posts are published."
 msgstr ""
 
 #. module: membership_insurance
+#: model_terms:ir.ui.view,arch_db:membership_insurance.res_partner_view_search_inherit_taxid
+#: model_terms:ir.ui.view,arch_db:membership_insurance.view_member_tree_company
+#: model_terms:ir.ui.view,arch_db:membership_insurance.view_org_nr_sfm
+msgid "Org.Nr"
+msgstr ""
+
+#. module: membership_insurance
 #: model:ir.model.fields,field_description:membership_insurance.field_res_partner__org_prn
 #: model:ir.model.fields,field_description:membership_insurance.field_res_users__org_prn
-#: model_terms:ir.ui.view,arch_db:membership_insurance.view_member_tree
+#: model_terms:ir.ui.view,arch_db:membership_insurance.view_member_tree_all
 msgid "Org/pers-nummer"
 msgstr ""
 
 #. module: membership_insurance
 #: model:ir.model.fields,field_description:membership_insurance.field_res_partner__personnumber
 #: model:ir.model.fields,field_description:membership_insurance.field_res_users__personnumber
+#: model_terms:ir.ui.view,arch_db:membership_insurance.res_partner_view_search_inherit_taxid
 msgid "Person Number"
+msgstr "Personnummer"
+
+#. module: membership_insurance
+#: model_terms:ir.ui.view,arch_db:membership_insurance.view_member_tree_accommodator
+msgid "PersonNumber"
 msgstr "Personnummer"
 
 #. module: membership_insurance
@@ -324,6 +356,24 @@ msgid "Role"
 msgstr "Roll"
 
 #. module: membership_insurance
+#: model_terms:ir.ui.view,arch_db:membership_insurance.view_partner_form
+#: model_terms:ir.ui.view,arch_db:membership_insurance.view_res_company_form
+msgid "State"
+msgstr "Status"
+
+#. module: membership_insurance
+#: model_terms:ir.ui.view,arch_db:membership_insurance.view_partner_form
+#: model_terms:ir.ui.view,arch_db:membership_insurance.view_res_company_form
+msgid "Street 2..."
+msgstr "Gata 2..."
+
+#. module: membership_insurance
+#: model_terms:ir.ui.view,arch_db:membership_insurance.view_partner_form
+#: model_terms:ir.ui.view,arch_db:membership_insurance.view_res_company_form
+msgid "Street..."
+msgstr "Gata..."
+
+#. module: membership_insurance
 #: model:ir.model.fields,field_description:membership_insurance.field_res_partner__vat
 #: model:ir.model.fields,field_description:membership_insurance.field_res_users__vat
 msgid "Tax ID"
@@ -342,7 +392,8 @@ msgid "This is person number"
 msgstr "Detta är ett personnummer"
 
 #. module: membership_insurance
-#: model_terms:ir.ui.view,arch_db:membership_insurance.view_partners_form_insurance
+#: model_terms:ir.ui.view,arch_db:membership_insurance.view_partner_form
+#: model_terms:ir.ui.view,arch_db:membership_insurance.view_res_company_form
 msgid "ZIP"
 msgstr "Postnummer"
 
