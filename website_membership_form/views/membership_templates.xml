@@ -6,7 +6,7 @@
         <div class="container">
           <div class="row mt8">
             <div class="col-md-12">
-              <form id="mobile_mail_form" action="/formtesting/post" method="post">
+              <form id="mobile_mail_form" action="/memberform/post" method="post">
                   
                 <div class="form-group">
                   <label for="event"></label>
@@ -34,4 +34,29 @@
       </div>
     </t>
   </template>
+    <template id="thankyou" name="Membership post">
+    <t t-call="website.layout">
+      <div id="wrap">
+        <div class="container">
+          <div class="row mt8">
+            <div class="col-md-12">
+                  
+                <div class="form-group">
+                  <span t-field='event.name' /> 
+                </div>
+                    <h1>Tack så mycket!</h1>
+                <input type="hidden" t-att-value="event.id" name="event_id"/>
+                
+                
+<!--
+                <button id="submit_btn" type="submit" class="btn btn-primary">Huvudsida</button>
+-->
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </t>
+  </template>
+  
 </odoo>

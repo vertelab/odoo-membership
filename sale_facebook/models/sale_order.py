@@ -8,8 +8,8 @@ class SaleOrder(models.Model):
     
     #is_abandoned_cart
     
-    name = self.name
-    customer_name = self.partner_id.name
+    # ~ name = self.name
+    # ~ customer_name = self.partner_id.name
     
     def action_recovery_email_send(self):
         for order in self:
