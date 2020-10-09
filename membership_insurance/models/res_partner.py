@@ -22,9 +22,12 @@
 from odoo import models, fields, api, _
 import time
 import re
+from odoo.exceptions import except_orm, Warning, RedirectWarning
+import requests
+import json
 import logging
-
 _logger = logging.getLogger(__name__)
+
 
 class insurance_permission(models.Model):
     _name = 'insurance.permission'
@@ -50,10 +53,6 @@ class res_partner(models.Model):
     internal_notes = fields.Text(string='Internal notes')
     date_start = fields.Date(string = "Date Start")
     date_end = fields.Date(string = "Date End")
-    # ~ status = fields.Boolean(string="Aktive")
-    # ~ space = fields.Char('  ', readonly=True)
-    # ~ postnumber = fields.Char(string='ZIP')
-    # ~ company_registry = re.compile(r"^\d*[-]?\d*$")
     
 
 
@@ -120,26 +119,7 @@ class res_partner(models.Model):
     count_man = fields.Integer(String='Male', compute = '_compute_gender')
     count_woman = fields.Integer(String='Female', compute = '_compute_gender')
     
-    # ~ @api.depends('personnumber')
-    # ~ def _match_personnumber(self):
-        # ~ for person in self:
-            # ~ if person.personnumber[6] == '-':
-                # ~ person.personnumber = person.personnumber[:6] + person.personnumber[7:]
-            # ~ elif person.personnumber[8] == '-':
-                # ~ person.personnumber = person.personnumber[2:8] + person.personnumber[9:]
-        # ~ personnumber = self.personnumber
     
-    # ~ @api.depends('personnumber')
-    # ~ def _compute_personnumber(self):
-            # ~ if len(str(self.personnumber)) == 13:
-                # ~ for person in self:
-                    # ~ if person.personnumber and re.match('[2-7]{8}', person.personnumber):
-                        # ~ person.personnumber = "%s-%s" % (person.personnumber[2:7],person.personnumber[7:])
-            # ~ elif len(str(self.personnumber)) == 11:
-                # ~ for person in self:
-                    # ~ if person.personnumber and re.match('[0-5]{6}', person.personnumber):
-                        # ~ person.personnumber = "%s-%s" % (person.personnumber[0:5],person.personnumber[5:])
-
     @api.one
     def _compute_org_prn(self):
         if self.company_type == 'company':
@@ -214,7 +194,7 @@ class res_partner(models.Model):
     
     
     def onchange_parent_id(self):
-        # return values in result, as this method is used by _fields_sync()
+        
         return {}
         
     

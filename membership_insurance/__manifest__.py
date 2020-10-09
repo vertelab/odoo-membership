@@ -8,6 +8,8 @@
         'views/res_partner_views.xml',
         'data/insurance.license.csv',
         'data/insurance.permission.csv',
+        'data/insurance.klientmedelskonto.product.csv',
+        'data/insurance.SFMbolag.product.csv',
         'data/insurance_data.xml',
         'security/ir.model.access.csv',
         # ~ 'views/assets.xml',

@@ -11,13 +11,25 @@
         <field name="model">account.invoice.send</field>
         <field name="inherit_id" ref="account.account_invoice_send_wizard_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//div[@name='option_email']" position='after'>
+            <xpath expr="//div[@name='option_email']" position="replace">
+                <field name="is_email" invisible="1" />
                 <div name="option_fortnox">
                     <field name="is_fortnox" />
                     <b><label for="is_fortnox"/></b>
                 </div>
             </xpath>
-            
+            <label for="is_print" position="attributes">
+                <attribute name="attrs">{'invisible': True}</attribute>
+            </label>
+            <field name="is_print" position="attributes">
+                <attribute name="attrs">{'invisible': True}</attribute>
+            </field>
+            <label for="snailmail_is_letter" position="attributes">
+                <attribute name="attrs">{'invisible': True}</attribute>
+            </label>
+            <field name="snailmail_is_letter" position="attributes">
+                <attribute name="attrs">{'invisible': True}</attribute>
+            </field>
             <footer>
                 <button string="Send "
                     attrs="{'invisible': [('is_fortnox', '=', False)]}"
