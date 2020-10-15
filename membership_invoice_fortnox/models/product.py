@@ -46,7 +46,7 @@ class ProductTemplate(models.Model):
 
 class ProductProduct(models.Model):
     _inherit = 'product.product'
-
+    
     @api.multi
     def membership_get_amount_qty(self, partner):
         eval_context = {
@@ -63,6 +63,9 @@ class ProductProduct(models.Model):
         }
         safe_eval(self.membership_code.strip(), eval_context, mode="exec", nocopy=True)  # nocopy allows to return 'action'
         return (eval_context.get('amount',self.list_price),eval_context.get('qty',1.0))
+
+
+    
 
 
 class res_partner(models.Model):

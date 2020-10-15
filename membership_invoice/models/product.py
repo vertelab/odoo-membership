@@ -93,3 +93,6 @@ class res_partner(models.Model):
                 if line.product_id.membership_code:
                     line.price_unit,line.quantity = line.product_id.membership_get_amount_qty(invoice.partner_id)
         return invoice_list
+
+
+    
