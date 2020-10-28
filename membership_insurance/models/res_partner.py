@@ -46,6 +46,7 @@ class insurance_role(models.Model):
 
 class res_partner(models.Model):
     _inherit = 'res.partner'
+    
 
     liability_insurance = fields.Many2many(comodel_name='insurance.license', string='Insurance License')
     liability_insurance_permission = fields.Many2many(comodel_name='insurance.permission', string='Insurance Permission')
@@ -209,4 +210,9 @@ class res_partner(models.Model):
             if not contact.internal_notes and contact.comment:
                 
                 contact.internal_notes = contact.comment 
-            
+    # ~ @api.one        
+    # ~ def set_payment_term(self):
+        # ~ for contact in self.env['res.partner'].search([]):
+            # ~ if not contact.property_payment_term_id:
+                # ~ contact.property_payment_term_id.id = self.env['account.payment.term'].payment_term_id.id
+        # ~ raise Warning (('%s test test ' ) % contact.property_payment_term_id)
