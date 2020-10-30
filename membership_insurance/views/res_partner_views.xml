@@ -127,6 +127,7 @@
         <button class="oe_stat_button" name="company_button" type="object" icon="fa-industry" context="{'partner_id': active_id, 'partner_name': name}">
           <field name="count_company" widget="statinfo" />
         </button>
+        <field name="insurance_company_type" invisible="1"/>
         <button class="oe_stat_button" name="accommodator_button" type="object" icon="fa-group" context="{'partner_id': active_id, 'partner_name': name}" attrs="{'invisible': [('insurance_company_type', '!=', 'company')]}">
           <field name="count_accommodator" widget="statinfo" />
         </button>
@@ -370,5 +371,7 @@
   <menuitem id="res_partner_menu_company" name="Company" parent="membership.menu_membership" action="action_company_form" sequence="3" />
   <menuitem id="res_partner_menu_accommodator" name="Accommodator" parent="membership.menu_membership" action="action_accommodator_form" sequence="4" />
   
+  
+							
  
 </odoo>

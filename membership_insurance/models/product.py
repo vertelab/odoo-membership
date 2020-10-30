@@ -41,3 +41,6 @@ class AccountInvoiceLine(models.Model):
             return ''
         return self.product_id.name
         
+
+	
+    

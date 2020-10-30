@@ -19,7 +19,8 @@ import dateutil.relativedelta
 import dateutil.rrule
 import dateutil.tz
 import base64
-
+import requests
+import json
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
@@ -47,6 +48,12 @@ class ProductTemplate(models.Model):
 class ProductProduct(models.Model):
     _inherit = 'product.product'
     
+    # ~ company_id = fields.Many2one(
+    # ~ 'res.company',
+    # ~ 'Company',
+    # ~ default=lambda self: self.env.user.company_id 
+    # ~ )
+    
     @api.multi
     def membership_get_amount_qty(self, partner):
         eval_context = {
@@ -64,6 +71,35 @@ class ProductProduct(models.Model):
         safe_eval(self.membership_code.strip(), eval_context, mode="exec", nocopy=True)  # nocopy allows to return 'action'
         return (eval_context.get('amount',self.list_price),eval_context.get('qty',1.0))
 
+    @api.multi
+    def article_update(self):
+        for product in self:
+            if not product.default_code:
+                raise Warning('You do not have set default code yet.')
+                try:
+                    url = "https://api.fortnox.se/3/articles/%s" % product.default_code
+                    #r = response
+                    r = self.env.user.company_id.fortnox_request('get',url)
+                except requests.exceptions.RequestException as e:
+                    _logger.warn('%s' %e)
+                # ~ raise Warning('%s Haze E' %e)
+            if product.default_code:
+                url = "https://api.fortnox.se/3/articles"
+                """ r = response """
+                r = self.env.user.company_id.fortnox_request('post', url,
+                    data={
+                        "Article": 
+                                {
+                                    "Description": product.name,
+                                    "ArticleNumber": product.default_code,
+                                    # ~ "SalesPrice": product.lst_price,
+                                }
+                    })
+            # ~ _logger.warn('%s Haze company_id' % self.env.user.company_id )
+            r = json.loads(r)
+            # ~ raise Warning('%s Haze' %str(r))
+            # ~ _logger.warn('%s Haze code' %product.default_code)
+            return r  
 
     
 

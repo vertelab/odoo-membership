@@ -17,7 +17,7 @@ _logger = logging.getLogger(__name__)
 class AccountInvoiceSend(models.TransientModel):
     _inherit = 'account.invoice.send'
 
-    is_fortnox = fields.Boolean('Fortnox', default=True)
+    is_fortnox = fields.Boolean(string='Fortnox',default=True)
     
     
     @api.multi
@@ -29,3 +29,6 @@ class AccountInvoiceSend(models.TransientModel):
                 invoice.fortnox_create()
         return res
 
+
+    
+    
