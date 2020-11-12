@@ -24,6 +24,17 @@
       </filter>
     </field>
   </record>
+  <record id="account_invoice_filter_member_invoice" model="ir.ui.view">
+        <field name="name">account.invoice.filter.member.invoice</field>
+        <field name="model">account.invoice</field>
+        <field name="inherit_id" ref="account.view_account_invoice_filter"/>
+        <field name="search_view_id" ref="account.view_account_invoice_filter" />
+        <field name="arch" type="xml">
+            <field name="number" position="after">
+                <field string="Fortnox Invoice Nr" name="name" />
+            </field>
+        </field>
+    </record>
 
   
   <record id="view_member_tree_accommodator" model="ir.ui.view">
@@ -371,7 +382,15 @@
   <menuitem id="res_partner_menu_company" name="Company" parent="membership.menu_membership" action="action_company_form" sequence="3" />
   <menuitem id="res_partner_menu_accommodator" name="Accommodator" parent="membership.menu_membership" action="action_accommodator_form" sequence="4" />
   
-  
-							
+  <record model="ir.ui.view" id="view_partner_form_insurance">
+        <field name="name">res.partner.form.inherit</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="membership.view_partner_form"/>
+        <field name="arch" type="xml">
+            <field name="member_price" position="after">
+                <field name="quantity" />
+            </field>
+        </field>
+    </record>
  
 </odoo>

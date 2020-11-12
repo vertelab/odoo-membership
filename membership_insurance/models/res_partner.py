@@ -44,6 +44,10 @@ class insurance_role(models.Model):
     
     name = fields.Char(string="Role")
 
+class MembershipLine(models.Model):
+    _inherit="membership.membership_line"
+    quantity = fields.Float(string="Quantity", related="account_invoice_line.quantity",readonly="1")
+    
 class res_partner(models.Model):
     _inherit = 'res.partner'
     
@@ -210,9 +214,35 @@ class res_partner(models.Model):
             if not contact.internal_notes and contact.comment:
                 
                 contact.internal_notes = contact.comment 
-    # ~ @api.one        
-    # ~ def set_payment_term(self):
-        # ~ for contact in self.env['res.partner'].search([]):
-            # ~ if not contact.property_payment_term_id:
-                # ~ contact.property_payment_term_id.id = self.env['account.payment.term'].payment_term_id.id
-        # ~ raise Warning (('%s test test ' ) % contact.property_payment_term_id)
+                
+    def set_payment_term(self):
+        for partner in self.env['res.partner'].search([('property_payment_term_id','=',False)]):
+          partner.property_payment_term_id = self.env['account.payment.term'].search([('id','=',3)])
+    
+    def delete_free_membership(self):
+        for partner in self.env['res.partner'].search([]):
+            partner.free_member = False
+            
+    def find_bug(self):
+        bugs = self.env['res.partner'].search([('city','=',False)])
+        for partner in bugs:
+            _logger.warn('%s Haze name' %partner.name)
+            if partner.parent_id:
+                partner.zip = partner.parent_id.zip
+                partner.city = partner.parent_id.city
+                
+            
+        # ~ raise Warning(bugs)
+        
+    def set_associate_member(self):
+        for partner in self.env['res.partner'].search([]):
+            partner.associate_member = partner.parent_id
+        
+    """ This is code for finding contacts which has no city or email in the database, it is for serveraction because it is not working in the pyton which is strange :(
+    bugs = env['res.partner'].search(['|',('email','=',False),('city','=',False)])
+    res = env['ir.actions.act_window'].for_xml_id(
+    'membership', 'action_membership_members')
+    res['domain'] = "[('id','in',%s)]" % bugs.mapped('id')
+    action = res"""
+            
+    

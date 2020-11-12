@@ -76,14 +76,24 @@ class ProductProduct(models.Model):
         for product in self:
             if not product.default_code:
                 raise Warning('You do not have set default code yet.')
+            if product.default_code:
                 try:
                     url = "https://api.fortnox.se/3/articles/%s" % product.default_code
                     #r = response
-                    r = self.env.user.company_id.fortnox_request('get',url)
+                    r = self.env.user.company_id.fortnox_request('put',url,
+                        data={
+                            "Article": 
+                                    {
+                                        "Description": product.name,
+                                        # ~ "ArticleNumber": product.default_code,
+                                        # ~ "SalesPrice": product.lst_price,
+                                    }
+                        })
+                    
                 except requests.exceptions.RequestException as e:
                     _logger.warn('%s' %e)
-                # ~ raise Warning('%s Haze E' %e)
-            if product.default_code:
+                    # ~ product.default_code = r["Article"]["ArticleNumber"]
+                    
                 url = "https://api.fortnox.se/3/articles"
                 """ r = response """
                 r = self.env.user.company_id.fortnox_request('post', url,
@@ -95,13 +105,40 @@ class ProductProduct(models.Model):
                                     # ~ "SalesPrice": product.lst_price,
                                 }
                     })
-            # ~ _logger.warn('%s Haze company_id' % self.env.user.company_id )
-            r = json.loads(r)
+                    # ~ _logger.warn('%s Haze company_id' % self.env.user.company_id )
+                r = json.loads(r)
+                
+            
             # ~ raise Warning('%s Haze' %str(r))
             # ~ _logger.warn('%s Haze code' %product.default_code)
             return r  
 
-    
+    """This is for Omsättning product, It changes every year, but with this code it will be easier to paste in omsättnings product"""
+    # ~ amount =  0.0
+    # ~ if partner.revenue > 10000000 and partner.revenue <= 50000000:
+        # ~ amount = 5000.0
+    # ~ elif partner.revenue > 50000000 and partner.revenue <= 100000000:
+        # ~ amount = 10000.0
+    # ~ elif partner.revenue > 100000000 and partner.revenue <= 200000000:
+        # ~ amount = 20000.0
+    # ~ elif partner.revenue > 200000000 and partner.revenue <= 300000000:
+        # ~ amount = 30000.0
+    # ~ elif partner.revenue > 300000000 and partner.revenue <= 400000000:
+        # ~ amount = 40000.0
+    # ~ elif partner.revenue > 400000000 and partner.revenue <= 500000000:
+        # ~ amount = 50000.0
+    # ~ elif partner.revenue > 500000000 and partner.revenue <= 600000000:
+        # ~ amount = 60000.0
+    # ~ elif partner.revenue > 600000000 and partner.revenue <= 700000000:
+        # ~ amount = 70000.0
+    # ~ elif partner.revenue > 700000000 and partner.revenue <= 800000000:
+        # ~ amount = 80000.0
+    # ~ elif partner.revenue > 800000000 and partner.revenue <= 900000000:
+        # ~ amount = 90000.0
+    # ~ elif partner.revenue > 900000000 and partner.revenue <= 1000000000:
+        # ~ amount = 100000.0
+    # ~ elif partner.revenue > 1000000000:
+        # ~ amount = 100000.0
 
 
 class res_partner(models.Model):

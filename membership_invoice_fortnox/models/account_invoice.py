@@ -4,6 +4,7 @@
 from odoo import api, fields, models
 from odoo.exceptions import Warning
 import warnings
+import time
 
 from datetime import datetime
 import requests
@@ -24,11 +25,11 @@ class AccountInvoiceSend(models.TransientModel):
     def send_and_print_action(self):
         res = super(AccountInvoiceSend, self).send_and_print_action()
         if self.is_fortnox:
-            for invoice in self.invoice_ids:
+            for index,invoice in enumerate(self.invoice_ids):
+                if index != 0 and index % 10 == 0 :
+                    time.sleep(3)
+                if not invoice.name:
                 # ~ raise Warning(invoice)
-                invoice.fortnox_create()
+                    invoice.fortnox_create()
         return res
 
-
-    
-    
