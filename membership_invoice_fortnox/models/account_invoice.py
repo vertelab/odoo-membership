@@ -27,7 +27,7 @@ class AccountInvoiceSend(models.TransientModel):
         if self.is_fortnox:
             for index,invoice in enumerate(self.invoice_ids):
                 if index != 0 and index % 10 == 0 :
-                    time.sleep(3)
+                    time.sleep(5)
                 if not invoice.name:
                 # ~ raise Warning(invoice)
                     invoice.fortnox_create()
