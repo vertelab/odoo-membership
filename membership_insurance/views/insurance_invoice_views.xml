@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<odoo>
+        
+  <record id="view_insurance_invoice_view" model="ir.ui.view">
+            <field name="name">insurance.invoice.view.form</field>
+            <field name="model">membership.insurance</field>
+            <field name="arch" type="xml">
+                <form string="Insurance Ansvarsförsäkringen Invoice">
+                    <group>
+                        <field name="product_id" widget="selection"/>
+                        <field name="insurance_price"/>
+<!--
+                        <field name="type" widget="selection" readonly="0"/>
+-->
+                    </group>
+                    <footer>
+                        <button string="Invoice Ansvarsförsäkringen Insurance" name="membership_insurance" type="object" class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_insurance_invoice_view" model="ir.actions.act_window">
+            <field name="name">Insurance Ansvarsförsäkringen Invoice</field>
+            <field name="res_model">membership.insurance</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_insurance_invoice_view"/>
+            <field name="target">new</field>
+        </record>
+
+        <act_window name="Insurance Ansvarsförsäkringen Invoice "
+            res_model="membership.insurance"
+            src_model="res.partner"
+            multi="True"
+            key2="client_action_multi"
+            view_mode="form"
+            id="action_insurance_invoice_view"/>
+            
+        
+ 
+</odoo>

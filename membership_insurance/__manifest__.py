@@ -6,6 +6,8 @@
 
     'data': [
         'views/res_partner_views.xml',
+        'views/insurance_invoice_views.xml',
+        'views/product_views.xml',
         'data/insurance.license.csv',
         'data/insurance.permission.csv',
         # ~ 'data/insurance.klientmedelskonto.product.csv',

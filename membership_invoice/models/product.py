@@ -79,14 +79,16 @@ class res_partner(models.Model):
         # Add extra products
         for invoice in self.env['account.invoice'].browse(invoice_list):
             for line in invoice.invoice_line_ids:
-                for member_product in line.product_id.membership_product_ids:
-                    # create a record in cache, apply onchange then revert back to a dictionnary
-                    invoice_line = self.env['account.invoice.line'].new({'product_id': member_product.id,'price_unit': member_product.lst_price,'inovice_id':invoice.id})
-                    invoice_line._onchange_product_id()
-                    line_values = invoice_line._convert_to_write({name: invoice_line[name] for name in invoice_line._cache})
-                    line_values['name'] = member_product.name
-                    line_values['account_id'] = member_product.property_account_income_id.id if member_product.property_account_income_id else self.env['account.account'].search([('user_type_id','=',self.env.ref('account.data_account_type_revenue').id)])[0].id 
-                    line.write({'invoice_line_ids': [(0,0,line_values)]})
+                if line.total_days == 0:
+                    for member_product in line.product_id.membership_product_ids:
+                        # create a record in cache, apply onchange then revert back to a dictionnary
+                        invoice_line = self.env['account.invoice.line'].new({'product_id': member_product.id,'price_unit': member_product.lst_price,'inovice_id':invoice.id})
+                        _logger.warn('Haze Sub %s' %invoice_line.price_subtotal)
+                        invoice_line._onchange_product_id()
+                        line_values = invoice_line._convert_to_write({name: invoice_line[name] for name in invoice_line._cache})
+                        line_values['name'] = member_product.name
+                        line_values['account_id'] = member_product.property_account_income_id.id if member_product.property_account_income_id else self.env['account.account'].search([('user_type_id','=',self.env.ref('account.data_account_type_revenue').id)])[0].id 
+                        line.write({'invoice_line_ids': [(0,0,line_values)]})
         # Calculate amount and qty
         for invoice in self.env['account.invoice'].browse(invoice_list):
             for line in invoice.invoice_line_ids:
