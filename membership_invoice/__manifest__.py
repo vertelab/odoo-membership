@@ -5,6 +5,7 @@
 {
     'name': 'Membership Invoice',
     'version': '1.0',
+    'author':'Vertel AB',
     'category': 'Sales',
     'description': """
 This module extends the invoicing capabilities for membership-module

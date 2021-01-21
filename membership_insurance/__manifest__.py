@@ -14,7 +14,6 @@
         # ~ 'data/insurance.SFMbolag.product.csv',
         'data/insurance_data.xml',
         'security/ir.model.access.csv',
-        # ~ 'views/assets.xml',
     ],
     'category': 'membership',
     'depends': ['crm','membership','l10n_se'],

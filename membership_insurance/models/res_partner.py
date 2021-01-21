@@ -59,8 +59,6 @@ class res_partner(models.Model):
     internal_notes = fields.Text(string='Internal notes')
     date_start = fields.Date(string = "Date Start")
     date_end = fields.Date(string = "Date End")
-    
-
 
     @api.one
     def _compute_count_company(self):
