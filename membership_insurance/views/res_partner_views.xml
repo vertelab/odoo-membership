@@ -162,7 +162,9 @@
                     </div>
                 </group>
                 <group>
+<!--
                     <field name="associate_member" />
+-->
                     <field name="insurance_start" readonly="0"/>
                     <field name="insurance_stop" readonly="0"/>
                     <field name="insurance_cancel" attrs="{'invisible':[('insurance_cancel','=',False)]}"/>
