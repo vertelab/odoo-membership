@@ -151,6 +151,7 @@
     <field name="model">res.partner</field>
     <field name="inherit_id" ref="base.view_partner_form" />
     <field name="arch" type="xml">
+<!--
         <notebook position="inside">
         <page string="Insurance">
             <group>
@@ -162,9 +163,6 @@
                     </div>
                 </group>
                 <group>
-<!--
-                    <field name="associate_member" />
--->
                     <field name="insurance_start" readonly="0"/>
                     <field name="insurance_stop" readonly="0"/>
                     <field name="insurance_cancel" attrs="{'invisible':[('insurance_cancel','=',False)]}"/>
@@ -194,6 +192,7 @@
             </field>
         </page>
       </notebook>
+-->
       <field name="company_type" position="replace">
         <field name="company_type" invisible="1" />
         <field name="insurance_company_type" options="{'horizontal': true}" widget="radio" />
