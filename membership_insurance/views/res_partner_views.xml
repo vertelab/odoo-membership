@@ -151,7 +151,6 @@
     <field name="model">res.partner</field>
     <field name="inherit_id" ref="base.view_partner_form" />
     <field name="arch" type="xml">
-<!--
         <notebook position="inside">
         <page string="Insurance">
             <group>
@@ -159,7 +158,7 @@
                     <label for="insurance_state"/>
                     <div>
                         <field name="insurance_state"/>
-                        <button name="%(action_insurance_invoice_view)d" type="action" string="Buy insurance" class="oe_link"/>
+                            <button name="%(action_insurance_invoice_view)d" type="action" string="Buy insurance" class="oe_link"/>
                     </div>
                 </group>
                 <group>
@@ -192,7 +191,6 @@
             </field>
         </page>
       </notebook>
--->
       <field name="company_type" position="replace">
         <field name="company_type" invisible="1" />
         <field name="insurance_company_type" options="{'horizontal': true}" widget="radio" />
