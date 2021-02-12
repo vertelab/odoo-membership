@@ -157,59 +157,61 @@ class ProductProduct(models.Model):
 
 
         
-class AccountInvoiceLine(models.Model):
-    _inherit = "account.invoice.line"
-    total_days = fields.Integer(related="invoice_id.total_days")
-    price_unit = fields.Float(compute='_get_price_on_days')
-    price_subtotal =fields.Float(compute='_get_price_on_days')
-    def _get_invoice_line_name_from_product(self):
-        """ Returns the automatic name to give to the invoice line depending on
-        the product it is linked to.
-        """
-        self.ensure_one()
-        if not self.product_id:
-            return ''
-        return self.product_id.name
+# ~ class AccountInvoiceLine(models.Model):
+    # ~ _inherit = "account.invoice.line"
+    # ~ total_days = fields.Integer(related="invoice_id.total_days")
+    # ~ price_unit = fields.Float(compute='_get_price_on_days')
+    # ~ price_subtotal =fields.Float(compute='_get_price_on_days')
+    # ~ def _get_invoice_line_name_from_product(self):
+        # ~ """ Returns the automatic name to give to the invoice line depending on
+        # ~ the product it is linked to.
+        # ~ """
+        # ~ self.ensure_one()
+        # ~ if not self.product_id:
+            # ~ return ''
+        # ~ return self.product_id.name
         
-    @api.multi
-    @api.onchange('invoice_id.price_unit','inovice_id.price_subtotal')
-    def _get_price_on_days(self):
-        for invoice_line in self:
-            if invoice_line.total_days != 0:
-                for line in self:
-                    line.price_unit = line.product_id.lst_price / 360 * invoice_line.total_days
-                    line.price_subtotal = line.price_unit * line.quantity
-                
-            else:
-                for line in self:
-                    line.price_unit = line.product_id.lst_price 
+    # ~ @api.multi
+    # ~ @api.onchange('invoice_id.price_unit','inovice_id.price_subtotal')
+    # ~ def _get_price_on_days(self):
+        # ~ if self.commercial_partner_id.date_start or self.commercial_partner_id.date_end
+        # ~ for invoice_line in self:
+            # ~ if invoice_line.total_days != 0:
+                # ~ for line in self:
+                    # ~ line.price_unit = line.product_id.lst_price / 360 * invoice_line.total_days
+                    # ~ line.price_subtotal = line.price_unit * line.quantity
+            
+            # ~ else:
+                # ~ for line in self:
+                    # ~ line.price_unit = line.product_id.lst_price 
+                    # ~ line.price_subtotal = line.price_unit * line.quantity
             
             
         
         
-class AccountInvoice(models.Model):
-    _inherit = "account.invoice"
-    current_year = datetime.now().year
-    membership_date_start = fields.Date(string = "Membership Date Start",default=datetime.now().strftime('%Y-04-01'))
-    membership_date_end = fields.Date(string = "Membership Date End",default=datetime.now().strftime('%s-03-31' %(current_year + 1)) )
-    total_days = fields.Integer(string = "Total Mebership Days", compute='_get_membership_days', readonly=True)
+# ~ class AccountInvoice(models.Model):
+    # ~ _inherit = "account.invoice"
+    # ~ current_year = datetime.now().year
+    # ~ membership_date_start = fields.Date(string = "Membership Date Start",default=datetime.now().strftime('%Y-04-01'))
+    # ~ membership_date_end = fields.Date(string = "Membership Date End",default=datetime.now().strftime('%s-03-31' %(current_year + 1)) )
+    # ~ total_days = fields.Integer(string = "Total Mebership Days", compute='_get_membership_days', readonly=True)
 
     
     
-    @api.multi
-    @api.onchange('invoice.partner_id.date_start','invoice.partner_id.date_end')
-    def _get_membership_days(self):
-        for invoice in self:
-            if invoice.partner_id.date_start:
-                if invoice.partner_id.date_start > invoice.membership_date_start:
-                    invoice.total_days = ((invoice.membership_date_end - invoice.partner_id.date_start).days + 1) /365 * 360 
-                    if invoice.total_days >= 360:
-                        raise Warning('It is longer than one year, please doubble check the joint date for client %s ' %invoice.partner_id.name)
-            elif invoice.partner_id.date_end:
-                if invoice.partner_id.date_end < invoice.membership_date_end:
-                    invoice.total_days = ((invoice.membership_date_end - invoice.partner_id.date_end).days + 1) /365 * 360 - 30
-                    if invoice.total_days < 30:
-                        raise Warning('Days left is less than 30 days, you do not need to create credit invoice for client %s ' %invoice.partner_id.name)
+    # ~ @api.multi
+    # ~ @api.onchange('invoice.partner_id.date_start','invoice.partner_id.date_end')
+    # ~ def _get_membership_days(self):
+        # ~ for invoice in self:
+            # ~ if invoice.partner_id.date_start:
+                # ~ if invoice.partner_id.date_start > invoice.membership_date_start:
+                    # ~ invoice.total_days = ((invoice.membership_date_end - invoice.partner_id.date_start).days + 1) /365 * 360 
+                    # ~ if invoice.total_days >= 360:
+                        # ~ raise Warning('It is longer than one year, please doubble check the joint date for client %s ' %invoice.partner_id.name)
+            # ~ elif invoice.partner_id.date_end:
+                # ~ if invoice.partner_id.date_end < invoice.membership_date_end:
+                    # ~ invoice.total_days = ((invoice.membership_date_end - invoice.partner_id.date_end).days + 1) /365 * 360 - 30
+                    # ~ if invoice.total_days < 30:
+                        # ~ raise Warning('Days left is less than 30 days, you do not need to create credit invoice for client %s ' %invoice.partner_id.name)
                 
     
 
