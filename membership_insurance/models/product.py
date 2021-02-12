@@ -157,19 +157,19 @@ class ProductProduct(models.Model):
 
 
         
-# ~ class AccountInvoiceLine(models.Model):
-    # ~ _inherit = "account.invoice.line"
+class AccountInvoiceLine(models.Model):
+    _inherit = "account.invoice.line"
     # ~ total_days = fields.Integer(related="invoice_id.total_days")
     # ~ price_unit = fields.Float(compute='_get_price_on_days')
     # ~ price_subtotal =fields.Float(compute='_get_price_on_days')
-    # ~ def _get_invoice_line_name_from_product(self):
-        # ~ """ Returns the automatic name to give to the invoice line depending on
-        # ~ the product it is linked to.
-        # ~ """
-        # ~ self.ensure_one()
-        # ~ if not self.product_id:
-            # ~ return ''
-        # ~ return self.product_id.name
+    def _get_invoice_line_name_from_product(self):
+        """ Returns the automatic name to give to the invoice line depending on
+        the product it is linked to.
+        """
+        self.ensure_one()
+        if not self.product_id:
+            return ''
+        return self.product_id.name
         
     # ~ @api.multi
     # ~ @api.onchange('invoice_id.price_unit','inovice_id.price_subtotal')
