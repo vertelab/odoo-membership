@@ -21,7 +21,7 @@ class AccountInvoice(models.Model):
         """
         self.state = 'draft'
         for line in self.invoice_line_ids:
-            if line.product_id.price_unit == 0:
+            if line.price_unit == 0:
                 line.unlink()
         self.state = 'open'
     
