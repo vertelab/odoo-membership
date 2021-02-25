@@ -38,6 +38,28 @@
                 </tree>
             </field>
         </record>
+        
+        <record id="product_insurance_product" model="ir.ui.view">
+            <field name="name">Product.insurance.product</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_normal_form_view"/>
+            <field name="arch" type="xml">
+                <field name="membership" position="after">
+                    <field name="insurance"/>
+                </field>
+            </field>
+        </record>
+        
+        <record model="ir.ui.view" id="product_form_view_insurance_product">
+            <field name="name">product.product.insurance.product</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="account.product_product_view_tree"/>
+            <field name="arch" type="xml">
+                <field name="membership" position="after">
+                    <field name="insurance"/>
+                </field>
+            </field>
+        </record>
 
         <record id="insurance_products_kanban" model="ir.ui.view">
             <field name="name">product.template.kanban</field>
