@@ -16,15 +16,22 @@ _logger = logging.getLogger(__name__)
 class AccountInvoice(models.Model):
     _inherit = "account.invoice"
     
-    def remove_free_lines(self):
-        """ SFM does not want package products to show on the invoice. Call this function to remove them.
+    def remove_zero_cost_lines(self):
+        """ SFM does not want products with 0 cost to show on the invoice. Call this function to remove them.
         """
-        #_logger.warn("~ Got invoice %s with %s lines!" % (self.id, len(self.invoice_line_ids)))
         self.state = 'draft'
         for line in self.invoice_line_ids:
-            #_logger.warn("~ the line named %s has %s products" % (line.display_name, len(line.product_id.membership_product_ids)))
+            if line.product_id.price_unit == 0:
+                line.unlink()
+        self.state = 'open'
+    
+    def remove_package_products(self):
+        """ SFM does not want package products to show on the invoice. Call this function to remove them.
+            This function is replaced remove_zero_cost_lines()
+        """
+        self.state = 'draft'
+        for line in self.invoice_line_ids:
             if len(line.product_id.membership_product_ids) > 0:
-                #_logger.warn("~ removing %s with id %s from invoice" % (line.display_name, line.id))
                 line.unlink()
         self.state = 'open'
 
@@ -40,7 +47,7 @@ class AccountInvoiceSend(models.TransientModel):
             for invoice in self.invoice_ids:
                 time.sleep(1)
                 if not invoice.name:
-                    invoice.remove_free_lines()
+                    invoice.remove_zero_cost_lines()
                     invoice.fortnox_create()
         return res
 
