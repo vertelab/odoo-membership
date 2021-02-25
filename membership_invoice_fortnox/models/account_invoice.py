@@ -13,24 +13,18 @@ import json
 import logging
 _logger = logging.getLogger(__name__)
 
-
-
 class AccountInvoiceSend(models.TransientModel):
     _inherit = 'account.invoice.send'
 
     is_fortnox = fields.Boolean(string='Fortnox',default=True)
     
-    
     @api.multi
     def send_and_print_action(self):
         res = super(AccountInvoiceSend, self).send_and_print_action()
         if self.is_fortnox:
-            # ~ for index,invoice in enumerate(self.invoice_ids):
-                # ~ if index != 0 and index % 10 == 0 :
             for invoice in self.invoice_ids:
                 time.sleep(1)
                 if not invoice.name:
-                # ~ raise Warning(invoice)
                     invoice.fortnox_create()
         return res
 
