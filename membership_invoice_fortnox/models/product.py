@@ -76,15 +76,15 @@ class ProductProduct(models.Model):
         for product in self:
             if not product.default_code:
                 raise Warning('You do not have set default code yet.')
+
             if product.default_code:
                 url = "https://api.fortnox.se/3/articles/%s" % product.default_code
                 r = self.env.user.company_id.fortnox_request('get', url)
                 r = json.loads(r)
-                _logger.warn('Haze new r %s' %r)
-                if int(r["Article"]["ArticleNumber"]) == product.default_code :
+
+                if int(r["Article"]["ArticleNumber"]) == product.default_code:
                     try:
                         url = "https://api.fortnox.se/3/articles/%s" % product.default_code
-                        #r = response
                         r = self.env.user.company_id.fortnox_request('put',url,
                             data={
                                 "Article": 
@@ -97,7 +97,6 @@ class ProductProduct(models.Model):
                         
                     except requests.exceptions.RequestException as e:
                         _logger.warn('%s' %e)
-                        # ~ product.default_code = r["Article"]["ArticleNumber"]
                 else:
                     url = "https://api.fortnox.se/3/articles"
                     """ r = response """
@@ -110,13 +109,7 @@ class ProductProduct(models.Model):
                                         # ~ "SalesPrice": product.lst_price,
                                     }
                         })
-                        # ~ _logger.warn('%s Haze company_id' % self.env.user.company_id )
                 r = json.loads(r)
-                
-            
-            # ~ raise Warning('%s Haze' %str(r))
-            # ~ _logger.warn('%s Haze code' %product.default_code)
-            return r  
 
     """This is for Omsättning product, It changes every year, but with this code it will be easier to paste in omsättnings product"""
     # ~ amount =  0.0
