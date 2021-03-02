@@ -24,17 +24,16 @@ class AccountInvoice(models.Model):
         
         return days
 
-    @api.one
     @api.onchange('partner_id')
     def _check_dates_insurance(self):
-        _logger.warn("~ Haze: in _check_dates_insurance ...")
+        _logger.warn("~ Haze: in _check_dates_insurance")
+        
         if self.partner_id:
             _logger.warn("~ Haze: looping through self.invoice_line_ids")
             for line in self.invoice_line_ids:
-                _logger.warn("~ Haze: is this line an insurance product?")
+                _logger.warn("~ Haze: this is an insurance product: %s" % line.product_id.insurance)
+                
                 if line.product_id.insurance:
-                    _logger.warn("~ Haze: YES! calculating insurance price ...")
-                    
                     insurance_start = line.product_id.product_tmpl_id.insurance_date_from
                     insurance_end = line.product_id.product_tmpl_id.insurance_date_to
                     partner_start = self.partner_id.date_start
@@ -42,9 +41,10 @@ class AccountInvoice(models.Model):
                     
                     line.total_days = self.days_between(partner_start or insurance_start, partner_end or insurance_end)
                     _logger.warn("~ Haze: total days was calculated to %s" % line.total_days)
-                    
                     line.price = line.product_id.lst_price * line.total_days
                     line.price_subtotal = line.price_unit * line.quantity
+
+        _logger.warn("~ Haze: _check_dates_insurance DONE")
 
 class AccountInvoiceLine(models.Model):
     _inherit = "account.invoice.line"
@@ -52,4 +52,5 @@ class AccountInvoiceLine(models.Model):
     @api.one
     @api.onchange('product_id')
     def _check_dates_insurance(self):
+        _logger.warn("~ Haze: in _check_dates_insurance 2 self.product_id %s" % self.product_id)
         self.invoice_id._check_dates_insurance()
