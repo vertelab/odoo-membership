@@ -49,7 +49,6 @@ class AccountInvoice(models.Model):
 class AccountInvoiceLine(models.Model):
     _inherit = "account.invoice.line"
     
-    @api.one
     @api.onchange('product_id')
     def _check_dates_insurance(self):
         _logger.warn("~ Haze: in _check_dates_insurance 2 self.product_id %s" % self.product_id)
