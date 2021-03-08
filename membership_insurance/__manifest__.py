@@ -5,8 +5,8 @@
     'author':'Vertel AB',
 
     'data': [
-        'views/res_partner_views.xml',
         'views/insurance_invoice_views.xml',
+        'views/res_partner_views.xml',
         'views/product_views.xml',
         'data/insurance.license.csv',
         'data/insurance.permission.csv',
@@ -16,7 +16,7 @@
         'security/ir.model.access.csv',
     ],
     'category': 'membership',
-    'depends': ['crm','membership','l10n_se'],
+    'depends': ['l10n_se','crm','membership', 'membership_invoice'],
     'sequence': 5,
     'application': False,
 }

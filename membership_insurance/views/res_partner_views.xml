@@ -123,7 +123,9 @@
             <field name="country_id" invisible="1"/>
             <field name="parent_id" invisible="1"/>
             <field name="active" invisible="1"/>
+<!--
             <field name="company_registry" string="Org.Nr"/>
+-->
             <field name="city" />
         </tree>
     </field>

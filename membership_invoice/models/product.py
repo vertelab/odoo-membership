@@ -38,7 +38,7 @@ class ProductTemplate(models.Model):
 #  - product; memberhsip product
 #  - partner: partner to invoice
 # To return an amount and qty, assign: \n
-#        amount =  <somethin>
+#        amount =  <something>
 #        qty = <something>\n\n\n\n""",
                        help="Write Python code that holds advanced calcultations for amount and quatity")
 
