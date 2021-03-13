@@ -40,10 +40,10 @@ _logger = logging.getLogger(__name__)
 
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
-    
+
     current_year = datetime.now().year
     insurance_product_ids = fields.Many2many(comodel_name='product.template', relation='insurance_product_rel', column1='product_id',column2='insurance_product_id', string='Invoice Products' ,domain="[('type', '=', 'service')]")
-   
+
     # Python code
     insurance_code = fields.Text(string='Python Code', groups='base.group_system',
                        default= """# Available variables:
@@ -57,7 +57,7 @@ class ProductTemplate(models.Model):
 #  - product; memberhsip product
 #  - partner: partner to invoice
 # To return an amount and qty, assign: \n
-#        amount =  <somethin>
+#        amount =  <something>
 #        qty = <something>\n\n\n\n""",
                        help="Write Python code that holds advanced calcultations for amount and quatity")
     insurance = fields.Boolean(help='Check if the product is eligible for insurance.')
@@ -79,6 +79,7 @@ class ProductTemplate(models.Model):
                 view_id = self.env.ref('membership_insurance.insurance_products_tree').id
         return super(ProductTemplate, self).fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar, submenu=submenu)
 
+
 class MembershipInsurance(models.TransientModel):
     _name = "membership.insurance"
     _description = "Insurance Credit Invoice"
@@ -88,9 +89,8 @@ class MembershipInsurance(models.TransientModel):
 
     product_id = fields.Many2one('product.product', string='Insurance Product', required=True)
     insurance_price = fields.Float(string='Insurance Price', digits= dp.get_precision('Product Price'), required=True)
-    
     # ~ total_days = fields.Integer(string = "Total Insurance Days", compute='_get_insurance_credit_days', readonly=True)
-    
+
     # ~ @api.multi
     # ~ @api.onchange('invoice.partner_id.date_start','invoice.partner_id.date_end')
     # ~ def _get_insurance_credit_days(self):
@@ -126,7 +126,7 @@ class MembershipInsurance(models.TransientModel):
         form_view_ref = self.env.ref('account.invoice_form', False)
         tree_view_ref = self.env.ref('account.invoice_tree', False)
 
-        return  {
+        return {
             'domain': [('id', 'in', invoice_list)],
             'name': 'Insurance Invoices',
             'res_model': 'account.invoice',
@@ -134,6 +134,7 @@ class MembershipInsurance(models.TransientModel):
             'views': [(tree_view_ref.id, 'tree'), (form_view_ref.id, 'form')],
             'search_view_id': search_view_ref and search_view_ref.id,
         }
+
 
 class ProductProduct(models.Model):
     _inherit = 'product.product'
@@ -152,8 +153,9 @@ class ProductProduct(models.Model):
             'partner': partner,
             'product': self,
         }
-        safe_eval(self.membership_code.strip(), eval_context, mode="exec", nocopy=True)  # nocopy allows to return 'action'
-        return (eval_context.get('amount',self.list_price),eval_context.get('qty',1.0))
+        safe_eval(self.insurance_code.strip(), eval_context, mode="exec", nocopy=True)  # nocopy allows to return 'action'
+        return (eval_context.get('amount', self.list_price), eval_context.get('qty', 1.0))
+
 
 class AccountInvoiceLine(models.Model):
     _inherit = "account.invoice.line"
@@ -168,5 +170,3 @@ class AccountInvoiceLine(models.Model):
         if not self.product_id:
             return ''
         return self.product_id.name
-       
-
