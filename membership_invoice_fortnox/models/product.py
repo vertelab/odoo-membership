@@ -44,16 +44,15 @@ class ProductTemplate(models.Model):
                        help="Write Python code that holds advanced calcultations for amount and quatity")
 
 
-
 class ProductProduct(models.Model):
     _inherit = 'product.product'
-    
+
     # ~ company_id = fields.Many2one(
     # ~ 'res.company',
     # ~ 'Company',
-    # ~ default=lambda self: self.env.user.company_id 
+    # ~ default=lambda self: self.env.user.company_id
     # ~ )
-    
+
     @api.multi
     def membership_get_amount_qty(self, partner):
         eval_context = {
@@ -77,39 +76,34 @@ class ProductProduct(models.Model):
             if not product.default_code:
                 raise Warning('You do not have set default code yet.')
 
-            if product.default_code:
-                url = "https://api.fortnox.se/3/articles/%s" % product.default_code
-                r = self.env.user.company_id.fortnox_request('get', url)
-                r = json.loads(r)
-
-                if int(r["Article"]["ArticleNumber"]) == product.default_code:
-                    try:
-                        url = "https://api.fortnox.se/3/articles/%s" % product.default_code
-                        r = self.env.user.company_id.fortnox_request('put',url,
-                            data={
-                                "Article": 
-                                        {
-                                            "Description": product.name,
-                                            # ~ "ArticleNumber": product.default_code,
-                                            # ~ "SalesPrice": product.lst_price,
-                                        }
-                            })
-                        
-                    except requests.exceptions.RequestException as e:
-                        _logger.warn('%s' %e)
-                else:
-                    url = "https://api.fortnox.se/3/articles"
-                    """ r = response """
-                    r = self.env.user.company_id.fortnox_request('post', url,
+            url = "https://api.fortnox.se/3/articles/%s" % product.default_code
+            r = self.env.user.company_id.fortnox_request('get', url)
+            r = json.loads(r)
+            default_code = r.get('Article', {}).get('ArticleNumber')
+            if default_code == product.default_code:
+                try:
+                    url = f"https://api.fortnox.se/3/articles/{product.default_code}"
+                    r = self.env.user.company_id.fortnox_request(
+                        'put',
+                        url,
                         data={
-                            "Article": 
-                                    {
-                                        "Description": product.name,
-                                        "ArticleNumber": product.default_code,
-                                        # ~ "SalesPrice": product.lst_price,
-                                    }
+                            "Article": {
+                                "Description": product.name,
+                                }
                         })
-                r = json.loads(r)
+                except requests.exceptions.RequestException as e:
+                    _logger.warn('%s' %e)
+            else:
+                r = self.env.user.company_id.fortnox_request(
+                    'post',
+                    'https://api.fortnox.se/3/articles',
+                    data={
+                        'Article': {
+                            'Description': product.name,
+                            'ArticleNumber': product.default_code,
+                        }
+                    })
+            r = json.loads(r)
 
     """This is for Omsättning product, It changes every year, but with this code it will be easier to paste in omsättnings product"""
     # ~ amount =  0.0
