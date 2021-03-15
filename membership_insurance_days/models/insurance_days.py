@@ -43,7 +43,7 @@ class AccountInvoiceLine(models.Model):
         return days
 
     @api.one
-    def _compute_price(self):
+    def X_compute_price(self):
         super(AccountInvoiceLine, self)._compute_price()
         if self.product_id and self.product_id.insurance:
             self.price_unit = (self.product_id.lst_price /
