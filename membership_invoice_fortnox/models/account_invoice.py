@@ -22,7 +22,7 @@ class AccountInvoice(models.Model):
         """
         self.state = 'draft'
         for line in self.invoice_line_ids:
-            if line.price_unit == 0:
+            if line.price_unit == 0 and line.quantity == 0:
                 line.unlink()
         self.state = 'open'
 
@@ -32,7 +32,7 @@ class AccountInvoice(models.Model):
         """
         self.state = 'draft'
         for line in self.invoice_line_ids:
-            if len(line.product_id.membership_product_ids) > 0:
+            if len(line.product_id.membership_product_ids) > 0 and line.price_unit == 0 and line.quantity == 0:
                 line.unlink()
         self.state = 'open'
 
