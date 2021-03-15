@@ -73,18 +73,28 @@ class res_partner(models.Model):
 
         if self.insurance_company_type in ['fellowship','company']:
     
-            self.count_ac_life_licence = self.env['res.partner'].search_count([('id', 'child_of', self.id),('insurance_company_type', '=', 'accommodator'),('liability_insurance', 'in', self.env.ref('membership_insurance.crm_insurance_life_permission').id)])
-            self.count_ac_property_licence = self.env['res.partner'].search_count([('id', 'child_of', self.id),('insurance_company_type', '=', 'accommodator'),('liability_insurance', 'in', self.env.ref('membership_insurance.crm_insurance_property_permission').id)])
-            self.count_ac_property_life_licence = self.env['res.partner'].search_count([('id', 'child_of', self.id),('insurance_company_type', '=', 'accommodator'),('liability_insurance', 'in', self.env.ref('membership_insurance.crm_insurance_property_permission').id),('liability_insurance', '=', self.env.ref('membership_insurance.crm_insurance_life_permission').id)])
+            self.count_ac_life_licence = self.env['res.partner'].search_count(
+                [('id', 'child_of', self.id),
+                 ('insurance_company_type', '=', 'accommodator'),
+                 ('liability_insurance', 'in', self.env.ref('membership_insurance.crm_insurance_life_permission').id)])
+            self.count_ac_property_licence = self.env['res.partner'].search_count(
+                [('id', 'child_of', self.id),
+                 ('insurance_company_type', '=', 'accommodator'),
+                 ('liability_insurance', 'in', self.env.ref('membership_insurance.crm_insurance_property_permission').id)])
+            self.count_ac_property_life_licence = self.env['res.partner'].search_count(
+                [('id', 'child_of', self.id),
+                 ('insurance_company_type', '=', 'accommodator'),
+                 ('liability_insurance', 'in', self.env.ref('membership_insurance.crm_insurance_property_permission').id),
+                 ('liability_insurance', '=', self.env.ref('membership_insurance.crm_insurance_life_permission').id)])
 
             self.count_accommodator         = self.env['res.partner'].search_count([('id', 'child_of', self.id),('insurance_company_type', '=', 'accommodator')])
 
-            self.count_ac_life = self.env['res.partner'].search_count([('id', 'child_of', self.id),('liability_insurance', 'in', self.env.ref('membership_insurance.crm_insurance_life').id)])
-            self.count_ac_property = self.env['res.partner'].search_count([('id', 'child_of', self.id),('liability_insurance', 'in', self.env.ref('membership_insurance.crm_insurance_property').id)])
+            self.count_ac_life = self.env['res.partner'].search_count([('id', 'child_of', self.id),('liability_insurance_permission', 'in', self.env.ref('membership_insurance.crm_insurance_life').id)])
+            self.count_ac_property = self.env['res.partner'].search_count([('id', 'child_of', self.id),('liability_insurance_permission', 'in', self.env.ref('membership_insurance.crm_insurance_property').id)])
             self.count_ac_property_life = self.env['res.partner'].search_count(
                 [('id', 'child_of', self.id),
-                 ('liability_insurance', 'in', self.env.ref('membership_insurance.crm_insurance_property').id), 
-                 ('liability_insurance', 'in', self.env.ref('membership_insurance.crm_insurance_life').id)])
+                 ('liability_insurance_permission', 'in', self.env.ref('membership_insurance.crm_insurance_property').id), 
+                 ('liability_insurance_permission', 'in', self.env.ref('membership_insurance.crm_insurance_life').id)])
     
     count_company               = fields.Integer(string='Company', compute ='_compute_count_company')
     count_co_life_permission    = fields.Integer(string='Company Life Permission', compute ='_compute_count_company')
