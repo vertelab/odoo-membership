@@ -74,8 +74,7 @@ class res_partner(models.Model):
         if self.insurance_company_type in ['fellowship','company']:
     
 
-            self.count_accommodator         = self.env['res.partner'].search_count([('id', 'child_of', self.id),('insurance_company_type', '=', 'accommodator')])
-
+            self.count_accommodator = self.env['res.partner'].search_count([('id', 'child_of', self.id),('insurance_company_type', '=', 'accommodator')])
 
             self.count_ac_life = self.env['res.partner'].search_count(
                 [('id', 'child_of', self.id),
