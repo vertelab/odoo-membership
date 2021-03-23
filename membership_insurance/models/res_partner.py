@@ -66,9 +66,9 @@ class res_partner(models.Model):
         
         if self.insurance_company_type == 'fellowship':
             self.count_company                      = self.env['res.partner'].search_count([('id', 'child_of', self.id),('insurance_company_type', '=', 'company')])
-            self.count_co_life_permission           = self.env['res.partner'].search_count([('id', 'child_of', self.id),('insurance_company_type', '=', 'company'),('liability_insurance_permission', '=', self.env.ref('membership_insurance.crm_insurance_life_permission_permission').id)])
-            self.count_co_property_permission       = self.env['res.partner'].search_count([('id', 'child_of', self.id),('insurance_company_type', '=', 'company'),('liability_insurance_permission', '=', self.env.ref('membership_insurance.crm_insurance_property_permission_permission').id)])
-            self.count_co_property_life_permission  = self.env['res.partner'].search_count([('id', 'child_of', self.id),('insurance_company_type', '=', 'company'),('liability_insurance_permission', '=', self.env.ref('membership_insurance.crm_insurance_property_permission_permission').id),('liability_insurance_permission', '=', self.env.ref('membership_insurance.crm_insurance_life_permission_permission').id)])
+            self.count_co_life_permission           = self.env['res.partner'].search_count([('id', 'child_of', self.id),('insurance_company_type', '=', 'company'),('liability_insurance_permission', '=', self.env.ref('membership_insurance.crm_insurance_life_permission').id)])
+            self.count_co_property_permission       = self.env['res.partner'].search_count([('id', 'child_of', self.id),('insurance_company_type', '=', 'company'),('liability_insurance_permission', '=', self.env.ref('membership_insurance.crm_insurance_property_permission').id)])
+            self.count_co_property_life_permission  = self.env['res.partner'].search_count([('id', 'child_of', self.id),('insurance_company_type', '=', 'company'),('liability_insurance_permission', '=', self.env.ref('membership_insurance.crm_insurance_property_permission').id),('liability_insurance_permission', '=', self.env.ref('membership_insurance.crm_insurance_life_permission').id)])
 
 
         if self.insurance_company_type in ['fellowship','company']:
@@ -209,15 +209,15 @@ class res_partner(models.Model):
         
     @api.multi
     def life_permission_button(self):
-        return self._action_button([('id', 'child_of', self.id),('liability_insurance_permission', '=', self.env.ref('membership_insurance.crm_insurance_life_permission_permission').id)])
+        return self._action_button([('id', 'child_of', self.id),('liability_insurance_permission', '=', self.env.ref('membership_insurance.crm_insurance_life_permission').id)])
         
     @api.multi
     def property_permission_button(self):
-        return self._action_button([('id', 'child_of', self.id),('liability_insurance_permission', '=', self.env.ref('membership_insurance.crm_insurance_property_permission_permission').id)])
+        return self._action_button([('id', 'child_of', self.id),('liability_insurance_permission', '=', self.env.ref('membership_insurance.crm_insurance_property_permission').id)])
         
     @api.multi
     def life_protperty_permission_button(self):
-        return self._action_button([('id', 'child_of', self.id),('liability_insurance_permission', '=', self.env.ref('membership_insurance.crm_insurance_life_permission_permission').id),('liability_insurance_permission', '=', self.env.ref('membership_insurance.crm_insurance_property_permission_permission').id)])
+        return self._action_button([('id', 'child_of', self.id),('liability_insurance_permission', '=', self.env.ref('membership_insurance.crm_insurance_life_permission').id),('liability_insurance_permission', '=', self.env.ref('membership_insurance.crm_insurance_property_permission').id)])
     
     
     def onchange_parent_id(self):
