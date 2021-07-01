@@ -16,25 +16,25 @@ STATE = [
 ]
 class res_partner(models.Model):
     _inherit = 'res.partner'
-    
+
     def set_associate_member(self):
         for partner in self.env['res.partner'].search([]):
             partner.associate_member = partner.parent_id
-        
-    """ This is code for finding contacts which has no city or email in the database, it is for serveraction because it is not working in the pyton which is strange :(
+
+    """ This is code for finding contacts which has no city or email in the database, it is for serveraction because it is not working in the python which is strange :(
     bugs = env['res.partner'].search(['|',('email','=',False),('city','=',False)])
     res = env['ir.actions.act_window'].for_xml_id(
     'membership', 'action_membership_members')
     res['domain'] = "[('id','in',%s)]" % bugs.mapped('id')
     action = res"""
-            
+
     # for insurance page
     associate_member = fields.Many2one('res.partner', string='Associate Member',
         help="A member with whom you want to associate your insurance."
              "It will consider the insurance state of the associated member.")
-             
+
     insurance_lines = fields.One2many('insurance.insurance_line', 'partner', string='Insurance')
-    
+
     insurance_amount = fields.Float(string='Insurance Amount', digits=(16, 2),
         help='The price negotiated by the partner')
     insurance_state = fields.Selection(insurance.STATE, compute='_compute_insurance_state',
@@ -50,7 +50,7 @@ class res_partner(models.Model):
         string ='Insurance Start Date',
         help="Date from which insurance becomes active.")
     insurance_stop = fields.Date(compute='_compute_insurance_stop',
-        string ='Insurance End Date', 
+        string ='Insurance End Date',
         help="Date until which insurance remains active.")
     insurance_cancel = fields.Date(compute='_compute_insurance_cancel',
         string ='Cancel insurance Date', store=True,
@@ -114,7 +114,7 @@ class res_partner(models.Model):
             ], limit=1, order='date_cancel desc').date_cancel
 
     def _insurance_state(self):
-        """This Function return insurance State For Given Partner. """
+        """This Function return insurance State For Given Partner."""
         res = {}
         today = fields.Date.today()
         for partner in self:
@@ -196,7 +196,8 @@ class res_partner(models.Model):
 
     @api.multi
     def create_insurance_invoice(self, product_id=None, datas=None):
-        """ Create Customer Invoice of insurance for partners.
+        """
+        Create Customer Invoice of insurance for partners.
         @param datas: datas has dictionary value which consist Id of Insurance product and Cost Amount of Insurance.
                       datas = {'insurance_product_id': None, 'amount': None}
         """
@@ -240,7 +241,7 @@ class res_partner(models.Model):
             invoice.write({'invoice_line_ids': [(0, 0, line_values)]})
             invoice_list.append(invoice.id)
             invoice.compute_taxes()
-        
+
         # Add extra products
         for invoice in self.env['account.invoice'].browse(invoice_list):
             for line in invoice.invoice_line_ids:
@@ -256,7 +257,7 @@ class res_partner(models.Model):
         for invoice in self.env['account.invoice'].browse(invoice_list):
             for line in invoice.invoice_line_ids:
                 if line.product_id.insurance_code:
-                    line.price_unit,line.quantity = line.product_id.insurance_get_amount_qty(invoice.partner_id)
+                    line.price_unit, line.quantity = line.product_id.insurance_get_amount_qty(invoice.partner_id)
         return invoice_list
 
 
@@ -327,3 +328,4 @@ class InsuranceLine(models.Model):
                 line.state = 'canceled'
             else:
                 line.state = 'none'
+

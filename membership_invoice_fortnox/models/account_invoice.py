@@ -18,7 +18,9 @@ class AccountInvoice(models.Model):
     _inherit = "account.invoice"
 
     def remove_zero_cost_lines(self):
-        """ SFM does not want products with 0 cost to show on the invoice. Call this function to remove them.
+        """
+        SFM does not want products with 0 cost to show on the invoice.
+        Call this function to remove them.
         """
         self.state = 'draft'
         for line in self.invoice_line_ids:
@@ -27,8 +29,10 @@ class AccountInvoice(models.Model):
         self.state = 'open'
 
     def remove_package_products(self):
-        """ SFM does not want package products to show on the invoice. Call this function to remove them.
-            This function is replaced remove_zero_cost_lines()
+        """
+        SFM does not want package products to show on the invoice.
+        Call this function to remove them.
+        This function is replaced remove_zero_cost_lines()
         """
         self.state = 'draft'
         for line in self.invoice_line_ids:
@@ -39,8 +43,8 @@ class AccountInvoice(models.Model):
 class AccountInvoiceSend(models.TransientModel):
     _inherit = 'account.invoice.send'
 
-    is_fortnox = fields.Boolean(string='Fortnox',default=True)
-    
+    is_fortnox = fields.Boolean(string='Fortnox', default=True)
+
     @api.multi
     def send_and_print_action(self):
         res = super(AccountInvoiceSend, self).send_and_print_action()
@@ -51,4 +55,3 @@ class AccountInvoiceSend(models.TransientModel):
                     invoice.remove_zero_cost_lines()
                     invoice.fortnox_create()
         return res
-

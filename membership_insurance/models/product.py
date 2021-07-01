@@ -19,29 +19,32 @@
 #
 ##############################################################################
 
-from odoo import models, fields, api, _
-import time
-from datetime import datetime
-from odoo.tools.safe_eval import safe_eval
-from pytz import timezone
-from odoo.addons import decimal_precision as dp
-import re
-from odoo.exceptions import except_orm, Warning, RedirectWarning
-import requests
+import base64
+import datetime
 import json
 import logging
+import re
+import requests
+import time
+
 import dateutil
 import dateutil.parser
 import dateutil.relativedelta
 import dateutil.rrule
 import dateutil.tz
-import base64
+from odoo import models, fields, api, _
+from odoo.tools.safe_eval import safe_eval
+from odoo.addons import decimal_precision as dp
+from odoo.exceptions import except_orm, UserError, RedirectWarning
+from pytz import timezone
+
+
 _logger = logging.getLogger(__name__)
 
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
-    current_year = datetime.now().year
+    current_year = datetime.datetime.now().year
     insurance_product_ids = fields.Many2many(comodel_name='product.template', relation='insurance_product_rel', column1='product_id',column2='insurance_product_id', string='Invoice Products' ,domain="[('type', '=', 'service')]")
 
     # Python code
@@ -59,15 +62,20 @@ class ProductTemplate(models.Model):
 # To return an amount and qty, assign: \n
 #        amount =  <something>
 #        qty = <something>\n\n\n\n""",
-                       help="Write Python code that holds advanced calcultations for amount and quatity")
+                       help="Write Python code that holds advanced calcultations for amount and quantity")
+
     insurance = fields.Boolean(help='Check if the product is eligible for insurance.')
-    insurance_date_from = fields.Date(string='Insurance Start Date', default=datetime.now().strftime('%Y-04-01'),
-        help='Date from which insurance becomes active.')
-    insurance_date_to = fields.Date(string='Insurance End Date', default=datetime.now().strftime('%s-03-31' %(current_year + 1)),
-        help='Date until which membership remains active.')
+    insurance_date_from = fields.Date(string='Insurance Start Date',
+                                      default=datetime.date(current_year, 4, 1 ),
+                                      help='Date from which insurance becomes active.')
+    insurance_date_to = fields.Date(string='Insurance End Date',
+                                    default=datetime.date(current_year + 1, 3, 31),
+                                    help='Date until which membership remains active.')
 
     _sql_constraints = [
-        ('insurance_date_greater', 'check(insurance_date_to >= insurance_date_from)', 'Error ! Ending Date cannot be set before Beginning Date.')
+        ('insurance_date_greater',
+         'check(insurance_date_to >= insurance_date_from)',
+         'Error! Ending Date cannot be set before Beginning Date.')
     ]
 
     @api.model
@@ -77,38 +85,42 @@ class ProductTemplate(models.Model):
                 view_id = self.env.ref('membership_insurance.insurance_products_form').id
             else:
                 view_id = self.env.ref('membership_insurance.insurance_products_tree').id
-        return super(ProductTemplate, self).fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar, submenu=submenu)
+        return super(ProductTemplate, self).fields_view_get(
+            view_id=view_id, view_type=view_type, toolbar=toolbar, submenu=submenu)
 
 
 class MembershipInsurance(models.TransientModel):
     _name = "membership.insurance"
     _description = "Insurance Credit Invoice"
-    # ~ current_year = datetime.now().year
-    # ~ membership_date_start = fields.Date(string = "Membership Date Start",default=datetime.now().strftime('%Y-04-01'))
-    # ~ membership_date_end = fields.Date(string = "Membership Date End",default=datetime.now().strftime('%s-03-31' %(current_year + 1)) )
+    current_year = datetime.datetime.now().year
+    membership_date_start = fields.Date(string="Membership Date Start",
+                                        default=datetime.date(current_year, 4, 1))
+    membership_date_end = fields.Date(string="Membership Date End",
+                                      default=datetime.date(current_year + 1, 3, 31))
 
     product_id = fields.Many2one('product.product', string='Insurance Product', required=True)
     insurance_price = fields.Float(string='Insurance Price', digits= dp.get_precision('Product Price'), required=True)
-    # ~ total_days = fields.Integer(string = "Total Insurance Days", compute='_get_insurance_credit_days', readonly=True)
+    total_days = fields.Integer(string = "Total Insurance Days", compute='_get_insurance_credit_days', readonly=True)
 
-    # ~ @api.multi
-    # ~ @api.onchange('invoice.partner_id.date_start','invoice.partner_id.date_end')
-    # ~ def _get_insurance_credit_days(self):
-        # ~ for partner in self.env['res.partner'].browse(self._context.get('active_ids')):
-            # ~ if partner.date_start:
-                # ~ if partner.date_start > self.membership_date_start:
-                    # ~ invoice.total_days = ((invoice.membership_date_end - invoice.partner_id.date_start).days + 1) /365 * 360 
-                    # ~ if invoice.total_days >= 360:
-                        # ~ raise Warning('It is longer than one year, please doubble check the joint date for client %s ' %invoice.partner_id.name)
-            # ~ if partner.date_end:
-                # ~ if partner.date_end < self.membership_date_end:
-                    # ~ self.total_days = ((self.membership_date_end - parnter.date_end).days + 1) /365 * 360 - 30
-                    # ~ if self.total_days < 30:
-                        # ~ raise Warning('Days left is less than 30 days, you do not need to create credit invoice for client %s ' %invoice.partner_id.name)
+    @api.multi
+    @api.onchange('invoice.partner_id.date_start', 'invoice.partner_id.date_end')
+    def _get_insurance_credit_days(self):
+        for partner in self.env['res.partner'].browse(self._context.get('active_ids')):
+            if partner.date_start:
+                if partner.date_start > self.membership_date_start:
+                    invoice.total_days = ((invoice.membership_date_end - invoice.partner_id.date_start).days + 1) /365 * 360
+                    if invoice.total_days >= 360:
+                        raise UserError(f'Insurance period is longer than one year, please verify join date for {invoice.partner_id.name}')
+            if partner.date_end:
+                if partner.date_end < self.membership_date_end:
+                    self.total_days = ((self.membership_date_end - partner.date_end).days + 1) /365 * 360 - 30
+                    if self.total_days < 30:
+                        raise UserError(f'Days left is less than 30 days, you do not need to create credit invoice for client {invoice.partner_id.name}')
 
     @api.onchange('product_id')
     def onchange_product(self):
-        """This function returns value of  product's member price based on product id.
+        """
+        This function returns value of product's member price based on product id.
         """
         price_dict = self.product_id.price_compute('list_price')
         self.insurance_price = price_dict.get(self.product_id.id) or False
@@ -121,6 +133,14 @@ class MembershipInsurance(models.TransientModel):
                 'amount': self.insurance_price
             }
         invoice_list = self.env['res.partner'].browse(self._context.get('active_ids')).create_insurance_invoice(datas=datas)
+
+        for partner in self.env['res.partner'].browse(self._context.get('active_ids')):
+            self.env['insurance.insurance_line'].create({'partner': partner.id,
+                                                         'date_from': self.membership_date_start,
+                                                         'date_to': self.membership_date_end,
+                                                         'insurance_id': self.product_id.id,
+                                                         'insurance_price': self.insurance_price,
+                                                         'account_invoice_id': None}) # Fix me! How to get invoice id from invoice_list?
 
         search_view_ref = self.env.ref('account.view_account_invoice_filter', False)
         form_view_ref = self.env.ref('account.invoice_form', False)
