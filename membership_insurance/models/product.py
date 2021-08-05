@@ -134,20 +134,21 @@ class MembershipInsurance(models.TransientModel):
             }
         invoice_list = self.env['res.partner'].browse(self._context.get('active_ids')).create_insurance_invoice(datas=datas)
 
-        for partner in self.env['res.partner'].browse(self._context.get('active_ids')):
-            self.env['insurance.insurance_line'].create({'partner': partner.id,
-                                                         'date_from': self.membership_date_start,
-                                                         'date_to': self.membership_date_end,
-                                                         'insurance_id': self.product_id.id,
-                                                         'insurance_price': self.insurance_price,
-                                                         'account_invoice_id': None}) # Fix me! How to get invoice id from invoice_list?
+        for invoice in invoice_list:
+            for line in invoice.invoice_line_ids:
+                self.env['insurance.insurance_line'].create({'partner': invoice.partner_id.id,
+                                                             'date_from': self.membership_date_start,
+                                                             'date_to': self.membership_date_end,
+                                                             'insurance_id': line.product_id.id,
+                                                             'insurance_price': line.price_unit,
+                                                             'account_invoice_line': line.id})
 
         search_view_ref = self.env.ref('account.view_account_invoice_filter', False)
         form_view_ref = self.env.ref('account.invoice_form', False)
         tree_view_ref = self.env.ref('account.invoice_tree', False)
 
         return {
-            'domain': [('id', 'in', invoice_list)],
+            'domain': [('id', 'in', [invoice.id for invoice in invoice_list])],
             'name': 'Insurance Invoices',
             'res_model': 'account.invoice',
             'type': 'ir.actions.act_window',
@@ -190,3 +191,4 @@ class AccountInvoiceLine(models.Model):
         if not self.product_id:
             return ''
         return self.product_id.name
+
