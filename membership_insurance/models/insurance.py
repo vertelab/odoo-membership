@@ -1,9 +1,15 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import api, fields, models
+import datetime
+import logging
+
+from odoo import api, fields, models, _
 from . import insurance
 from odoo.addons import decimal_precision as dp
+from odoo.exceptions import UserError
+
+_logger = logging.getLogger(__name__)
 
 STATE = [
     ('none', 'Non Insurance'),
@@ -14,6 +20,9 @@ STATE = [
     ('free', 'Free Insurance'),
     ('paid', 'Paid Insurance'),
 ]
+
+DAYS_IN_YEAR = 360
+
 class res_partner(models.Model):
     _inherit = 'res.partner'
 
@@ -239,22 +248,24 @@ class res_partner(models.Model):
             line_values = invoice_line._convert_to_write({name: invoice_line[name] for name in invoice_line._cache})
             line_values['price_unit'] = amount
             invoice.write({'invoice_line_ids': [(0, 0, line_values)]})
-            invoice_list.append(invoice.id)
+            invoice_list.append(invoice)
             invoice.compute_taxes()
 
         # Add extra products
-        for invoice in self.env['account.invoice'].browse(invoice_list):
+        for invoice in invoice_list:
             for line in invoice.invoice_line_ids:
                 for insurance_product in line.product_id.insurance_product_ids:
                     # create a record in cache, apply onchange then revert back to a dictionnary
-                    invoice_line = self.env['account.invoice.line'].new({'product_id': insurance_product.id,'price_unit': insurance_product.lst_price,'inovice_id':invoice.id})
+                    invoice_line = self.env['account.invoice.line'].new({'product_id': insurance_product.id,
+                                                                         'price_unit': insurance_product.lst_price,
+                                                                         'inovice_id':invoice.id})
                     invoice_line._onchange_product_id()
                     line_values = invoice_line._convert_to_write({name: invoice_line[name] for name in invoice_line._cache})
                     line_values['name'] = insurance_product.name
-                    line_values['account_id'] = insurance_product.property_account_income_id.id if insurance_product.property_account_income_id else self.env['account.account'].search([('user_type_id','=',self.env.ref('account.data_account_type_revenue').id)])[0].id 
+                    line_values['account_id'] = insurance_product.property_account_income_id.id if insurance_product.property_account_income_id else self.env['account.account'].search([('user_type_id','=',self.env.ref('account.data_account_type_revenue').id)])[0].id
                     invoice.write({'invoice_line_ids': [(0, 0, line_values)]})
         # Calculate amount and qty
-        for invoice in self.env['account.invoice'].browse(invoice_list):
+        for invoice in invoice_list:
             for line in invoice.invoice_line_ids:
                 if line.product_id.insurance_code:
                     line.price_unit, line.quantity = line.product_id.insurance_get_amount_qty(invoice.partner_id)
@@ -291,7 +302,8 @@ class InsuranceLine(models.Model):
 
     @api.depends('account_invoice_line.invoice_id.state',
                  'account_invoice_line.invoice_id.payment_ids',
-                 'account_invoice_line.invoice_id.payment_ids.invoice_ids.type')
+                 'account_invoice_line.invoice_id.payment_ids.invoice_ids.type',
+                 'date_cancel')
     def _compute_state(self):
         """Compute the state lines """
         Invoice = self.env['account.invoice']
@@ -311,7 +323,7 @@ class InsuranceLine(models.Model):
                 )
             ''', (line.id,))
             fetched = self._cr.fetchone()
-            if not fetched:
+            if not fetched or self.date_cancel:
                 line.state = 'canceled'
                 continue
             istate = fetched[0]
@@ -328,4 +340,71 @@ class InsuranceLine(models.Model):
                 line.state = 'canceled'
             else:
                 line.state = 'none'
+
+    def button_cancel_insurance(self):
+        view = self.env.ref('membership_insurance.view_insurance_cancel')
+        ctx = {'default_line_id': self.id}
+        return {
+            'name': _('Cancel Insurance'),
+            'type': 'ir.actions.act_window',
+            'view_mode': 'form',
+            'res_model': 'insurance.cancel_insurance',
+            'views': [(view.id, 'form')],
+            'view_id': view.id,
+            'target': 'new',
+            'context': ctx,
+        }
+
+class CancelInsurance(models.TransientModel):
+    _name = 'insurance.cancel_insurance'
+    _description = 'Cancel insurance and create refund invoice.'
+    cancel_from_date = fields.Date(string='Cancel from', default=fields.Date.today)
+    product_id = fields.Many2one(related='line_id.insurance_id', readonly=True)
+    line_id = fields.Many2one('insurance.insurance_line', string='Insurance Line')
+    refund_amount = fields.Float(string='Amount Refunded (ex taxes)', compute='_compute_refund')
+
+    @api.multi
+    def cancel_insurance(self):
+        _logger.warning(f'lineid:{self.line_id}')
+        journal_id = self.line_id.account_invoice_id.journal_id.id
+        invoice = self.line_id.account_invoice_id.refund(self.cancel_from_date, self.cancel_from_date, 'Avbruten försäkring', journal_id)
+
+        # Remove lines that are not refunded this time.
+        invoice.invoice_line_ids.filtered(lambda r: r.product_id.id != self.product_id.id).unlink()
+
+        # Calculate ratio to refund.
+        ratio = self.refund_ratio(self.cancel_from_date, self.line_id.date_to)
+        # Apply refund.
+        for line in invoice.invoice_line_ids:
+            line.price_unit = line.price_unit * ratio
+            line._onchange_eval('price_unit', "1", {})
+        invoice.compute_taxes()
+        self.line_id.date_cancel = self.cancel_from_date
+
+        result = self.env.ref('account.action_invoice_out_refund').read()[0]
+        view_ref = self.env.ref('account.invoice_form')
+        form_view = [(view_ref.id, 'form')]
+        result['views'] = form_view
+        result['res_id'] = invoice.id
+        return result
+
+    @api.depends('cancel_from_date')
+    def _compute_refund(self):
+        ratio = self.refund_ratio(self.cancel_from_date, self.line_id.date_to)
+        line = self.line_id.account_invoice_line
+        self.refund_amount = line.price_unit * line.quantity * ratio
+
+    def refund_ratio(self, date_from, date_to):
+        days = (date_to - date_from).days
+
+        if days <= 0:
+            days += 365
+        elif days < 30:
+            raise UserError('ERROR: Days left is less than 30 days. You cannot '
+                          'create credit invoice for client')
+        elif days > 365:
+            raise UserError('ERROR: Period is longer than one year. '
+                          'Please check the join date for client')
+
+        return 1 - (days / DAYS_IN_YEAR)
 

@@ -9,11 +9,11 @@ DAYS_IN_YEAR = 360
 
 class AccountInvoiceLine(models.Model):
     _inherit = "account.invoice.line"
-    
+
     total_days = fields.Integer(string = "Total Insurance Days",
                                 compute='_check_dates_insurance',
                                 readonly=True)
-                                
+
     @api.one
     def _check_dates_insurance(self):
         if self.product_id and self.product_id.insurance:

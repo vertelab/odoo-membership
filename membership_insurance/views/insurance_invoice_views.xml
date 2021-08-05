@@ -1,36 +1,55 @@
 <?xml version="1.0"?>
 <odoo>
   <record id="view_insurance_invoice_view" model="ir.ui.view">
-            <field name="name">insurance.invoice.view.form</field>
-            <field name="model">membership.insurance</field>
-            <field name="arch" type="xml">
-                <form string="Insurance Ansvarsförsäkringen Invoice">
-                    <group>
-                        <field name="product_id" widget="selection"/>
-                        <field name="insurance_price"/>
-                    </group>
-                    <footer>
-                        <button string="Invoice Ansvarsförsäkringen Insurance" name="membership_insurance" type="object" class="btn-primary"/>
-                        <button string="Cancel" class="btn-secondary" special="cancel" />
-                    </footer>
-                </form>
-            </field>
-        </record>
+    <field name="name">insurance.invoice.view.form</field>
+    <field name="model">membership.insurance</field>
+    <field name="arch" type="xml">
+      <form string="Insurance Ansvarsförsäkringen Invoice">
+        <group>
+          <field name="product_id" widget="selection"/>
+          <field name="insurance_price"/>
+        </group>
+        <footer>
+          <button string="Invoice Ansvarsförsäkringen Insurance" name="membership_insurance" type="object" class="btn-primary"/>
+          <button string="Cancel" class="btn-secondary" special="cancel" />
+        </footer>
+      </form>
+    </field>
+  </record>
 
-        <record id="action_insurance_invoice_view" model="ir.actions.act_window">
-            <field name="name">Insurance Ansvarsförsäkringen Invoice</field>
-            <field name="res_model">membership.insurance</field>
-            <field name="view_type">form</field>
-            <field name="view_mode">tree,form</field>
-            <field name="view_id" ref="view_insurance_invoice_view"/>
-            <field name="target">new</field>
-        </record>
+  <record id="action_insurance_invoice_view" model="ir.actions.act_window">
+    <field name="name">Insurance Ansvarsförsäkringen Invoice</field>
+    <field name="res_model">membership.insurance</field>
+    <field name="view_type">form</field>
+    <field name="view_mode">tree,form</field>
+    <field name="view_id" ref="view_insurance_invoice_view"/>
+    <field name="target">new</field>
+  </record>
 
-        <act_window name="Insurance Ansvarsförsäkringen Invoice "
-            res_model="membership.insurance"
-            src_model="res.partner"
-            multi="True"
-            key2="client_action_multi"
-            view_mode="form"
-            id="action_insurance_invoice_view"/> 
+  <act_window name="Insurance Ansvarsförsäkringen Invoice "
+              res_model="membership.insurance"
+              src_model="res.partner"
+              multi="True"
+              key2="client_action_multi"
+              view_mode="form"
+              id="action_insurance_invoice_view"/>
+
+    <record id="view_insurance_cancel" model="ir.ui.view">
+    <field name="name">insurance.cancel.view.form</field>
+    <field name="model">insurance.cancel_insurance</field>
+    <field name="arch" type="xml">
+      <form string="Insurance Cancel">
+	<group>
+	  <field name="line_id" invisible="1"/>
+	  <field name="product_id"/>
+	  <field name="cancel_from_date"/>
+	  <field name="refund_amount"/>
+	</group>
+        <footer>
+          <button string="Refund remaining insurance" name="cancel_insurance" type="object" class="btn-primary"/>
+          <button string="Cancel" class="btn-secondary" special="cancel" />
+        </footer>
+      </form>
+    </field>
+  </record>
 </odoo>
