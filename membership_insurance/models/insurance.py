@@ -11,6 +11,8 @@ from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
+_logger = logging.getLogger(__name__)
+
 STATE = [
     ('none', 'Non Insurance'),
     ('canceled', 'Cancelled Insurance'),
@@ -407,4 +409,3 @@ class CancelInsurance(models.TransientModel):
                           'Please check the join date for client')
 
         return 1 - (days / DAYS_IN_YEAR)
-
