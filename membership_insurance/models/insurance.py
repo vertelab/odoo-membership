@@ -7,6 +7,9 @@ import logging
 from odoo import api, fields, models, _
 from . import insurance
 from odoo.addons import decimal_precision as dp
+from odoo.exceptions import UserError
+
+_logger = logging.getLogger(__name__)
 
 _logger = logging.getLogger(__name__)
 
@@ -19,6 +22,9 @@ STATE = [
     ('free', 'Free Insurance'),
     ('paid', 'Paid Insurance'),
 ]
+
+DAYS_IN_YEAR = 360
+
 class res_partner(models.Model):
     _inherit = 'res.partner'
 
@@ -298,7 +304,8 @@ class InsuranceLine(models.Model):
 
     @api.depends('account_invoice_line.invoice_id.state',
                  'account_invoice_line.invoice_id.payment_ids',
-                 'account_invoice_line.invoice_id.payment_ids.invoice_ids.type')
+                 'account_invoice_line.invoice_id.payment_ids.invoice_ids.type',
+                 'date_cancel')
     def _compute_state(self):
         """Compute the state lines """
         Invoice = self.env['account.invoice']
@@ -318,7 +325,7 @@ class InsuranceLine(models.Model):
                 )
             ''', (line.id,))
             fetched = self._cr.fetchone()
-            if not fetched:
+            if not fetched or self.date_cancel:
                 line.state = 'canceled'
                 continue
             istate = fetched[0]
@@ -356,15 +363,44 @@ class CancelInsurance(models.TransientModel):
     cancel_from_date = fields.Date(string='Cancel from', default=fields.Date.today)
     product_id = fields.Many2one(related='line_id.insurance_id', readonly=True)
     line_id = fields.Many2one('insurance.insurance_line', string='Insurance Line')
+    refund_amount = fields.Float(string='Amount Refunded (ex taxes)', compute='_compute_refund')
 
     @api.multi
     def cancel_insurance(self):
+        _logger.warning(f'lineid:{self.line_id}')
         journal_id = self.line_id.account_invoice_id.journal_id.id
-        refund = self.line_id.account_invoice_id.refund(self.cancel_from_date, self.cancel_from_date, 'Avbruten försäkring', journal_id)
-
+        invoice = self.line_id.account_invoice_id.refund(self.cancel_from_date, self.cancel_from_date, 'Avbruten försäkring', journal_id)
+        # Remove lines that are not refunded this time.
+        invoice.invoice_line_ids.filtered(lambda r: r.product_id.id != self.product_id.id).unlink()
+        # Calculate ratio to refund.
+        ratio = self.refund_ratio(self.cancel_from_date, self.line_id.date_to)
+        # Apply refund.
+        for line in invoice.invoice_line_ids:
+            line.price_unit = line.price_unit * ratio
+            line._onchange_eval('price_unit', "1", {})
+        invoice.compute_taxes()
+        self.line_id.date_cancel = self.cancel_from_date
         result = self.env.ref('account.action_invoice_out_refund').read()[0]
         view_ref = self.env.ref('account.invoice_form')
         form_view = [(view_ref.id, 'form')]
         result['views'] = form_view
-        result['res_id'] = refund.id
+        result['res_id'] = invoice.id
         return result
+
+    @api.depends('cancel_from_date')
+    def _compute_refund(self):
+        ratio = self.refund_ratio(self.cancel_from_date, self.line_id.date_to)
+        line = self.line_id.account_invoice_line
+        self.refund_amount = line.price_unit * line.quantity * ratio
+
+    def refund_ratio(self, date_from, date_to):
+        days = (date_to - date_from).days
+        if days <= 0:
+            days += 365
+        elif days < 30:
+            raise UserError('ERROR: Days left is less than 30 days. You cannot '
+                          'create credit invoice for client')
+        elif days > 365:
+            raise UserError('ERROR: Period is longer than one year. '
+                          'Please check the join date for client')
+        return 1 - (days / DAYS_IN_YEAR)
