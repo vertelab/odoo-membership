@@ -1,9 +1,14 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import api, fields, models
+import datetime
+import logging
+
+from odoo import api, fields, models, _
 from . import insurance
 from odoo.addons import decimal_precision as dp
+
+_logger = logging.getLogger(__name__)
 
 STATE = [
     ('none', 'Non Insurance'),
@@ -239,22 +244,24 @@ class res_partner(models.Model):
             line_values = invoice_line._convert_to_write({name: invoice_line[name] for name in invoice_line._cache})
             line_values['price_unit'] = amount
             invoice.write({'invoice_line_ids': [(0, 0, line_values)]})
-            invoice_list.append(invoice.id)
+            invoice_list.append(invoice)
             invoice.compute_taxes()
 
         # Add extra products
-        for invoice in self.env['account.invoice'].browse(invoice_list):
+        for invoice in invoice_list:
             for line in invoice.invoice_line_ids:
                 for insurance_product in line.product_id.insurance_product_ids:
                     # create a record in cache, apply onchange then revert back to a dictionnary
-                    invoice_line = self.env['account.invoice.line'].new({'product_id': insurance_product.id,'price_unit': insurance_product.lst_price,'inovice_id':invoice.id})
+                    invoice_line = self.env['account.invoice.line'].new({'product_id': insurance_product.id,
+                                                                         'price_unit': insurance_product.lst_price,
+                                                                         'inovice_id':invoice.id})
                     invoice_line._onchange_product_id()
                     line_values = invoice_line._convert_to_write({name: invoice_line[name] for name in invoice_line._cache})
                     line_values['name'] = insurance_product.name
-                    line_values['account_id'] = insurance_product.property_account_income_id.id if insurance_product.property_account_income_id else self.env['account.account'].search([('user_type_id','=',self.env.ref('account.data_account_type_revenue').id)])[0].id 
+                    line_values['account_id'] = insurance_product.property_account_income_id.id if insurance_product.property_account_income_id else self.env['account.account'].search([('user_type_id','=',self.env.ref('account.data_account_type_revenue').id)])[0].id
                     invoice.write({'invoice_line_ids': [(0, 0, line_values)]})
         # Calculate amount and qty
-        for invoice in self.env['account.invoice'].browse(invoice_list):
+        for invoice in invoice_list:
             for line in invoice.invoice_line_ids:
                 if line.product_id.insurance_code:
                     line.price_unit, line.quantity = line.product_id.insurance_get_amount_qty(invoice.partner_id)
@@ -329,3 +336,35 @@ class InsuranceLine(models.Model):
             else:
                 line.state = 'none'
 
+    def button_cancel_insurance(self):
+        view = self.env.ref('membership_insurance.view_insurance_cancel')
+        ctx = {'default_line_id': self.id}
+        return {
+            'name': _('Cancel Insurance'),
+            'type': 'ir.actions.act_window',
+            'view_mode': 'form',
+            'res_model': 'insurance.cancel_insurance',
+            'views': [(view.id, 'form')],
+            'view_id': view.id,
+            'target': 'new',
+            'context': ctx,
+        }
+
+class CancelInsurance(models.TransientModel):
+    _name = 'insurance.cancel_insurance'
+    _description = 'Cancel insurance and create refund invoice.'
+    cancel_from_date = fields.Date(string='Cancel from', default=fields.Date.today)
+    product_id = fields.Many2one(related='line_id.insurance_id', readonly=True)
+    line_id = fields.Many2one('insurance.insurance_line', string='Insurance Line')
+
+    @api.multi
+    def cancel_insurance(self):
+        journal_id = self.line_id.account_invoice_id.journal_id.id
+        refund = self.line_id.account_invoice_id.refund(self.cancel_from_date, self.cancel_from_date, 'Avbruten försäkring', journal_id)
+
+        result = self.env.ref('account.action_invoice_out_refund').read()[0]
+        view_ref = self.env.ref('account.invoice_form')
+        form_view = [(view_ref.id, 'form')]
+        result['views'] = form_view
+        result['res_id'] = refund.id
+        return result
