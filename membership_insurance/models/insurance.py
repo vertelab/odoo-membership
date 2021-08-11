@@ -11,6 +11,8 @@ from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
+_logger = logging.getLogger(__name__)
+
 STATE = [
     ('none', 'Non Insurance'),
     ('canceled', 'Cancelled Insurance'),
@@ -368,10 +370,8 @@ class CancelInsurance(models.TransientModel):
         _logger.warning(f'lineid:{self.line_id}')
         journal_id = self.line_id.account_invoice_id.journal_id.id
         invoice = self.line_id.account_invoice_id.refund(self.cancel_from_date, self.cancel_from_date, 'Avbruten försäkring', journal_id)
-
         # Remove lines that are not refunded this time.
         invoice.invoice_line_ids.filtered(lambda r: r.product_id.id != self.product_id.id).unlink()
-
         # Calculate ratio to refund.
         ratio = self.refund_ratio(self.cancel_from_date, self.line_id.date_to)
         # Apply refund.
@@ -380,7 +380,6 @@ class CancelInsurance(models.TransientModel):
             line._onchange_eval('price_unit', "1", {})
         invoice.compute_taxes()
         self.line_id.date_cancel = self.cancel_from_date
-
         result = self.env.ref('account.action_invoice_out_refund').read()[0]
         view_ref = self.env.ref('account.invoice_form')
         form_view = [(view_ref.id, 'form')]
@@ -396,7 +395,6 @@ class CancelInsurance(models.TransientModel):
 
     def refund_ratio(self, date_from, date_to):
         days = (date_to - date_from).days
-
         if days <= 0:
             days += 365
         elif days < 30:
@@ -405,5 +403,4 @@ class CancelInsurance(models.TransientModel):
         elif days > 365:
             raise UserError('ERROR: Period is longer than one year. '
                           'Please check the join date for client')
-
         return 1 - (days / DAYS_IN_YEAR)
