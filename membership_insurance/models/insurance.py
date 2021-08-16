@@ -403,4 +403,4 @@ class CancelInsurance(models.TransientModel):
         elif days > 365:
             raise UserError('ERROR: Period is longer than one year. '
                           'Please check the join date for client')
-        return 1 - (days / DAYS_IN_YEAR)
+        return days / DAYS_IN_YEAR
