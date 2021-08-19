@@ -14,13 +14,13 @@ _logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 
 STATE = [
-    ('none', 'Non Insurance'),
-    ('canceled', 'Cancelled Insurance'),
-    ('old', 'Old Insurance'),
-    ('waiting', 'Waiting Insurance'),
-    ('invoiced', 'Invoiced Insurance'),
-    ('free', 'Free Insurance'),
-    ('paid', 'Paid Insurance'),
+    ('none', _('Non Insurance')),
+    ('canceled', _('Cancelled Insurance')),
+    ('old', _('Old Insurance')),
+    ('waiting', _('Waiting Insurance')),
+    ('invoiced', _('Invoiced Insurance')),
+    ('free', _('Free Insurance')),
+    ('paid', _('Paid Insurance')),
 ]
 
 DAYS_IN_YEAR = 360
