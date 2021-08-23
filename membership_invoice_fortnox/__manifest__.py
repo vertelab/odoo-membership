@@ -12,12 +12,10 @@ This module extends the invoicing capabilities for membership-module
     """,
     'depends': ['membership_invoice'],
     'data': [
-        
         'views/partner_views.xml',
         'views/account_invoice_send_view.xml',
+        'data/cron_jobs.xml'
         # ~ 'views/product_views.xml',
-
-        
     ],
     'website': 'vertel.se',
 }

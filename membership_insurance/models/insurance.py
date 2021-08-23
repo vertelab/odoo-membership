@@ -325,7 +325,7 @@ class InsuranceLine(models.Model):
                 )
             ''', (line.id,))
             fetched = self._cr.fetchone()
-            if not fetched or self.date_cancel:
+            if not fetched or line.date_cancel:
                 line.state = 'canceled'
                 continue
             istate = fetched[0]
@@ -367,16 +367,19 @@ class CancelInsurance(models.TransientModel):
 
     @api.multi
     def cancel_insurance(self):
-        _logger.warning(f'lineid:{self.line_id}')
         journal_id = self.line_id.account_invoice_id.journal_id.id
-        invoice = self.line_id.account_invoice_id.refund(self.cancel_from_date, self.cancel_from_date, 'Avbruten försäkring', journal_id)
+        invoice = self.line_id.account_invoice_id.refund(self.cancel_from_date,
+                                                         self.cancel_from_date,
+                                                         'Avbruten försäkring',
+                                                         journal_id)
         # Remove lines that are not refunded this time.
-        invoice.invoice_line_ids.filtered(lambda r: r.product_id.id != self.product_id.id).unlink()
-        # Calculate ratio to refund.
-        ratio = self.refund_ratio(self.cancel_from_date, self.line_id.date_to)
+        invoice.invoice_line_ids.filtered(
+            lambda r: r.product_id.id != self.product_id.id).unlink()
+        ratio = self.ratio(self.cancel_from_date,
+                           self.line_id.date_to + datetime.timedelta(days=-1))
         # Apply refund.
         for line in invoice.invoice_line_ids:
-            line.price_unit = line.price_unit * ratio
+            line.price_unit = line.price_unit * days_left
             line._onchange_eval('price_unit', "1", {})
         invoice.compute_taxes()
         self.line_id.date_cancel = self.cancel_from_date
@@ -389,15 +392,19 @@ class CancelInsurance(models.TransientModel):
 
     @api.depends('cancel_from_date')
     def _compute_refund(self):
-        ratio = self.refund_ratio(self.cancel_from_date, self.line_id.date_to)
+        ratio = self.ratio(self.cancel_from_date,
+                           self.line_id.date_to + datetime.timedelta(days=-1))
         line = self.line_id.account_invoice_line
-        self.refund_amount = line.price_unit * line.quantity * ratio
+        self.refund_amount = line.price_unit * ratio * line.quantity
 
-    def refund_ratio(self, date_from, date_to):
+    def refund(base_price, date_from, date_to):
+        months = date_to.month - date_from.month
+        days = min(date_to.day + 1 - date_from.day, 30) + months*30
+        return base_price - price_per_day * days
+
+    def ratio(self, date_from, date_to):
         days = (date_to - date_from).days
-        if days <= 0:
-            days += 365
-        elif days < 30:
+        if days < 30:
             raise UserError('ERROR: Days left is less than 30 days. You cannot '
                           'create credit invoice for client')
         elif days > 365:
