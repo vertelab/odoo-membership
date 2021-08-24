@@ -1,16 +1,14 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import api, fields, models
-from odoo.exceptions import Warning
-import warnings
+from datetime import datetime, timedelta
+import logging
+import json
 import time
 
-from datetime import datetime
-import requests
-import json
+from odoo import api, fields, models
+from odoo.exceptions import Warning
 
-import logging
 _logger = logging.getLogger(__name__)
 
 BASE_URL = 'https://api.fortnox.se'
@@ -41,6 +39,50 @@ class AccountInvoice(models.Model):
                 line.unlink()
         self.state = 'open'
 
+    def update_invoice_status_fortnox_cron(self):
+        """Update invoice status from fortnox."""
+
+        # Assumption that most invoices are paid rather than canceled.
+        # Python conserves dict order since Python 3.7 so order matters.
+        states = {'fullypaid': 'paid',
+                  'cancelled': 'cancel',}
+
+        # States we don't care about.
+        #          'unpaid': 'open',
+        #          'unpaidoverdue': 'open'}
+
+        # Cutof date to not check too old invoices.
+        from_date = datetime.now() - timedelta(days=365)
+        # Allow for multi company.
+        for company in self.env['res.company'].search([]):
+            for invoice in self.env['account.invoice'].search(
+                    [('company_id', '=', company.id),
+                     ('create_date', '>', from_date)]):
+                for state in states:
+                    # Only allowed to do 4 requests per second to Fortnox.
+                    # Do 3 requests per second just to be sure.
+                    time.sleep(0.3)
+                    try:
+                        r = company.fortnox_request(
+                            'get',
+                            f'{BASE_URL}/3/invoices/?filter={state}&documentnumber={invoice.name}&fromdate={from_date.strftime("%Y-%m-%d")}')
+                        r = json.loads(r)
+                    except:
+                        _logger.error(f'Could not find invoice with name: {invoice.name}')
+                        _logger.error(r.get('ErrorInformation'))
+                        continue
+                    for inv in r.get('Invoices', []):
+                        if invoice.name == inv.get('DocumentNumber'):
+                            _logger.info(f'{invoice.name}: {state}')
+                            _logger.debug(str(invoice.read()))
+                            invoice.state = states[state]
+                            break
+                    else:
+                        # If we found an invoice we do not have to check
+                        # next state.
+                        break
+
+
 class AccountInvoiceSend(models.TransientModel):
     _inherit = 'account.invoice.send'
     is_fortnox = fields.Boolean(string='Fortnox', default=True)
@@ -59,27 +101,3 @@ class AccountInvoiceSend(models.TransientModel):
                     invoice.remove_zero_cost_lines()
                     invoice.fortnox_create()
         return res
-
-    def update_invoice_status_fortnox_cron(self):
-        """Update invoice status from fortnox."""
-        states = {'cancelled': 'cancel',
-                  'fullypaid': 'paid',
-                  'unpaid': 'open',
-                  'unpaidoverdue': 'open'}
-        for state in states:
-            # Only care for the fullypaid at the moment, may be extended
-            # in the future.
-            if not state == 'fullypaid':
-                continue
-            r = self.company_id.fortnox_request(
-                'get',
-                f'{BASE_URL}/3/invoices/?filter={state}')
-            r = r.json.loads(r)
-            if r.get('ErrorInformation'):
-                _logger.error(f'Failed to get the state: {state} from fortnox')
-            else:
-                for inv in r.get('Invoices', []):
-                    name = inv.get("DocumentNumber")
-                    invoice = self.env['account.invoice'].search(['name', '=', name])
-                    if invoice:
-                        invoice.state = states[state]
