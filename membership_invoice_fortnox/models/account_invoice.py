@@ -42,14 +42,18 @@ class AccountInvoice(models.Model):
     def update_invoice_status_fortnox_cron(self):
         """Update invoice status from fortnox."""
 
-        states = {'cancelled': 'cancel',
-                  'fullypaid': 'paid',}
+        # Assumption that most invoices are paid rather than canceled.
+        # Python conserves dict order since Python 3.7 so order matters.
+        states = {'fullypaid': 'paid',
+                  'cancelled': 'cancel',}
 
         # States we don't care about.
         #          'unpaid': 'open',
         #          'unpaidoverdue': 'open'}
 
+        # Cutof date to not check too old invoices.
         from_date = datetime.now() - timedelta(days=365)
+        # Allow for multi company.
         for company in self.env['res.company'].search([]):
             for invoice in self.env['account.invoice'].search(
                     [('company_id', '=', company.id),

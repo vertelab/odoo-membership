@@ -7,9 +7,7 @@ import logging
 from odoo import api, fields, models, _
 from . import insurance
 from odoo.addons import decimal_precision as dp
-from odoo.exceptions import UserError
-
-_logger = logging.getLogger(__name__)
+from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -360,13 +358,17 @@ class InsuranceLine(models.Model):
 class CancelInsurance(models.TransientModel):
     _name = 'insurance.cancel_insurance'
     _description = 'Cancel insurance and create refund invoice.'
-    cancel_from_date = fields.Date(string='Cancel from', default=fields.Date.today)
+    cancel_from_date = fields.Date(string='Cancel from', default=fields.Date.today, required=True)
     product_id = fields.Many2one(related='line_id.insurance_id', readonly=True)
     line_id = fields.Many2one('insurance.insurance_line', string='Insurance Line')
     refund_amount = fields.Float(string='Amount Refunded (ex taxes)', compute='_compute_refund')
 
     @api.multi
     def cancel_insurance(self):
+        """
+        Cancel insurance and refund remaning amount.
+        """
+
         journal_id = self.line_id.account_invoice_id.journal_id.id
         invoice = self.line_id.account_invoice_id.refund(self.cancel_from_date,
                                                          self.cancel_from_date,
@@ -375,11 +377,9 @@ class CancelInsurance(models.TransientModel):
         # Remove lines that are not refunded this time.
         invoice.invoice_line_ids.filtered(
             lambda r: r.product_id.id != self.product_id.id).unlink()
-        ratio = self.ratio(self.cancel_from_date,
-                           self.line_id.date_to + datetime.timedelta(days=-1))
         # Apply refund.
         for line in invoice.invoice_line_ids:
-            line.price_unit = line.price_unit * days_left
+            line.price_unit = self.refund(line.price_unit, self.line_id)
             line._onchange_eval('price_unit', "1", {})
         invoice.compute_taxes()
         self.line_id.date_cancel = self.cancel_from_date
@@ -390,24 +390,48 @@ class CancelInsurance(models.TransientModel):
         result['res_id'] = invoice.id
         return result
 
+    @api.onchange('cancel_from_date')
+    def _check_cancel_date(self):
+        if not self.cancel_from_date:
+            return
+        days = self.days_between(self.cancel_from_date, self.line_id.date_to)
+        if days < 30:
+            return {
+                'value': {'cancel_from_date': False},
+                'warning': {'title': _('Warning!'),
+                            'message': _('Not allowed to refund insurance with less than 30 days left')}
+            }
+        if self.cancel_from_date < self.line_id.date_from:
+            return {
+                'value': {'cancel_from_date': False},
+                'warning': {'title': _('Warning!'),
+                            'message': _('Cancel date is before start date of insurance!')}
+            }
+
     @api.depends('cancel_from_date')
     def _compute_refund(self):
-        ratio = self.ratio(self.cancel_from_date,
-                           self.line_id.date_to + datetime.timedelta(days=-1))
-        line = self.line_id.account_invoice_line
-        self.refund_amount = line.price_unit * ratio * line.quantity
+        if self.cancel_from_date:
+            self.refund_amount = self.refund(self.line_id.insurance_price, self.line_id)
 
-    def refund(base_price, date_from, date_to):
-        months = date_to.month - date_from.month
-        days = min(date_to.day + 1 - date_from.day, 30) + months*30
-        return base_price - price_per_day * days
+    def refund(self, price, line):
+        """
+        Calculate refund amount.
 
-    def ratio(self, date_from, date_to):
-        days = (date_to - date_from).days
-        if days < 30:
-            raise UserError('ERROR: Days left is less than 30 days. You cannot '
-                          'create credit invoice for client')
-        elif days > 365:
-            raise UserError('ERROR: Period is longer than one year. '
-                          'Please check the join date for client')
-        return days / DAYS_IN_YEAR
+        Calculated from the price per day for the insurance and
+        multiplied with remaining days of the insurance.
+        """
+        price_per_day = line.insurance_price / min(
+            self.days_between(line.date_from, line.date_to), DAYS_IN_YEAR)
+        days = self.days_between(line.date_from, self.cancel_from_date)
+        return line.insurance_price - price_per_day * days
+
+    def days_between(self, date_from, date_to):
+        """
+        Calculate how manny days its between two dates.
+
+        All months has 30 days, totaling in 360 days in a year.
+        Calculate all whole months and add days from non full months.
+        """
+        months = (date_to.month + 12 * (date_to.year - date_from.year)) - date_from.month
+        return min(date_to.day + 1 - date_from.day, 30) + months * 30
+
