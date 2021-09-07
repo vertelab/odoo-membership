@@ -7,7 +7,11 @@
       <form string="Insurance Ansvarsförsäkringen Invoice">
         <group>
           <field name="product_id" widget="selection"/>
-          <field name="insurance_price"/>
+          <field name="base_price"/>
+	  <field name="membership_date_start"/>
+	  <field name="membership_date_end"/>
+	  <field name="total_days"/>
+	  <field name="insurance_price"/>
         </group>
         <footer>
           <button string="Invoice Ansvarsförsäkringen Insurance" name="membership_insurance" type="object" class="btn-primary"/>

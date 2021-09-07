@@ -213,6 +213,7 @@ class res_partner(models.Model):
         product_id = product_id or datas.get('insurance_product_id')
         amount = datas.get('amount', 0.0)
         invoice_list = []
+
         for partner in self:
             addr = partner.address_get(['invoice'])
             if not addr.get('invoice', False):
@@ -355,6 +356,32 @@ class InsuranceLine(models.Model):
             'context': ctx,
         }
 
+    @api.model
+    def price_per_day(self, line, **kwargs):
+        '''Calculate the price per day from an insurance line.'''
+        try:
+            _logger.warning(kwargs)
+            price = kwargs.get('price') or line.insurance_price
+            date_from = kwargs.get('date_from') or line.date_from
+            date_to = kwargs.get('date_to') or line.date_to
+        except AttributeError:
+            _logger.exception('Failed to get price per day')
+            return
+        return price / min(
+            self.days_between(date_from, date_to), DAYS_IN_YEAR)
+
+    @api.model
+    def days_between(self, date_from, date_to):
+        """
+        Calculate how manny days its between two dates.
+
+        All months has 30 days, totaling in 360 days in a year.
+        Calculate all whole months and add days from non full months.
+        """
+        months = (date_to.month + 12 * (date_to.year - date_from.year)) - date_from.month
+        return min(date_to.day + 1 - date_from.day, 30) + months * 30
+
+
 class CancelInsurance(models.TransientModel):
     _name = 'insurance.cancel_insurance'
     _description = 'Cancel insurance and create refund invoice.'
@@ -362,33 +389,6 @@ class CancelInsurance(models.TransientModel):
     product_id = fields.Many2one(related='line_id.insurance_id', readonly=True)
     line_id = fields.Many2one('insurance.insurance_line', string='Insurance Line')
     refund_amount = fields.Float(string='Amount Refunded (ex taxes)', compute='_compute_refund')
-
-    @api.multi
-    def cancel_insurance(self):
-        """
-        Cancel insurance and refund remaning amount.
-        """
-
-        journal_id = self.line_id.account_invoice_id.journal_id.id
-        invoice = self.line_id.account_invoice_id.refund(self.cancel_from_date,
-                                                         self.cancel_from_date,
-                                                         'Avbruten försäkring',
-                                                         journal_id)
-        # Remove lines that are not refunded this time.
-        invoice.invoice_line_ids.filtered(
-            lambda r: r.product_id.id != self.product_id.id).unlink()
-        # Apply refund.
-        for line in invoice.invoice_line_ids:
-            line.price_unit = self.refund(line.price_unit, self.line_id)
-            line._onchange_eval('price_unit', "1", {})
-        invoice.compute_taxes()
-        self.line_id.date_cancel = self.cancel_from_date
-        result = self.env.ref('account.action_invoice_out_refund').read()[0]
-        view_ref = self.env.ref('account.invoice_form')
-        form_view = [(view_ref.id, 'form')]
-        result['views'] = form_view
-        result['res_id'] = invoice.id
-        return result
 
     @api.onchange('cancel_from_date')
     def _check_cancel_date(self):
@@ -411,27 +411,45 @@ class CancelInsurance(models.TransientModel):
     @api.depends('cancel_from_date')
     def _compute_refund(self):
         if self.cancel_from_date:
-            self.refund_amount = self.refund(self.line_id.insurance_price, self.line_id)
+            self.refund_amount = self.refund(self.line_id)
 
-    def refund(self, price, line):
+    @api.multi
+    def cancel_insurance(self):
+        """
+        Cancel insurance and refund remaning amount.
+        """
+
+        journal_id = self.line_id.account_invoice_id.journal_id.id
+        invoice = self.line_id.account_invoice_id.refund(self.cancel_from_date,
+                                                         self.cancel_from_date,
+                                                         'Avbruten försäkring',
+                                                         journal_id)
+        # Remove lines that are not refunded this time.
+        invoice.invoice_line_ids.filtered(
+            lambda r: r.product_id.id != self.product_id.id).unlink()
+        # Apply refund.
+        for line in invoice.invoice_line_ids:
+            line.price_unit = self.refund(self.line_id)
+            line._onchange_eval('price_unit', "1", {})
+        invoice.compute_taxes()
+        self.line_id.date_cancel = self.cancel_from_date
+        result = self.env.ref('account.action_invoice_out_refund').read()[0]
+        view_ref = self.env.ref('account.invoice_form')
+        form_view = [(view_ref.id, 'form')]
+        result['views'] = form_view
+        result['res_id'] = invoice.id
+        return result
+
+    def refund(self, line):
         """
         Calculate refund amount.
 
         Calculated from the price per day for the insurance and
         multiplied with remaining days of the insurance.
         """
-        price_per_day = line.insurance_price / min(
-            self.days_between(line.date_from, line.date_to), DAYS_IN_YEAR)
-        days = self.days_between(line.date_from, self.cancel_from_date)
-        return line.insurance_price - price_per_day * days
+        line_obj = env['insurance.insurance_line']
+        return (line.insurance_price -
+                line_obj.price_per_day(line) *
+                line_obj.days_between(line.date_from, self.cancel_from_date))
 
-    def days_between(self, date_from, date_to):
-        """
-        Calculate how manny days its between two dates.
-
-        All months has 30 days, totaling in 360 days in a year.
-        Calculate all whole months and add days from non full months.
-        """
-        months = (date_to.month + 12 * (date_to.year - date_from.year)) - date_from.month
-        return min(date_to.day + 1 - date_from.day, 30) + months * 30
 
