@@ -5,7 +5,6 @@ import datetime
 import logging
 
 from odoo import api, fields, models, _
-from . import insurance
 from odoo.addons import decimal_precision as dp
 from odoo.exceptions import UserError, ValidationError
 
@@ -46,7 +45,7 @@ class res_partner(models.Model):
 
     insurance_amount = fields.Float(string='Insurance Amount', digits=(16, 2),
         help='The price negotiated by the partner')
-    insurance_state = fields.Selection(insurance.STATE, compute='_compute_insurance_state',
+    insurance_state = fields.Selection(STATE, compute='_compute_insurance_state',
         string='Current Insurance Status', store=True,
         help='It indicates the insurance state.\n'
              '-Non insurance: A partner who has not applied for any insurance.\n'
@@ -269,7 +268,11 @@ class res_partner(models.Model):
         for invoice in invoice_list:
             for line in invoice.invoice_line_ids:
                 if line.product_id.insurance_code:
-                    line.price_unit, line.quantity = line.product_id.insurance_get_amount_qty(invoice.partner_id)
+                    price_unit, quantity = line.product_id.insurance_get_amount_qty(invoice.partner_id)
+                    if price_unit:
+                        line.price_unit = price_unit
+                    if quantity:
+                        line.quantity = quantity
         return invoice_list
 
 

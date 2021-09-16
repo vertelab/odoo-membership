@@ -209,7 +209,7 @@ class ProductProduct(models.Model):
             'product': self,
         }
         safe_eval(self.insurance_code.strip(), eval_context, mode="exec", nocopy=True)  # nocopy allows to return 'action'
-        return (eval_context.get('amount', self.list_price), eval_context.get('qty', 1.0))
+        return (eval_context.get('amount', False), eval_context.get('qty', False))
 
 
 class AccountInvoiceLine(models.Model):
