@@ -98,24 +98,59 @@ class MembershipInsurance(models.TransientModel):
     membership_date_end = fields.Date(string="Membership Date End",
                                       default=datetime.date(current_year + 1, 3, 31))
 
-    product_id = fields.Many2one('product.product', string='Insurance Product', required=True)
-    insurance_price = fields.Float(string='Insurance Price', digits= dp.get_precision('Product Price'), required=True)
-    total_days = fields.Integer(string = "Total Insurance Days", compute='_get_insurance_credit_days', readonly=True)
+    product_id = fields.Many2one('product.product',
+                                 string='Insurance Product',
+                                 required=True)
+    base_price = fields.Float(string='Base Price',
+                              digits=dp.get_precision('Product Price'),
+                              required=True)
+    insurance_price = fields.Float(string='Total Insurance Price',
+                                   compute='_compute_price',
+                                   digits=dp.get_precision('Product Price'),
+                                   readonly=True)
+    total_days = fields.Integer(string="Total Insurance Days",
+                                compute="_compute_days",
+                                readonly=True)
 
-    @api.multi
-    @api.onchange('invoice.partner_id.date_start', 'invoice.partner_id.date_end')
-    def _get_insurance_credit_days(self):
-        for partner in self.env['res.partner'].browse(self._context.get('active_ids')):
-            if partner.date_start:
-                if partner.date_start > self.membership_date_start:
-                    invoice.total_days = ((invoice.membership_date_end - invoice.partner_id.date_start).days + 1) /365 * 360
-                    if invoice.total_days >= 360:
-                        raise UserError(f'Insurance period is longer than one year, please verify join date for {invoice.partner_id.name}')
-            if partner.date_end:
-                if partner.date_end < self.membership_date_end:
-                    self.total_days = ((self.membership_date_end - partner.date_end).days + 1) /365 * 360 - 30
-                    if self.total_days < 30:
-                        raise UserError(f'Days left is less than 30 days, you do not need to create credit invoice for client {invoice.partner_id.name}')
+
+    @api.depends('membership_date_start', 'membership_date_end', 'base_price')
+    def _compute_price(self):
+        if not all((self.base_price, self.membership_date_start, self.membership_date_end)):
+            return
+        current_year = datetime.datetime.now().year
+        line_obj = self.env['insurance.insurance_line']
+        price_per_day = line_obj.price_per_day(None,
+                                               price=self.base_price,
+                                               date_from=datetime.date(current_year, 4, 1),
+                                               date_to=datetime.date(current_year + 1, 3, 31))
+        total_days = line_obj.days_between(self.membership_date_start,
+                                           self.membership_date_end)
+        if price_per_day and total_days:
+            self.insurance_price = total_days * price_per_day
+
+    @api.onchange('membership_date_start', 'membership_date_end')
+    def _verify_days(self):
+        line_obj = self.env['insurance.insurance_line']
+        if not (self.membership_date_start and self.membership_date_end):
+            return
+        days = line_obj.days_between(self.membership_date_start,
+                                     self.membership_date_end)
+        if days < 30:
+            return {
+                'warning': {'title': _('Warning!'),
+                            'message': _('Insurance has to be atleast 30 days.')}
+            }
+        if days > 360:
+            return {
+                'warning': {'title': _('Warning!'),
+                            'message': _('Insurance period cannot be longer than 360 days..')}
+            }
+
+    @api.depends('membership_date_start', 'membership_date_end')
+    def _compute_days(self):
+        line_obj = self.env['insurance.insurance_line']
+        self.total_days = line_obj.days_between(self.membership_date_start, self.membership_date_end)
+
 
     @api.onchange('product_id')
     def onchange_product(self):
@@ -123,15 +158,14 @@ class MembershipInsurance(models.TransientModel):
         This function returns value of product's member price based on product id.
         """
         price_dict = self.product_id.price_compute('list_price')
-        self.insurance_price = price_dict.get(self.product_id.id) or False
+        self.base_price = price_dict.get(self.product_id.id) or False
 
     @api.multi
     def membership_insurance(self):
-        if self:
-            datas = {
-                'insurance_product_id': self.product_id.id,
-                'amount': self.insurance_price
-            }
+        datas = {
+            'insurance_product_id': self.product_id.id,
+            'amount': self.insurance_price
+        }
         invoice_list = self.env['res.partner'].browse(self._context.get('active_ids')).create_insurance_invoice(datas=datas)
 
         for invoice in invoice_list:
@@ -175,7 +209,7 @@ class ProductProduct(models.Model):
             'product': self,
         }
         safe_eval(self.insurance_code.strip(), eval_context, mode="exec", nocopy=True)  # nocopy allows to return 'action'
-        return (eval_context.get('amount', self.list_price), eval_context.get('qty', 1.0))
+        return (eval_context.get('amount', False), eval_context.get('qty', False))
 
 
 class AccountInvoiceLine(models.Model):
