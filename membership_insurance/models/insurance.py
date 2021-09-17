@@ -397,7 +397,8 @@ class CancelInsurance(models.TransientModel):
     def _check_cancel_date(self):
         if not self.cancel_from_date:
             return
-        days = self.days_between(self.cancel_from_date, self.line_id.date_to)
+        days_between = self.env['insurance.insurance_line'].days_between
+        days = days_between(self.cancel_from_date, self.line_id.date_to)
         if days < 30:
             return {
                 'value': {'cancel_from_date': False},
@@ -450,7 +451,7 @@ class CancelInsurance(models.TransientModel):
         Calculated from the price per day for the insurance and
         multiplied with remaining days of the insurance.
         """
-        line_obj = env['insurance.insurance_line']
+        line_obj = self.env['insurance.insurance_line']
         return (line.insurance_price -
                 line_obj.price_per_day(line) *
                 line_obj.days_between(line.date_from, self.cancel_from_date))
