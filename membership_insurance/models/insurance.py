@@ -454,5 +454,3 @@ class CancelInsurance(models.TransientModel):
         return (line.insurance_price -
                 line_obj.price_per_day(line) *
                 line_obj.days_between(line.date_from, self.cancel_from_date))
-
-
