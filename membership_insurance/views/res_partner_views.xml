@@ -41,10 +41,10 @@
     <field eval="99" name="priority"/>
     <field name="arch" type="xml">
       <tree string="Accommodator ">
-	<!--
+    <!--
             <field name="status" />
-	-->
-	<field name="insurance_company_type" />
+    -->
+    <field name="insurance_company_type" />
         <field name="fellowship_id" class="o_colum_sortable"/>
         <field name="insurance_company_id" />
         <field name="name" />
@@ -65,10 +65,10 @@
     <field eval="99" name="priority"/>
     <field name="arch" type="xml">
       <tree string="All ">
-	<!--
+    <!--
             <field name="status" />
-	-->
-	<field name="insurance_company_type" />
+    -->
+    <field name="insurance_company_type" />
         <field name="fellowship_id" />
         <field name="insurance_company_id" />
         <field name="name" />
@@ -88,9 +88,9 @@
     <field eval="99" name="priority"/>
     <field name="arch" type="xml">
       <tree string="Fellowship">
-	<!--
+    <!--
             <field name="status" />
-	-->
+    -->
         <field name="insurance_company_type" />
         <field name="count_company" />
         <field name="count_accommodator" />
@@ -108,9 +108,9 @@
     <field eval="99" name="priority"/>
     <field name="arch" type="xml">
       <tree string="Company">
-	<!--
+    <!--
             <field name="status" />
-	-->
+    -->
         <field name="insurance_company_type" />
         <field name="fellowship_id" />
         <field name="count_accommodator" />
@@ -121,9 +121,9 @@
         <field name="country_id" invisible="1"/>
         <field name="parent_id" invisible="1"/>
         <field name="active" invisible="1"/>
-	<!--
+    <!--
             <field name="company_registry" string="Org.Nr"/>
-	-->
+    -->
         <field name="city" />
       </tree>
     </field>
@@ -171,10 +171,13 @@
             <tree string="Insurances">
               <field name="date"/>
               <field name="insurance_id"/>
+              <field name="quantity"/>
+              <field name="original_quantity"/>
               <field name="insurance_price"/>
               <field name="account_invoice_id"/>
               <field name="state"/>
-	      <button name="button_cancel_insurance" string="Cancel Insurance" type="object" icon="fa-times-circle text-danger"/>
+                <button name="button_cancel_insurance" string="Cancel Insurance" type="object" icon="fa-times-circle text-danger" attrs="{'invisible':[('quantity','=', 0)]}"/>
+                <button name="button_start_insurance" string="Start Insurance" type="object" icon="fa-check-circle text-success" attrs="{'invisible':[('quantity','>=','original_quantity')]}"/>
             </tree>
             <form string="Insurances">
               <group col="2">
@@ -186,6 +189,7 @@
                 <group>
                   <field name="insurance_price"/>
                   <field name="account_invoice_id" context="{'form_view_ref': 'account.invoice_form'}"/>
+                  <field name="refund_invoices"/>
                 </group>
               </group>
             </form>
@@ -343,8 +347,8 @@
     <field name="act_window_id" ref="membership.action_membership_members" />
     <field name="search_view_id" ref="base.view_res_partner_filter" />
     <field name="view_ids" eval="[(5, 0, 0),
-				 (0, 0, {'view_mode': 'tree', 'view_id': ref('membership_insurance.view_member_tree_all')}),
-				 (0, 0, {'view_mode': 'form', 'view_id': ref('base.view_partner_form')})]"/>
+                 (0, 0, {'view_mode': 'tree', 'view_id': ref('membership_insurance.view_member_tree_all')}),
+                 (0, 0, {'view_mode': 'form', 'view_id': ref('base.view_partner_form')})]"/>
   </record>
   <record id="action_fellowship_form" model="ir.actions.act_window">
     <field name="name">Fellowship</field>
@@ -356,8 +360,8 @@
     <field name="act_window_id" ref="membership.action_membership_members" />
     <field name="search_view_id" ref="base.view_res_partner_filter" />
     <field name="view_ids" eval="[(5, 0, 0),
-				 (0, 0, {'view_mode': 'tree', 'view_id': ref('membership_insurance.view_member_tree_fellowship')}),
-				 (0, 0, {'view_mode': 'form', 'view_id': ref('base.view_partner_form')})]"/>
+                 (0, 0, {'view_mode': 'tree', 'view_id': ref('membership_insurance.view_member_tree_fellowship')}),
+                 (0, 0, {'view_mode': 'form', 'view_id': ref('base.view_partner_form')})]"/>
   </record>
   <record id="action_accommodator_form" model="ir.actions.act_window">
     <field name="name">Accommodator</field>
@@ -369,8 +373,8 @@
     <field name="act_window_id" ref="membership.action_membership_members" />
     <field name="search_view_id" ref="base.view_res_partner_filter" />
     <field name="view_ids" eval="[(5, 0, 0),
-				 (0, 0, {'view_mode': 'tree', 'view_id': ref('membership_insurance.view_member_tree_accommodator')}),
-				 (0, 0, {'view_mode': 'form', 'view_id': ref('base.view_partner_form')})]"/>
+                 (0, 0, {'view_mode': 'tree', 'view_id': ref('membership_insurance.view_member_tree_accommodator')}),
+                 (0, 0, {'view_mode': 'form', 'view_id': ref('base.view_partner_form')})]"/>
   </record>
 
   <record id="action_company_form" model="ir.actions.act_window">
@@ -383,8 +387,8 @@
     <field name="act_window_id" ref="membership.action_membership_members" />
     <field name="search_view_id" ref="base.view_res_partner_filter" />
     <field name="view_ids" eval="[(5, 0, 0),
-				 (0, 0, {'view_mode': 'tree', 'view_id': ref('membership_insurance.view_member_tree_company')}),
-				 (0, 0, {'view_mode': 'form', 'view_id': ref('base.view_partner_form')})]"/>
+                 (0, 0, {'view_mode': 'tree', 'view_id': ref('membership_insurance.view_member_tree_company')}),
+                 (0, 0, {'view_mode': 'form', 'view_id': ref('base.view_partner_form')})]"/>
   </record>
 
   <menuitem id="res_partner_menu_all" name="All" parent="membership.menu_membership" action="action_all_form" sequence="99" />

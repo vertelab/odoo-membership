@@ -1,7 +1,7 @@
 {
     'name':'Membership Insurance',
-    'description': 'Fields for administer members in insurance industry',
-    'version':'1.0',
+    'description': 'Fields for administering members in insurance industry',
+    'version':'14.0.1.0.0',
     'author':'Vertel AB',
 
     'data': [
@@ -10,8 +10,6 @@
         'views/product_views.xml',
         'data/insurance.license.csv',
         'data/insurance.permission.csv',
-        # ~ 'data/insurance.klientmedelskonto.product.csv',
-        # ~ 'data/insurance.SFMbolag.product.csv',
         'data/insurance_data.xml',
         'security/ir.model.access.csv',
     ],

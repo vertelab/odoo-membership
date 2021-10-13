@@ -22,8 +22,8 @@ class AccountInvoiceLine(models.Model):
             partner_start = self.partner_id.date_start
             partner_end = self.partner_id.date_end
 
-            self.total_days = self.days_between(partner_start or insurance_start,
-                                                partner_end or insurance_end)
+            self.total_days = self.days_between(insurance_start or partner_start,
+                                                insurance_end or partner_end)
 
 
     def days_between(self, date_from, date_to):
