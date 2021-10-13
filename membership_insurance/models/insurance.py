@@ -12,6 +12,7 @@ _logger = logging.getLogger(__name__)
 
 STATE = [
     ('none', _('Non Insurance')),
+    ('partially_canceled', _('Partially Cancelled Insurance')),
     ('canceled', _('Cancelled Insurance')),
     ('old', _('Old Insurance')),
     ('waiting', _('Waiting Insurance')),
@@ -203,7 +204,7 @@ class res_partner(models.Model):
         self.recompute()
 
     @api.multi
-    def create_insurance_invoice(self, product_id=None, datas=None):
+    def create_insurance_invoice(self, product_id=None, datas=None, manual_quantity=None):
         """
         Create Customer Invoice of insurance for partners.
         @param datas: datas has dictionary value which consist Id of Insurance product and Cost Amount of Insurance.
@@ -271,7 +272,9 @@ class res_partner(models.Model):
                     price_unit, quantity = line.product_id.insurance_get_amount_qty(invoice.partner_id)
                     if price_unit:
                         line.price_unit = price_unit
-                    if quantity:
+                    if manual_quantity and quantity:
+                        line.quantity = manual_quantity
+                    elif quantity:
                         line.quantity = quantity
         return invoice_list
 
@@ -292,8 +295,13 @@ class InsuranceLine(models.Model):
     insurance_price = fields.Float(string='Insurance Fee',
         digits=dp.get_precision('Product Price'), required=True,
         help='Amount for the Insurance')
+    original_insurance_price = fields.Float(string='Insurance Fee',
+        digits=dp.get_precision('Product Price'), required=True,
+        help='Amount for the Insurance')
+
     account_invoice_line = fields.Many2one('account.invoice.line', string='Account Invoice line', readonly=True, ondelete='cascade')
     account_invoice_id = fields.Many2one('account.invoice', related='account_invoice_line.invoice_id', string='Invoice', readonly=True)
+    refund_invoices = fields.One2many('account.invoice', inverse_name='insurance_line_id', string='Refund Invoices', readonly=True)
     company_id = fields.Many2one('res.company', related='account_invoice_line.invoice_id.company_id', string="Company", readonly=True, store=True)
     state = fields.Selection(STATE, compute='_compute_state', string='Insurance Status', store=True,
         help="It indicates the Insurance status.\n"
@@ -304,10 +312,18 @@ class InsuranceLine(models.Model):
              "-Invoiced Insurance: A Insurance whose invoice has been created.\n"
              "-Paid Insurance: A Insurance who has paid the Insurance amount.")
 
+    original_quantity = fields.Integer(string='Original Quantity', default=1)
+    quantity = fields.Integer(string='Quantity', default=1)
+
+    @api.onchange('quantity')
+    def recalculate_insurance_price(self):
+        self.insurance_price = (self.original_insurance_price / self.original_quantity) * self.quantity
+
     @api.depends('account_invoice_line.invoice_id.state',
                  'account_invoice_line.invoice_id.payment_ids',
                  'account_invoice_line.invoice_id.payment_ids.invoice_ids.type',
-                 'date_cancel')
+                 'date_cancel',
+                 'refund_invoices')
     def _compute_state(self):
         """Compute the state lines """
         Invoice = self.env['account.invoice']
@@ -327,8 +343,12 @@ class InsuranceLine(models.Model):
                 )
             ''', (line.id,))
             fetched = self._cr.fetchone()
+
             if not fetched or line.date_cancel:
-                line.state = 'canceled'
+                if self.quantity > 0 and self.quantity < self.original_quantity:
+                    line.state = 'partially_canceled'
+                else:
+                    line.state = 'canceled'
                 continue
             istate = fetched[0]
             if istate == 'draft':
@@ -344,6 +364,17 @@ class InsuranceLine(models.Model):
                 line.state = 'canceled'
             else:
                 line.state = 'none'
+
+    def button_start_insurance(self):
+        for invoice in self.refund_invoices:
+            if invoice.state == 'draft':
+                for line in invoice.invoice_line_ids:
+                    self.state = 'partially_canceled'
+                    self.quantity += line.quantity
+                invoice.unlink()
+        if self.quantity == self.original_quantity:
+            self.state = 'waiting'
+        self.recalculate_insurance_price()
 
     def button_cancel_insurance(self):
         view = self.env.ref('membership_insurance.view_insurance_cancel')
@@ -363,7 +394,6 @@ class InsuranceLine(models.Model):
     def price_per_day(self, line, **kwargs):
         '''Calculate the price per day from an insurance line.'''
         try:
-            _logger.warning(kwargs)
             price = kwargs.get('price') or line.insurance_price
             date_from = kwargs.get('date_from') or line.date_from
             date_to = kwargs.get('date_to') or line.date_to
@@ -392,6 +422,13 @@ class CancelInsurance(models.TransientModel):
     product_id = fields.Many2one(related='line_id.insurance_id', readonly=True)
     line_id = fields.Many2one('insurance.insurance_line', string='Insurance Line')
     refund_amount = fields.Float(string='Amount Refunded (ex taxes)', compute='_compute_refund')
+    num_to_cancel = fields.Integer(string='Number of insurances to cancel', default=1, readonly=False)
+
+
+    @api.onchange('num_to_cancel')
+    def _check_num_to_cancel(self):
+        if self.num_to_cancel > self.line_id.quantity or self.num_to_cancel < 1:
+            raise ValidationError("You cant cancel less than one insurance or more than what was originally ordered")
 
     @api.onchange('cancel_from_date')
     def _check_cancel_date(self):
@@ -412,10 +449,12 @@ class CancelInsurance(models.TransientModel):
                             'message': _('Cancel date is before start date of insurance!')}
             }
 
-    @api.depends('cancel_from_date')
+    @api.depends('cancel_from_date', 'num_to_cancel')
     def _compute_refund(self):
         if self.cancel_from_date:
-            self.refund_amount = self.refund(self.line_id)
+            original_quantity = self.line_id.original_quantity
+            quantity = self.line_id.quantity
+            self.refund_amount = self.refund(self.line_id) * self.num_to_cancel
 
     @api.multi
     def cancel_insurance(self):
@@ -434,6 +473,7 @@ class CancelInsurance(models.TransientModel):
         # Apply refund.
         for line in invoice.invoice_line_ids:
             line.price_unit = self.refund(self.line_id)
+            line.quantity = self.num_to_cancel
             line._onchange_eval('price_unit', "1", {})
         invoice.compute_taxes()
         self.line_id.date_cancel = self.cancel_from_date
@@ -442,6 +482,9 @@ class CancelInsurance(models.TransientModel):
         form_view = [(view_ref.id, 'form')]
         result['views'] = form_view
         result['res_id'] = invoice.id
+        self.line_id.quantity -= self.num_to_cancel
+        self.line_id.recalculate_insurance_price()
+        invoice.insurance_line_id = self.line_id.id
         return result
 
     def refund(self, line):
@@ -452,6 +495,11 @@ class CancelInsurance(models.TransientModel):
         multiplied with remaining days of the insurance.
         """
         line_obj = self.env['insurance.insurance_line']
-        return (line.insurance_price -
-                line_obj.price_per_day(line) *
+        return ((line.insurance_price / line.quantity) -
+                (line_obj.price_per_day(line) / line.quantity) *
                 line_obj.days_between(line.date_from, self.cancel_from_date))
+
+class AccountInvoice(models.Model):
+    _inherit = 'account.invoice'
+
+    insurance_line_id = fields.Many2one('insurance.insurance_line')

@@ -111,6 +111,8 @@ class MembershipInsurance(models.TransientModel):
     total_days = fields.Integer(string="Total Insurance Days",
                                 compute="_compute_days",
                                 readonly=True)
+    quantity = fields.Integer(string="Manual Quantity",
+                              help="Keep at 0 to automatically calculate the amount of insuranses to invoice")
 
 
     @api.depends('membership_date_start', 'membership_date_end', 'base_price')
@@ -166,7 +168,7 @@ class MembershipInsurance(models.TransientModel):
             'insurance_product_id': self.product_id.id,
             'amount': self.insurance_price
         }
-        invoice_list = self.env['res.partner'].browse(self._context.get('active_ids')).create_insurance_invoice(datas=datas)
+        invoice_list = self.env['res.partner'].browse(self._context.get('active_ids')).create_insurance_invoice(datas=datas, manual_quantity = self.quantity)
 
         for invoice in invoice_list:
             for line in invoice.invoice_line_ids:
@@ -174,8 +176,11 @@ class MembershipInsurance(models.TransientModel):
                                                              'date_from': self.membership_date_start,
                                                              'date_to': self.membership_date_end,
                                                              'insurance_id': line.product_id.id,
-                                                             'insurance_price': line.price_unit,
-                                                             'account_invoice_line': line.id})
+                                                             'insurance_price': line.price_unit * line.quantity,
+                                                             'original_insurance_price': line.price_unit * line.quantity,
+                                                             'account_invoice_line': line.id,
+                                                             'original_quantity': line.quantity,
+                                                             'quantity': line.quantity})
 
         search_view_ref = self.env.ref('account.view_account_invoice_filter', False)
         form_view_ref = self.env.ref('account.invoice_form', False)
@@ -195,7 +200,7 @@ class ProductProduct(models.Model):
     _inherit = 'product.product'
 
     @api.multi
-    def insurance_get_amount_qty(self, partner):
+    def insurance_get_amount_qty(self, partner, manual_quantity = None):
         eval_context = {
             'uid': self._uid,
             'user': self.env.user,
