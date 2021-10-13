@@ -8,10 +8,11 @@
         <group>
           <field name="product_id" widget="selection"/>
           <field name="base_price"/>
-	  <field name="membership_date_start"/>
-	  <field name="membership_date_end"/>
-	  <field name="total_days"/>
-	  <field name="insurance_price"/>
+      <field name="membership_date_start"/>
+      <field name="membership_date_end"/>
+      <field name="total_days"/>
+      <field name="insurance_price"/>
+      <field name="quantity"/>
         </group>
         <footer>
           <button string="Invoice Ansvarsförsäkringen Insurance" name="membership_insurance" type="object" class="btn-primary"/>
@@ -39,21 +40,22 @@
               id="action_insurance_invoice_view"/>
 
     <record id="view_insurance_cancel" model="ir.ui.view">
-    <field name="name">insurance.cancel.view.form</field>
-    <field name="model">insurance.cancel_insurance</field>
-    <field name="arch" type="xml">
-      <form string="Insurance Cancel">
-	<group>
-	  <field name="line_id" invisible="1"/>
-	  <field name="product_id"/>
-	  <field name="cancel_from_date"/>
-	  <field name="refund_amount"/>
-	</group>
-        <footer>
-          <button string="Refund remaining insurance" name="cancel_insurance" type="object" class="btn-primary"/>
-          <button string="Cancel" class="btn-secondary" special="cancel" />
-        </footer>
-      </form>
-    </field>
+        <field name="name">insurance.cancel.view.form</field>
+        <field name="model">insurance.cancel_insurance</field>
+        <field name="arch" type="xml">
+          <form string="Insurance Cancel">
+        <group>
+          <field name="line_id" invisible="1"/>
+          <field name="product_id"/>
+          <field name="cancel_from_date"/>
+          <field name="num_to_cancel"/>
+          <field name="refund_amount"/>
+        </group>
+            <footer>
+              <button string="Refund remaining insurance" name="cancel_insurance" type="object" class="btn-primary"/>
+              <button string="Cancel" class="btn-secondary" special="cancel" />
+            </footer>
+          </form>
+        </field>
   </record>
 </odoo>
