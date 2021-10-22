@@ -96,8 +96,8 @@ class AccountInvoiceSend(models.TransientModel):
         res = super(AccountInvoiceSend, self).send_and_print_action()
         if self.is_fortnox:
             for invoice in self.invoice_ids:
+                invoice.remove_zero_cost_lines()
+                invoice.fortnox_create()
+                # Do not spam fortnox
                 time.sleep(1)
-                if not invoice.name:
-                    invoice.remove_zero_cost_lines()
-                    invoice.fortnox_create()
         return res

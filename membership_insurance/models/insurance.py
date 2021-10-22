@@ -466,7 +466,7 @@ class CancelInsurance(models.TransientModel):
         journal_id = self.line_id.account_invoice_id.journal_id.id
         invoice = self.line_id.account_invoice_id.refund(self.cancel_from_date,
                                                          self.cancel_from_date,
-                                                         '',
+                                                         'Avbruten försäkring',
                                                          journal_id)
         # Remove lines that are not refunded this time.
         invoice.invoice_line_ids.filtered(
