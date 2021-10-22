@@ -315,6 +315,7 @@ class InsuranceLine(models.Model):
     original_quantity = fields.Integer(string='Original Quantity', default=1)
     quantity = fields.Integer(string='Quantity', default=1)
 
+
     @api.onchange('quantity')
     def recalculate_insurance_price(self):
         self.insurance_price = (self.original_insurance_price / self.original_quantity) * self.quantity
@@ -345,7 +346,7 @@ class InsuranceLine(models.Model):
             fetched = self._cr.fetchone()
 
             if not fetched or line.date_cancel:
-                if self.quantity > 0 and self.quantity < self.original_quantity:
+                if line.quantity > 0 and line.quantity < line.original_quantity:
                     line.state = 'partially_canceled'
                 else:
                     line.state = 'canceled'

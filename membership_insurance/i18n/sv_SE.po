@@ -7,8 +7,8 @@ msgstr ""
 "Project-Id-Version: Odoo Server 12.0-20210804\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-17 12:20+0000\n"
-"PO-Revision-Date: 2021-08-19 08:02+0000\n"
-"Last-Translator: Nils-Nyman-Waara <nils.nyman-waara@vertel.se>\n"
+"PO-Revision-Date: 2021-10-14 11:30+0000\n"
+"Last-Translator: Victor Ekström <victor.ekstrom@vertel.se>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -116,6 +116,7 @@ msgstr "Bellop att betala tillbaka (ex moms)"
 
 #. module: membership_insurance
 #: model:ir.model.fields,help:membership_insurance.field_insurance_insurance_line__insurance_price
+#: model:ir.model.fields,help:membership_insurance.field_insurance_insurance_line__original_insurance_price
 msgid "Amount for the Insurance"
 msgstr "Bellop för Förskringen"
 
@@ -134,6 +135,23 @@ msgid "Associate Member"
 msgstr "Associerad medlem"
 
 #. module: membership_insurance
+#: selection:insurance.insurance_line,state:0
+#: selection:res.partner,insurance_state:0
+msgid "Avbruten försäkring"
+msgstr ""
+
+#. module: membership_insurance
+#: model:ir.model.fields,field_description:membership_insurance.field_membership_insurance__base_price
+msgid "Base Price"
+msgstr ""
+
+#. module: membership_insurance
+#: selection:insurance.insurance_line,state:0
+#: selection:res.partner,insurance_state:0
+msgid "Betald försäkring"
+msgstr ""
+
+#. module: membership_insurance
 #: model_terms:ir.ui.view,arch_db:membership_insurance.view_partner_form
 msgid "Buy insurance"
 msgstr "Köp försäkring"
@@ -145,7 +163,7 @@ msgid "Cancel"
 msgstr "Avbryt"
 
 #. module: membership_insurance
-#: code:addons/membership_insurance/models/insurance.py:350
+#: code:addons/membership_insurance/models/insurance.py:383
 #: model_terms:ir.ui.view,arch_db:membership_insurance.view_partner_form
 #, python-format
 msgid "Cancel Insurance"
@@ -155,6 +173,12 @@ msgstr "Avbryt försäkring"
 #: model:ir.model.fields,field_description:membership_insurance.field_insurance_insurance_line__date_cancel
 msgid "Cancel date"
 msgstr "Avbruted datum"
+
+#. module: membership_insurance
+#: code:addons/membership_insurance/models/insurance.py:449
+#, python-format
+msgid "Cancel date is before start date of insurance!"
+msgstr "Slutdatum är före startdatum för försäkringen"
 
 #. module: membership_insurance
 #: model:ir.model.fields,field_description:membership_insurance.field_insurance_cancel_insurance__cancel_from_date
@@ -173,9 +197,7 @@ msgid "Cancel insurance and create refund invoice."
 msgstr "Avbryt försäkring och skapa återbetalnings faktura"
 
 #. module: membership_insurance
-#: code:addons/membership_insurance/models/insurance.py:18
-#: selection:insurance.insurance_line,state:0
-#: selection:res.partner,insurance_state:0
+#: code:addons/membership_insurance/models/insurance.py:16
 #, python-format
 msgid "Cancelled Insurance"
 msgstr "Avbruten försäkring"
@@ -320,7 +342,7 @@ msgstr "Aktiverings datum för försäkringen"
 #. module: membership_insurance
 #: model:ir.model.fields,help:membership_insurance.field_insurance_insurance_line__date
 msgid "Date on which Insurance has joined the Insurance"
-msgstr ""
+msgstr "Datumet då kunden skaffade försökringen"
 
 #. module: membership_insurance
 #: model:ir.model.fields,help:membership_insurance.field_res_partner__insurance_cancel
@@ -356,6 +378,12 @@ msgid "Error! Ending Date cannot be set before Beginning Date."
 msgstr "Fel! Slut Datum kan inte vara före Start Datum"
 
 #. module: membership_insurance
+#: selection:insurance.insurance_line,state:0
+#: selection:res.partner,insurance_state:0
+msgid "Fakturerade försäkringar"
+msgstr ""
+
+#. module: membership_insurance
 #: model:ir.actions.act_window,name:membership_insurance.action_fellowship_form
 #: model:ir.model.fields,field_description:membership_insurance.field_res_partner__fellowship_id
 #: model:ir.model.fields,field_description:membership_insurance.field_res_users__fellowship_id
@@ -378,9 +406,7 @@ msgid "Fortnox Invoice Nr"
 msgstr "Fortnox Faktura Nummer"
 
 #. module: membership_insurance
-#: code:addons/membership_insurance/models/insurance.py:22
-#: selection:insurance.insurance_line,state:0
-#: selection:res.partner,insurance_state:0
+#: code:addons/membership_insurance/models/insurance.py:20
 #, python-format
 msgid "Free Insurance"
 msgstr "Gratis försäkring"
@@ -395,6 +421,12 @@ msgstr "Från"
 #: model:ir.model.fields,field_description:membership_insurance.field_res_users__gender
 msgid "Gender"
 msgstr "Kön"
+
+#. module: membership_insurance
+#: selection:insurance.insurance_line,state:0
+#: selection:res.partner,insurance_state:0
+msgid "Gratis försäkring"
+msgstr ""
 
 #. module: membership_insurance
 #: model_terms:ir.ui.view,arch_db:membership_insurance.insurance_product_search_form_view
@@ -474,6 +506,7 @@ msgstr "Försäkrings Slutdatum"
 
 #. module: membership_insurance
 #: model:ir.model.fields,field_description:membership_insurance.field_insurance_insurance_line__insurance_price
+#: model:ir.model.fields,field_description:membership_insurance.field_insurance_insurance_line__original_insurance_price
 msgid "Insurance Fee"
 msgstr "Försäkrings Avgift"
 
@@ -485,6 +518,7 @@ msgstr "Licens"
 
 #. module: membership_insurance
 #: model:ir.model,name:membership_insurance.model_insurance_insurance_line
+#: model:ir.model.fields,field_description:membership_insurance.field_account_invoice__insurance_line_id
 #: model:ir.model.fields,field_description:membership_insurance.field_insurance_cancel_insurance__line_id
 msgid "Insurance Line"
 msgstr "Försäkrings Rad"
@@ -494,11 +528,6 @@ msgstr "Försäkrings Rad"
 #: model:ir.model.fields,field_description:membership_insurance.field_res_users__liability_insurance_permission
 msgid "Insurance Permission"
 msgstr "Tillstånd"
-
-#. module: membership_insurance
-#: model:ir.model.fields,field_description:membership_insurance.field_membership_insurance__insurance_price
-msgid "Insurance Price"
-msgstr "Försäkrings Pris"
 
 #. module: membership_insurance
 #: model:ir.model.fields,field_description:membership_insurance.field_membership_insurance__product_id
@@ -531,6 +560,18 @@ msgid "Insurance Status"
 msgstr "Försäkrings Status"
 
 #. module: membership_insurance
+#: code:addons/membership_insurance/models/product.py:143
+#, python-format
+msgid "Insurance has to be atleast 30 days."
+msgstr "Försäkringen måste vara minst 30 dager"
+
+#. module: membership_insurance
+#: code:addons/membership_insurance/models/product.py:148
+#, python-format
+msgid "Insurance period cannot be longer than 360 days.."
+msgstr "Försäkrningsperioden får max sträckas sig 360 dagar"
+
+#. module: membership_insurance
 #: model_terms:ir.ui.view,arch_db:membership_insurance.insurance_products_form
 #: model_terms:ir.ui.view,arch_db:membership_insurance.insurance_products_tree
 msgid "Insurance products"
@@ -540,6 +581,12 @@ msgstr "Försäkrings produkter"
 #: model_terms:ir.ui.view,arch_db:membership_insurance.view_partner_form
 msgid "Insurances"
 msgstr "Försäkringar"
+
+#. module: membership_insurance
+#: selection:insurance.insurance_line,state:0
+#: selection:res.partner,insurance_state:0
+msgid "Inte Försäkrad"
+msgstr ""
 
 #. module: membership_insurance
 #: model:ir.model.fields,field_description:membership_insurance.field_res_partner__internal_notes
@@ -570,12 +617,16 @@ msgid "Invoice Products"
 msgstr "Faktura Produkter"
 
 #. module: membership_insurance
-#: code:addons/membership_insurance/models/insurance.py:21
-#: selection:insurance.insurance_line,state:0
-#: selection:res.partner,insurance_state:0
+#: code:addons/membership_insurance/models/insurance.py:19
 #, python-format
 msgid "Invoiced Insurance"
 msgstr "Fakturerade försäkringar"
+
+#. module: membership_insurance
+#: selection:insurance.insurance_line,state:0
+#: selection:res.partner,insurance_state:0
+msgid "Inväntar försäkring."
+msgstr ""
 
 #. module: membership_insurance
 #: model:ir.model.fields,help:membership_insurance.field_insurance_insurance_line__state
@@ -604,6 +655,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:membership_insurance.field_insurance_insurance_line__date
 msgid "Join Date"
 msgstr "Anslutnings datum"
+
+#. module: membership_insurance
+#: model:ir.model.fields,help:membership_insurance.field_membership_insurance__quantity
+msgid "Keep at 0 to automatically calculate the amount of insuranses to invoice"
+msgstr ""
 
 #. module: membership_insurance
 #: model:ir.model.fields,field_description:membership_insurance.field_insurance_cancel_insurance____last_update
@@ -642,6 +698,11 @@ msgid "Male"
 msgstr "Man"
 
 #. module: membership_insurance
+#: model:ir.model.fields,field_description:membership_insurance.field_membership_insurance__quantity
+msgid "Manual Quantity"
+msgstr "Manuell Mängd"
+
+#. module: membership_insurance
 #: model:ir.model.fields,field_description:membership_insurance.field_membership_insurance__membership_date_end
 msgid "Membership Date End"
 msgstr "Medlemskap Slutdatum"
@@ -671,17 +732,24 @@ msgid "No blog post was found. Make sure your posts are published."
 msgstr "Inget bloginlägg hittades. Kontrollera att dina inlägg är publicerade"
 
 #. module: membership_insurance
-#: code:addons/membership_insurance/models/insurance.py:17
-#: selection:insurance.insurance_line,state:0
-#: selection:res.partner,insurance_state:0
+#: code:addons/membership_insurance/models/insurance.py:14
 #, python-format
 msgid "Non Insurance"
 msgstr "Inte Försäkrad"
 
 #. module: membership_insurance
-#: code:addons/membership_insurance/models/insurance.py:19
-#: selection:insurance.insurance_line,state:0
-#: selection:res.partner,insurance_state:0
+#: code:addons/membership_insurance/models/insurance.py:443
+#, python-format
+msgid "Not allowed to refund insurance with less than 30 days left"
+msgstr ""
+
+#. module: membership_insurance
+#: model:ir.model.fields,field_description:membership_insurance.field_insurance_cancel_insurance__num_to_cancel
+msgid "Number of insurances to cancel"
+msgstr "Mängden försäkringar som ska avslutas"
+
+#. module: membership_insurance
+#: code:addons/membership_insurance/models/insurance.py:17
 #, python-format
 msgid "Old Insurance"
 msgstr "Utgången försäkring"
@@ -700,12 +768,23 @@ msgid "Org/pers-nummer"
 msgstr ""
 
 #. module: membership_insurance
-#: code:addons/membership_insurance/models/insurance.py:23
-#: selection:insurance.insurance_line,state:0
-#: selection:res.partner,insurance_state:0
+#: model:ir.model.fields,field_description:membership_insurance.field_insurance_insurance_line__original_quantity
+msgid "Original Quantity"
+msgstr "Originell mängd"
+
+#. module: membership_insurance
+#: code:addons/membership_insurance/models/insurance.py:21
 #, python-format
 msgid "Paid Insurance"
 msgstr "Betald försäkring"
+
+#. module: membership_insurance
+#: code:addons/membership_insurance/models/insurance.py:15
+#: selection:insurance.insurance_line,state:0
+#: selection:res.partner,insurance_state:0
+#, python-format
+msgid "Partially Cancelled Insurance"
+msgstr "Delvis avslutad försäkring"
 
 #. module: membership_insurance
 #: model:ir.model.fields,field_description:membership_insurance.field_insurance_insurance_line__partner
@@ -713,7 +792,7 @@ msgid "Partner"
 msgstr "Samarbetspartner"
 
 #. module: membership_insurance
-#: code:addons/membership_insurance/models/insurance.py:221
+#: code:addons/membership_insurance/models/insurance.py:220
 #, python-format
 msgid "Partner doesn't have an address to make the invoice."
 msgstr "Partner saknar faktura adress."
@@ -747,9 +826,15 @@ msgid "Python Code"
 msgstr "Pythonkod"
 
 #. module: membership_insurance
+#: model:ir.model.fields,field_description:membership_insurance.field_insurance_insurance_line__quantity
 #: model:ir.model.fields,field_description:membership_insurance.field_membership_membership_line__quantity
 msgid "Quantity"
 msgstr "Antal"
+
+#. module: membership_insurance
+#: model:ir.model.fields,field_description:membership_insurance.field_insurance_insurance_line__refund_invoices
+msgid "Refund Invoices"
+msgstr "Återbetala fakturor"
 
 #. module: membership_insurance
 #: model_terms:ir.ui.view,arch_db:membership_insurance.view_insurance_cancel
@@ -791,6 +876,11 @@ msgstr "Roll"
 #: model_terms:ir.ui.view,arch_db:membership_insurance.insurance_product_search_form_view
 msgid "Start Date"
 msgstr "Startdatum"
+
+#. module: membership_insurance
+#: model_terms:ir.ui.view,arch_db:membership_insurance.view_partner_form
+msgid "Start Insurance"
+msgstr ""
 
 #. module: membership_insurance
 #: model_terms:ir.ui.view,arch_db:membership_insurance.view_partner_form
@@ -855,12 +945,30 @@ msgid "Total Insurance Days"
 msgstr "Totalt Antal Försäkrade Dagar"
 
 #. module: membership_insurance
-#: code:addons/membership_insurance/models/insurance.py:20
+#: model:ir.model.fields,field_description:membership_insurance.field_membership_insurance__insurance_price
+msgid "Total Insurance Price"
+msgstr "Totalt försäkringspris"
+
+#. module: membership_insurance
 #: selection:insurance.insurance_line,state:0
 #: selection:res.partner,insurance_state:0
+msgid "Utgången försäkring"
+msgstr ""
+
+#. module: membership_insurance
+#: code:addons/membership_insurance/models/insurance.py:18
 #, python-format
 msgid "Waiting Insurance"
 msgstr "Inväntar försäkring."
+
+#. module: membership_insurance
+#: code:addons/membership_insurance/models/insurance.py:442
+#: code:addons/membership_insurance/models/insurance.py:448
+#: code:addons/membership_insurance/models/product.py:142
+#: code:addons/membership_insurance/models/product.py:147
+#, python-format
+msgid "Warning!"
+msgstr ""
 
 #. module: membership_insurance
 #: model:ir.model.fields,help:membership_insurance.field_product_product__insurance_code
@@ -869,7 +977,7 @@ msgid "Write Python code that holds advanced calcultations for amount and quanti
 msgstr "Skriv Python kod som innehåller anvancerade beräkningar för värde och antal"
 
 #. module: membership_insurance
-#: code:addons/membership_insurance/models/insurance.py:198
+#: code:addons/membership_insurance/models/insurance.py:196
 #, python-format
 msgid "You cannot create recursive associated members."
 msgstr "Du kan inte skapa rekursiva assoicierade medlemmar."
@@ -905,4 +1013,3 @@ msgstr "Tillstånd"
 #: model:ir.model,name:membership_insurance.model_insurance_role
 msgid "insurance.role"
 msgstr ""
-
