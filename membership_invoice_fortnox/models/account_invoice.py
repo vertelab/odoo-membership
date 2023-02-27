@@ -15,6 +15,8 @@ BASE_URL = 'https://api.fortnox.se'
 
 class AccountInvoice(models.Model):
     _inherit = "account.invoice"
+    fortnox_response = fields.Char(string="Fortnox Response", readonly=True)
+    fortnox_status = fields.Char(string="Fortnox Status", readonly=True)
 
     def remove_zero_cost_lines(self):
         """
@@ -38,6 +40,27 @@ class AccountInvoice(models.Model):
             if len(line.product_id.membership_product_ids) > 0 and line.price_unit == 0 and line.quantity == 0:
                 line.unlink()
         self.state = 'open'
+    @api.multi
+    def update_invoice_status_fortnox_paid(self):
+        payment_methods = (self.residual>0) and self.journal_id.inbound_payment_method_ids or self.journal_id.outbound_payment_method_ids
+        payment_register_params = dict(
+            amount=self.residual,
+            communication=self.reference,
+            currency_id=self.currency_id.id,
+            journal_id=self.journal_id.id,
+            payment_date=self.date,
+            payment_method_id=payment_methods and payment_methods[0].id or False,
+            payment_type= self.residual >0 and 'inbound' or 'outbound',
+            partner_id=self.partner_id.id,
+        )
+
+        payment_id = self.env['account.payment'].with_context(
+            active_model='account.invoice',
+            active_ids=self.id,
+        ).create(payment_register_params)
+
+        payment_id._onchange_journal()
+        action = payment_id.action_validate_invoice_payment()
 
     def update_invoice_status_fortnox_cron(self):
         """Update invoice status from fortnox."""
@@ -57,7 +80,9 @@ class AccountInvoice(models.Model):
         for company in self.env['res.company'].search([]):
             for invoice in self.env['account.invoice'].search(
                     [('company_id', '=', company.id),
-                     ('create_date', '>', from_date)]):
+                     ('create_date', '>', from_date),
+                     ('state', '!=', 'paid'),
+                     ('id', '=', 1009)]):
                 for state in states:
                     # Only allowed to do 4 requests per second to Fortnox.
                     # Do 3 requests per second just to be sure.
@@ -76,6 +101,10 @@ class AccountInvoice(models.Model):
                             _logger.info(f'{invoice.name}: {state}')
                             _logger.debug(str(invoice.read()))
                             invoice.state = states[state]
+                            if states[state] == 'paid':
+                                invoice.update_invoice_status_fortnox_paid()
+                            invoice.fortnox_response = r
+                            invoice.fortnox_status = states[state]
                             break
                     else:
                         # If we found an invoice we do not have to check
