@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+1# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import datetime, timedelta
@@ -47,7 +47,7 @@ class AccountInvoice(models.Model):
             amount=self.residual,
             communication=self.reference,
             currency_id=self.currency_id.id,
-            journal_id=self.journal_id.id,
+            journal_id=10,
             payment_date=self.date,
             payment_method_id=payment_methods and payment_methods[0].id or False,
             payment_type= self.residual >0 and 'inbound' or 'outbound',
@@ -60,7 +60,12 @@ class AccountInvoice(models.Model):
         ).create(payment_register_params)
 
         payment_id._onchange_journal()
+       # _logger.warning(f"before"*10)
+       # _logger.warning(self.env.context)
+       # _logger.warning(self.company_id)
+       # _logger.warning(self.id)
         action = payment_id.action_validate_invoice_payment()
+       # _logger.warning("after"*10)
 
     def update_invoice_status_fortnox_cron(self):
         """Update invoice status from fortnox."""
@@ -82,7 +87,10 @@ class AccountInvoice(models.Model):
                     [('company_id', '=', company.id),
                      ('create_date', '>', from_date),
                      ('state', '!=', 'paid'),
-                     ('id', '=', 1009)]):
+                     ('state', '!=', 'draft'),
+                     ('state', '!=', 'cancel'),
+                    ]):
+                #('id', '=', 940)
                 for state in states:
                     # Only allowed to do 4 requests per second to Fortnox.
                     # Do 3 requests per second just to be sure.
@@ -96,13 +104,20 @@ class AccountInvoice(models.Model):
                         _logger.error(f'Could not find invoice with name: {invoice.name}')
                         _logger.error(r.get('ErrorInformation'))
                         continue
+                    
                     for inv in r.get('Invoices', []):
                         if invoice.name == inv.get('DocumentNumber'):
-                            _logger.info(f'{invoice.name}: {state}')
+                            _logger.info(f' {invoice.id} {invoice.name}: {state}')
                             _logger.debug(str(invoice.read()))
-                            invoice.state = states[state]
-                            if states[state] == 'paid':
+                            _logger.warning("Look here"*100)
+                            _logger.warning(states[state])
+                            _logger.warning(invoice.state)
+                            if states[state] == 'paid' and invoice.state == 'open':
                                 invoice.update_invoice_status_fortnox_paid()
+                            elif states[state] == 'paid' and invoice.state == 'sent':
+                                invoice.state = 'open'
+                                invoice.update_invoice_status_fortnox_paid()
+
                             invoice.fortnox_response = r
                             invoice.fortnox_status = states[state]
                             break
