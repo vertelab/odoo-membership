@@ -7,7 +7,7 @@ import json
 import time
 
 from odoo import api, fields, models
-from odoo.exceptions import Warning
+from odoo.exceptions import Warning, UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -42,12 +42,17 @@ class AccountInvoice(models.Model):
         self.state = 'open'
     @api.multi
     def update_invoice_status_fortnox_paid(self):
+        fortnox_journal = self.env['account.journal'].search([('name','like','fortnox'),('type','=','bank')])
+        if not fortnox_journal:
+            raise UserError("No valid Journal found. Create a journal called something containing fortnox and of the type bank.")
+        elif len(fortnox_journal) > 1:
+            raise UserError("More than one valid journal found for fortnox. Make sure there is only one journal of the type Bank with fortnox in its name.")
         payment_methods = (self.residual>0) and self.journal_id.inbound_payment_method_ids or self.journal_id.outbound_payment_method_ids
         payment_register_params = dict(
             amount=self.residual,
             communication=self.reference,
             currency_id=self.currency_id.id,
-            journal_id=10,
+            journal_id = fortnox_journal.id,
             payment_date=self.date,
             payment_method_id=payment_methods and payment_methods[0].id or False,
             payment_type= self.residual >0 and 'inbound' or 'outbound',
