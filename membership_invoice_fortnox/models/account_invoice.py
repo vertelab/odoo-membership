@@ -41,22 +41,25 @@ class AccountInvoice(models.Model):
                 line.unlink()
         self.state = 'open'
     @api.multi
-    def update_invoice_status_fortnox_paid(self):
+    def update_invoice_status_fortnox_paid(self, fortnox_values):
+        final_pay_date_string = fortnox_values.get('FinalPayDate')
+        final_pay_date = datetime.strptime(final_pay_date_string, '%Y-%m-%d').date()
         fortnox_journal = self.env['account.journal'].search([('name','like','fortnox'),('type','=','bank')])
+
         if not fortnox_journal:
             raise UserError("No valid Journal found. Create a journal called something containing fortnox and of the type bank.")
         elif len(fortnox_journal) > 1:
             raise UserError("More than one valid journal found for fortnox. Make sure there is only one journal of the type Bank with fortnox in its name.")
         payment_methods = (self.residual>0) and self.journal_id.inbound_payment_method_ids or self.journal_id.outbound_payment_method_ids
         payment_register_params = dict(
-            amount=self.residual,
-            communication=self.reference,
-            currency_id=self.currency_id.id,
+            amount = self.residual,
+            communication = self.reference,
+            currency_id = self.currency_id.id,
             journal_id = fortnox_journal.id,
-            payment_date=self.date,
-            payment_method_id=payment_methods and payment_methods[0].id or False,
-            payment_type= self.residual >0 and 'inbound' or 'outbound',
-            partner_id=self.partner_id.id,
+            payment_date = final_pay_date if final_pay_date else self.date,
+            payment_method_id = payment_methods and payment_methods[0].id or False,
+            payment_type = self.residual >0 and 'inbound' or 'outbound',
+            partner_id = self.partner_id.id,
         )
 
         payment_id = self.env['account.payment'].with_context(
@@ -113,15 +116,15 @@ class AccountInvoice(models.Model):
                     for inv in r.get('Invoices', []):
                         if invoice.name == inv.get('DocumentNumber'):
                             _logger.info(f' {invoice.id} {invoice.name}: {state}')
-                            _logger.debug(str(invoice.read()))
+                            _logger.debug(str(invoice.read())) 
                             _logger.warning("Look here"*100)
                             _logger.warning(states[state])
                             _logger.warning(invoice.state)
                             if states[state] == 'paid' and invoice.state == 'open':
-                                invoice.update_invoice_status_fortnox_paid()
+                                invoice.update_invoice_status_fortnox_paid(inv)
                             elif states[state] == 'paid' and invoice.state == 'sent':
                                 invoice.state = 'open'
-                                invoice.update_invoice_status_fortnox_paid()
+                                invoice.update_invoice_status_fortnox_paid(inv)
 
                             invoice.fortnox_response = r
                             invoice.fortnox_status = states[state]
