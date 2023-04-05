@@ -115,11 +115,11 @@ class AccountInvoice(models.Model):
                     
                     for inv in r.get('Invoices', []):
                         if invoice.name == inv.get('DocumentNumber'):
-                            _logger.info(f' {invoice.id} {invoice.name}: {state}')
-                            _logger.debug(str(invoice.read())) 
-                            _logger.warning("Look here"*100)
-                            _logger.warning(states[state])
-                            _logger.warning(invoice.state)
+                            #_logger.info(f' {invoice.id} {invoice.name}: {state}')
+                            #_logger.debug(str(invoice.read())) 
+                            #_logger.warning("Look here"*100)
+                            #_logger.warning(states[state])
+                            #_logger.warning(invoice.state)
                             if states[state] == 'paid' and invoice.state == 'open':
                                 invoice.update_invoice_status_fortnox_paid(inv)
                             elif states[state] == 'paid' and invoice.state == 'sent':
