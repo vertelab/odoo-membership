@@ -5,17 +5,14 @@
 {
     'name': 'Membership Invoice',
     'version': '1.0',
-    'author':'Vertel AB',
+    'author': 'Vertel AB',
     'category': 'Sales',
     'description': """
 This module extends the invoicing capabilities for membership-module
     """,
-    'depends': ['membership','l10n_se'],
+    'depends': ['membership', 'l10n_se'],
     'data': [
-        
-        'views/partner_views.xml',
         'views/product_views.xml',
-        
     ],
     'website': 'vertel.se',
 }

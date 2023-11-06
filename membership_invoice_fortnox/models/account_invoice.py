@@ -1,4 +1,4 @@
-1# -*- coding: utf-8 -*-
+1  # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import datetime, timedelta
@@ -13,8 +13,10 @@ _logger = logging.getLogger(__name__)
 
 BASE_URL = 'https://api.fortnox.se'
 
+
 class AccountInvoice(models.Model):
     _inherit = "account.invoice"
+
     fortnox_response = fields.Char(string="Fortnox Response", readonly=True)
     fortnox_status = fields.Char(string="Fortnox Status", readonly=True)
 
@@ -40,26 +42,31 @@ class AccountInvoice(models.Model):
             if len(line.product_id.membership_product_ids) > 0 and line.price_unit == 0 and line.quantity == 0:
                 line.unlink()
         self.state = 'open'
+
     @api.multi
     def update_invoice_status_fortnox_paid(self, fortnox_values):
         final_pay_date_string = fortnox_values.get('FinalPayDate')
         final_pay_date = datetime.strptime(final_pay_date_string, '%Y-%m-%d').date()
-        fortnox_journal = self.env['account.journal'].search([('name','like','fortnox'),('type','=','bank')])
+        fortnox_journal = self.env['account.journal'].search([('name', 'like', 'fortnox'), ('type', '=', 'bank')])
 
         if not fortnox_journal:
-            raise UserError("No valid Journal found. Create a journal called something containing fortnox and of the type bank.")
+            raise UserError(
+                "No valid Journal found. Create a journal called something containing fortnox and of the type bank.")
         elif len(fortnox_journal) > 1:
-            raise UserError("More than one valid journal found for fortnox. Make sure there is only one journal of the type Bank with fortnox in its name.")
-        payment_methods = (self.residual>0) and self.journal_id.inbound_payment_method_ids or self.journal_id.outbound_payment_method_ids
+            raise UserError(
+                "More than one valid journal found for fortnox. Make sure there is only one journal of the type Bank "
+                "with fortnox in its name.")
+        payment_methods = (
+                                  self.residual > 0) and self.journal_id.inbound_payment_method_ids or self.journal_id.outbound_payment_method_ids
         payment_register_params = dict(
-            amount = self.residual,
-            communication = self.reference,
-            currency_id = self.currency_id.id,
-            journal_id = fortnox_journal.id,
-            payment_date = final_pay_date if final_pay_date else self.date,
-            payment_method_id = payment_methods and payment_methods[0].id or False,
-            payment_type = self.residual >0 and 'inbound' or 'outbound',
-            partner_id = self.partner_id.id,
+            amount=self.residual,
+            communication=self.reference,
+            currency_id=self.currency_id.id,
+            journal_id=fortnox_journal.id,
+            payment_date=final_pay_date if final_pay_date else self.date,
+            payment_method_id=payment_methods and payment_methods[0].id or False,
+            payment_type=self.residual > 0 and 'inbound' or 'outbound',
+            partner_id=self.partner_id.id,
         )
 
         payment_id = self.env['account.payment'].with_context(
@@ -68,12 +75,8 @@ class AccountInvoice(models.Model):
         ).create(payment_register_params)
 
         payment_id._onchange_journal()
-       # _logger.warning(f"before"*10)
-       # _logger.warning(self.env.context)
-       # _logger.warning(self.company_id)
-       # _logger.warning(self.id)
+
         action = payment_id.action_validate_invoice_payment()
-       # _logger.warning("after"*10)
 
     def update_invoice_status_fortnox_cron(self):
         """Update invoice status from fortnox."""
@@ -81,7 +84,7 @@ class AccountInvoice(models.Model):
         # Assumption that most invoices are paid rather than canceled.
         # Python conserves dict order since Python 3.7 so order matters.
         states = {'fullypaid': 'paid',
-                  'cancelled': 'cancel',}
+                  'cancelled': 'cancel', }
 
         # States we don't care about.
         #          'unpaid': 'open',
@@ -97,8 +100,8 @@ class AccountInvoice(models.Model):
                      ('state', '!=', 'paid'),
                      ('state', '!=', 'draft'),
                      ('state', '!=', 'cancel'),
-                    ]):
-                #('id', '=', 940)
+                     ]):
+                # ('id', '=', 940)
                 for state in states:
                     # Only allowed to do 4 requests per second to Fortnox.
                     # Do 3 requests per second just to be sure.
@@ -112,14 +115,14 @@ class AccountInvoice(models.Model):
                         _logger.error(f'Could not find invoice with name: {invoice.name}')
                         _logger.error(r.get('ErrorInformation'))
                         continue
-                    
+
                     for inv in r.get('Invoices', []):
                         if invoice.name == inv.get('DocumentNumber'):
-                            #_logger.info(f' {invoice.id} {invoice.name}: {state}')
-                            #_logger.debug(str(invoice.read())) 
-                            #_logger.warning("Look here"*100)
-                            #_logger.warning(states[state])
-                            #_logger.warning(invoice.state)
+                            # _logger.info(f' {invoice.id} {invoice.name}: {state}')
+                            # _logger.debug(str(invoice.read()))
+                            # _logger.warning("Look here"*100)
+                            # _logger.warning(states[state])
+                            # _logger.warning(invoice.state)
                             if states[state] == 'paid' and invoice.state == 'open':
                                 invoice.update_invoice_status_fortnox_paid(inv)
                             elif states[state] == 'paid' and invoice.state == 'sent':

@@ -31,11 +31,6 @@
                 <attribute name="attrs">{'invisible': True}</attribute>
             </field>
             <footer>
-<!--
-                <button string="Send "
-                    attrs="{'invisible': [('is_fortnox', '=', False)]}"
-                    name="send_and_print_action" type="object" class="send_and_print btn-primary o_mail_send"/>
--->
                 <button string="Send" name="send_and_print_action" type="object" class="send_and_print btn-primary o_mail_send"/>
             </footer>
         </field>
