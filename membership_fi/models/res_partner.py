@@ -20,7 +20,6 @@
 ##############################################################################
 
 from odoo import models, fields, api, _
-from tabulate import tabulate
 from odoo.exceptions import UserError
 import logging
 
@@ -72,7 +71,6 @@ class res_partner(models.Model):
 
         for partner in partner_ids:
             children_from_web = []
-            children_from_odoo = []
 
             if not partner.url_financial_supervisory:
                 no_url_financial_supervisory.append(partner.name)
@@ -81,13 +79,15 @@ class res_partner(models.Model):
                 page = requests.get(partner.url_financial_supervisory)
                 soup = BeautifulSoup(page.content, 'html.parser')
 
+                children_from_odoo = self.env['res.partner'].search([
+                    ('parent_id', '=', partner.id), ('insurance_company_type', '=', 'accommodator')
+                ]).mapped('name')
+
                 for atag in soup.findAll('a'):
                     if "/sv/vara-register/foretagsregistret/details/?id=" in atag['href']:
                         (last, first) = atag.text.strip().split(', ')
                         name = "%s %s" % (first, last)
                         children_from_web.append(name)
-                        child = self.env['res.partner'].search([('parent_id', '=', partner.id), ('name', '=', name)])
-                        children_from_odoo.append(child.name)
 
                 in_odoo_not_in_web.extend(
                     [elem for elem in list(set(children_from_odoo).difference(children_from_web)) if elem]
@@ -100,15 +100,15 @@ class res_partner(models.Model):
         result = ""
 
         result += "==" * 40 + "\n"
-        result += _("List of Records in Odoo that lacks FI Link: \n\n".upper())
+        result += _("List of Records in Odoo that lacks FI Link: \n".upper())
         result += '\n'.join(no_url_financial_supervisory)
 
         result += "\n" + "==" * 40 + "\n"
-        result += _("List of Users in Odoo but not in FI: \n\n".upper())
+        result += _("List of Users in Odoo but not in FI: \n".upper())
         result += '\n'.join(in_odoo_not_in_web)
 
         result += "\n" + "==" * 40 + "\n"
-        result += _("List of Users in FI but not in Odoo: \n\n".upper())
+        result += _("List of Users in FI but not in Odoo: \n".upper())
         result += '\n'.join(in_web_not_in_odoo)
 
         raise UserError(result)
