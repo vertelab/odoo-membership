@@ -271,15 +271,42 @@ class EventRegistration(models.Model):
         string="Reserved Table 1"
     )
 
+    reserved_table_1_name = fields.Char(
+        string="Reserved Table 1 Name",
+        related="reserved_table_1_id.name"
+    )
+
     reserved_table_2_id = fields.Many2one(
         'event.booking.table',
         string="Reserved Table 2"
+    )
+
+    reserved_table_2_name = fields.Char(
+        string="Reserved Table 2 Name",
+        related="reserved_table_2_id.name"
     )
 
     reserved_table_3_id = fields.Many2one(
         'event.booking.table',
         string="Reserved Table 3"
     )
+
+    reserved_table_3_name = fields.Char(
+        string="Reserved Table 3 Name",
+        related="reserved_table_3_id.name"
+    )
+
+    network_id = fields.Many2one(
+        'membership.network',
+        string="Network",
+        related="event_id.network_id",
+    )
+    
+    network_name = fields.Char(
+        string="Network Name",
+        related="network_id.name",
+    )
+
 
 
     @api.model_create_multi
