@@ -22,7 +22,6 @@
                                 <field name="name"/>
                                 <field name="capacity"/>
                             </group>
-<!--                            <group></group>-->
                         </group>
                     </sheet>
                 </form>

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Add membership_network_id field to product form -->
     <record id="view_product_template_form_inherit_membership_network" model="ir.ui.view">
         <field name="name">product.template.form.inherit.membership.network</field>
         <field name="model">product.template</field>

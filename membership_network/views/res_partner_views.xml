@@ -17,64 +17,7 @@
                         <span class="o_stat_text">Table History</span>
                     </div>
                 </button>
-                <button name="action_view_network_memberships"
-                        type="object"
-                        class="oe_stat_button"
-                        icon="fa-id-card"
-                        invisible="network_count &lt; 1">
-                    <div class="o_field_widget o_stat_info">
-                        <span class="o_stat_value">
-                            <field name="network_count" nolabel="1"/>
-                        </span>
-                        <span class="o_stat_text">Networks</span>
-                    </div>
-                </button>
             </xpath>
-        </field>
-    </record>
-
-    <record id="view_partner_network_membership_form" model="ir.ui.view">
-        <field name="name">res.partner.network.membership</field>
-        <field name="model">res.partner</field>
-        <field name="inherit_id" ref="base.view_partner_form"/>
-        <field name="arch" type="xml">
-            <notebook position="inside">
-                <page string="Network Memberships" name="network_memberships">
-                    <field name="network_membership_ids">
-                        <list string="Network Memberships">
-                            <field name="network_id"/>
-                            <field name="date"/>
-                            <field name="date_from"/>
-                            <field name="date_to"/>
-                            <field name="state" widget="badge" decoration-info="state == 'waiting'" decoration-success="state in ['invoiced', 'free', 'paid']"/>
-                            <field name="account_invoice_id"/>
-                            <field name="member_price"/>
-                        </list>
-                        <form string="Network Membership">
-                            <group>
-                                <group>
-                                    <field name="network_id"/>
-                                    <field name="date"/>
-                                    <field name="state"/>
-                                </group>
-                                <group>
-                                    <field name="member_price"/>
-                                    <field name="account_invoice_id" context="{'form_view_ref': 'account.view_move_form', 'default_move_type': 'out_invoice'}"/>
-                                </group>
-                            </group>
-                            <group>
-                                <group>
-                                    <field name="date_from"/>
-                                    <field name="date_to"/>
-                                </group>
-                                <group>
-                                    <field name="date_cancel"/>
-                                </group>
-                            </group>
-                        </form>
-                    </field>
-                </page>
-            </notebook>
         </field>
     </record>
 </odoo>

@@ -38,17 +38,6 @@
                 </xpath>
             </field>
         </record>
-        
-        <!-- Add is_network_member to registration list view -->
-<!--        <record model="ir.ui.view" id="event_registration_booking_table_list">-->
-<!--            <field name="name">event registration booking table list</field>-->
-<!--            <field name="model">event.registration</field>-->
-<!--            <field name="inherit_id" ref="event.view_event_registration_tree"/>-->
-<!--            <field name="arch" type="xml">-->
-<!--                <field name="state" position="after">-->
-<!--                    <field name="reserved_table_id"/>-->
-<!--                </field>-->
-<!--            </field>-->
-<!--        </record>-->
+
     </data>
 </odoo>

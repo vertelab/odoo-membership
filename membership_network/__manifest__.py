@@ -53,7 +53,7 @@
         'views/table_booking_history_views.xml',
         'views/event_event_views.xml',
         'views/website_templates.xml',
-        # 'views/event_website_templates.xml',
+        'views/res_partner_views.xml',
         'views/event_table_report.xml',
     ],
     'demo': [],
