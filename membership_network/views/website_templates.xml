@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="event_membership_required" name="Event Membership Required">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure oe_empty">
+                <section class="s_text_block pt96 pb96 o_colored_level">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg-8 offset-lg-2 text-center">
+                                <i class="fa fa-lock fa-5x mb-3 text-warning"/>
+                                <h1 class="mb-3">Membership Required</h1>
+                                <p class="lead">
+                                    This event requires membership in the <strong t-esc="network.name"/> network.
+                                </p>
+                                <t t-if="partner">
+                                    <p class="text-muted">
+                                        Your account (<t t-esc="partner.name"/>) is not currently a member of this network.
+                                    </p>
+                                </t>
+                                <t t-else="">
+                                    <p class="text-muted">
+                                        Please log in with a member account to register for this event.
+                                    </p>
+                                </t>
+                                <div class="mt-4">
+                                    <a t-attf-href="/event/#{event.id}" class="btn btn-primary">
+                                        <i class="fa fa-arrow-left"/> Back to Event
+                                    </a>
+                                    <t t-if="not partner or partner.id == request.env.ref('base.public_partner').id">
+                                        <a href="/web/login" class="btn btn-secondary">
+                                            <i class="fa fa-sign-in"/> Login
+                                        </a>
+                                    </t>
+                                </div>
+                                <div class="mt-5">
+                                    <p class="small text-muted">
+                                        To become a member, please contact the event organizer.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+</odoo>

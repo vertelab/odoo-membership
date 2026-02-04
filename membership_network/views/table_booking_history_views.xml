@@ -1,0 +1,50 @@
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="event_table_history_list">
+            <field name="name">event table list</field>
+            <field name="model">event.booking.table.history</field>
+            <field name="arch" type="xml">
+                <list>
+                    <field name="create_date"/>
+                    <field name="name"/>
+                    <field name="table_id"/>
+                    <field name="event_id"/>
+
+                </list>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="event_table_history_form">
+            <field name="name">event table form</field>
+            <field name="model">event.booking.table.history</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="create_date"/>
+                            </group>
+                            <group>
+                                <field name="table_id"/>
+                                <field name="event_id"/>
+                            </group>
+                            <field name="partner_ids"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+
+        <!-- actions opening views on models -->
+        <record model="ir.actions.act_window" id="event_booking_table_history_action">
+            <field name="name">Table History</field>
+            <field name="res_model">event.booking.table.history</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+        <menuitem name="Event Tables History" id="event_booking_table_history_menu" sequence="10" parent="event.menu_event_configuration" action="event_booking_table_history_action"/>
+
+    </data>
+</odoo>

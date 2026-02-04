@@ -1,0 +1,56 @@
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="event_event_booking_table_form">
+            <field name="name">event booking table form</field>
+            <field name="model">event.event</field>
+            <field name="inherit_id" ref="event.view_event_form"/>
+            <field name="arch" type="xml">
+                <field name="tag_ids" position="after">
+                    <field name="network_id"/>
+                    <field name="event_table_ids" widget="many2many_tags"/>
+                    <field name="session_count" invisible="not event_table_ids"/>
+                </field>
+
+                <!-- Add action buttons (commented for now - using auto-assignment on registration) -->
+<!--                <xpath expr="//button[last()]" position="after">-->
+<!--                    <button name="action_assign_tables" -->
+<!--                            class="btn btn-primary" -->
+<!--                            type="object" -->
+<!--                            string="Assign Tables (Bulk)"-->
+<!--                            invisible="not event_table_ids"-->
+<!--                            help="Intelligently assign tables for all sessions to all registrations"/>-->
+<!--                </xpath>-->
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="event_registration_booking_table_form">
+            <field name="name">event registration booking table form</field>
+            <field name="model">event.registration</field>
+            <field name="inherit_id" ref="event.view_event_registration_form"/>
+            <field name="arch" type="xml">
+<!--                <field name="date_closed" position="after">-->
+<!--                    <field name="reserved_table_id"/>-->
+<!--                </field>-->
+                <xpath expr="//group/group[last()]" position="after">
+                    <group string="Reserved Tables" name="reserved_tables" groups="base.group_no_one">
+                        <field name="reserved_table_1_id"/>
+                        <field name="reserved_table_2_id"/>
+                        <field name="reserved_table_3_id"/>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+        
+        <!-- Add is_network_member to registration list view -->
+<!--        <record model="ir.ui.view" id="event_registration_booking_table_list">-->
+<!--            <field name="name">event registration booking table list</field>-->
+<!--            <field name="model">event.registration</field>-->
+<!--            <field name="inherit_id" ref="event.view_event_registration_tree"/>-->
+<!--            <field name="arch" type="xml">-->
+<!--                <field name="state" position="after">-->
+<!--                    <field name="reserved_table_id"/>-->
+<!--                </field>-->
+<!--            </field>-->
+<!--        </record>-->
+    </data>
+</odoo>

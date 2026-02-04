@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Membership Network List View -->
+    <record id="view_membership_network_list" model="ir.ui.view">
+        <field name="name">membership.network.list</field>
+        <field name="model">membership.network</field>
+        <field name="arch" type="xml">
+            <list string="Networks">
+                <field name="name"/>
+                <field name="product_id"/>
+                <field name="member_count"/>
+                <field name="active_member_count"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Membership Network Form View -->
+    <record id="view_membership_network_form" model="ir.ui.view">
+        <field name="name">membership.network.form</field>
+        <field name="model">membership.network</field>
+        <field name="arch" type="xml">
+            <form string="Network">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="%(membership.action_membership_members)d" type="action" class="oe_stat_button" icon="fa-users" context="{'search_default_membership_state': [('membership_state', 'in', ['invoiced', 'paid', 'free'])]}">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_value">
+                                    <field name="active_member_count" nolabel="1"/>
+                                </span>
+                                <span class="o_stat_text">Active Members</span>
+                            </div>
+                        </button>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="product_id"/>
+                        </group>
+                        <group>
+                            <field name="member_count"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="description"/>
+                    </group>
+                    <notebook>
+                        <page string="Members" name="members">
+                            <field name="member_ids">
+                                <list string="Members">
+                                    <field name="name"/>
+                                    <field name="email"/>
+                                    <field name="phone"/>
+                                    <field name="membership_state" widget="badge" 
+                                           decoration-info="membership_state == 'waiting'" 
+                                           decoration-success="membership_state in ['invoiced', 'free', 'paid']"
+                                           decoration-warning="membership_state == 'old'"
+                                           decoration-danger="membership_state == 'canceled'"/>
+                                    <field name="membership_start"/>
+                                    <field name="membership_stop"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Membership Network Kanban View -->
+    <record id="view_membership_network_kanban" model="ir.ui.view">
+        <field name="name">membership.network.kanban</field>
+        <field name="model">membership.network</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <field name="name"/>
+                <field name="product_id"/>
+                <field name="member_count"/>
+                <field name="active_member_count"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_card oe_kanban_global_click">
+                            <div class="o_kanban_card_header">
+                                <div class="o_kanban_card_header_title">
+                                    <div class="o_primary"><field name="name"/></div>
+                                    <div class="o_secondary"><field name="product_id"/></div>
+                                </div>
+                            </div>
+                            <div class="o_kanban_card_content">
+                                <div class="o_kanban_card_manage_pane">
+                                    <div>Total Members: <field name="member_count"/></div>
+                                    <div>Active Members: <field name="active_member_count"/></div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Membership Network Search View -->
+    <record id="view_membership_network_search" model="ir.ui.view">
+        <field name="name">membership.network.search</field>
+        <field name="model">membership.network</field>
+        <field name="arch" type="xml">
+            <search string="Networks">
+                <field name="name"/>
+                <field name="product_id"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Membership Network Action -->
+    <record id="action_membership_network" model="ir.actions.act_window">
+        <field name="name">Networks</field>
+        <field name="res_model">membership.network</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="view_membership_network_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new network
+            </p>
+            <p>
+                Networks allow you to group members by linking to a membership product.
+                Partners who purchase the network's membership product automatically become members.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Item -->
+    <menuitem id="menu_membership_network"
+              name="Networks"
+              parent="membership.menu_association"
+              action="action_membership_network"
+              sequence="10"/>
+</odoo>

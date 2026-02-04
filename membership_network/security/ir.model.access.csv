@@ -1,2 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_scaffold_test_scaffold_test,scaffold_test.scaffold_test,model_scaffold_test_scaffold_test,base.group_user,1,1,1,1
+membership_network.access_event_booking_table,access_event_booking_table,membership_network.model_event_booking_table,base.group_user,1,1,1,1
+membership_network.access_event_booking_table_history,access_event_booking_table_history,membership_network.model_event_booking_table_history,base.group_user,1,1,1,1
+membership_network.access_membership_network,access_membership_network,membership_network.model_membership_network,base.group_user,1,1,1,1

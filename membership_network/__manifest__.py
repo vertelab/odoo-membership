@@ -24,19 +24,37 @@
 {
     'name': 'Membership: Network',
     'version': '1.0',
-    'summary': """
-        Short (1 phrase/line) summary of the module's purpose, used as
-        subtitle on modules listing or apps.odoo.com""",
-    'category': '', # Technical Settings|Localization|Payroll Localization|Account Charts|User types|Invoicing|Sales|Human Resources|Operations|Marketing|Manufacturing|Website|Theme|Administration|Appraisals|Sign|Helpdesk|Administration|Extra Rights|Other Extra Rights|
+    'summary': 'Membership Network - allows partners to be members of multiple networks/clubs',
+    'category': 'Human Resources', # Technical Settings|Localization|Payroll Localization|Account Charts|User types|Invoicing|Sales|Human Resources|Operations|Marketing|Manufacturing|Website|Theme|Administration|Appraisals|Sign|Helpdesk|Administration|Extra Rights|Other Extra Rights|
     'description': """
-        Long description of module's purpose
+        Membership Network Module
+        =========================
+        
+        This module extends Odoo's core membership functionality by allowing partners 
+        to be members of multiple networks/clubs simultaneously.
+        
+        Features:
+        ---------
+        * Create multiple membership networks/clubs
+        * Link networks to membership products
+        * Track partner memberships in multiple networks
+        * Each network membership has its own state, dates, and invoices
+        * Smart buttons and dedicated tabs on partner form
     """,
     'author': 'Vertel AB',
     'website': 'https://vertel.se/apps/odoo-',
     'images': ['static/description/banner.png'],
     'license': 'AGPL-3',
-    'depends': ["contact"],
-    'data': [],
+    'depends': ["contacts", "event", "membership", "account"],
+    'data': [
+        'security/ir.model.access.csv',
+        'views/membership_network_views.xml',
+        'views/table_booking_views.xml',
+        'views/table_booking_history_views.xml',
+        'views/event_event_views.xml',
+        'views/website_templates.xml',
+        # 'views/event_website_templates.xml',
+    ],
     'demo': [],
     'application': False,
     'installable': True,    
