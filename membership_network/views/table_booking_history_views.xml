@@ -36,8 +36,6 @@
             </field>
         </record>
 
-
-        <!-- actions opening views on models -->
         <record model="ir.actions.act_window" id="event_booking_table_history_action">
             <field name="name">Table History</field>
             <field name="res_model">event.booking.table.history</field>

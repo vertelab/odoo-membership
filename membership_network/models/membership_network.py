@@ -12,6 +12,9 @@ class MembershipNetwork(models.Model):
     member_ids = fields.Many2many('res.partner', compute='_compute_members', string='Members', store=False)
     member_count = fields.Integer(compute='_compute_member_count', string='Number of Members')
     active_member_count = fields.Integer(compute='_compute_member_count', string='Active Members')
+    network_partner_id = fields.Many2one(
+        'res.partner', string='Membership Partner', domain=[('is_network', '=', True)]
+    )
 
     def _compute_members(self):
         for network in self:

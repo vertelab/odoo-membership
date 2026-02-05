@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Membership Network List View -->
     <record id="view_membership_network_list" model="ir.ui.view">
         <field name="name">membership.network.list</field>
         <field name="model">membership.network</field>
@@ -14,7 +13,6 @@
         </field>
     </record>
 
-    <!-- Membership Network Form View -->
     <record id="view_membership_network_form" model="ir.ui.view">
         <field name="name">membership.network.form</field>
         <field name="model">membership.network</field>
@@ -38,6 +36,7 @@
                         </group>
                         <group>
                             <field name="member_count"/>
+                            <field name="network_partner_id"/>
                         </group>
                     </group>
                     <group>
@@ -66,7 +65,6 @@
         </field>
     </record>
 
-    <!-- Membership Network Kanban View -->
     <record id="view_membership_network_kanban" model="ir.ui.view">
         <field name="name">membership.network.kanban</field>
         <field name="model">membership.network</field>
@@ -98,7 +96,6 @@
         </field>
     </record>
 
-    <!-- Membership Network Search View -->
     <record id="view_membership_network_search" model="ir.ui.view">
         <field name="name">membership.network.search</field>
         <field name="model">membership.network</field>
@@ -110,7 +107,6 @@
         </field>
     </record>
 
-    <!-- Membership Network Action -->
     <record id="action_membership_network" model="ir.actions.act_window">
         <field name="name">Networks</field>
         <field name="res_model">membership.network</field>
@@ -127,7 +123,6 @@
         </field>
     </record>
 
-    <!-- Menu Item -->
     <menuitem id="menu_membership_network"
               name="Networks"
               parent="membership.menu_association"

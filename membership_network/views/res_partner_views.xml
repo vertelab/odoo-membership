@@ -18,6 +18,17 @@
                     </div>
                 </button>
             </xpath>
+
+            <xpath expr="//group/group[//field[@name='vat']]" position="inside">
+                <field name="is_network" />
+                <field name="network_id" />
+            </xpath>
+
+            <xpath expr="//form/sheet[1]" position="before">
+                <header>
+                    <button name="action_create_network" type="object" class="btn btn-primary" invisible="not is_network or network_id" string="Create Network"/>
+                </header>
+            </xpath>
         </field>
     </record>
 </odoo>

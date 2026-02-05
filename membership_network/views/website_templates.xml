@@ -17,20 +17,10 @@
                                         Your account (<t t-esc="partner.name"/>) is not currently a member of this network.
                                     </p>
                                 </t>
-                                <t t-else="">
-                                    <p class="text-muted">
-                                        Please log in with a member account to register for this event.
-                                    </p>
-                                </t>
                                 <div class="mt-4">
                                     <a t-attf-href="/event/#{event.id}" class="btn btn-primary">
                                         <i class="fa fa-arrow-left"/> Back to Event
                                     </a>
-                                    <t t-if="not partner or partner.id == request.env.ref('base.public_partner').id">
-                                        <a href="/web/login" class="btn btn-secondary">
-                                            <i class="fa fa-sign-in"/> Login
-                                        </a>
-                                    </t>
                                 </div>
                                 <div class="mt-5">
                                     <p class="small text-muted">

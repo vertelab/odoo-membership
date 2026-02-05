@@ -41,7 +41,7 @@ class MembershipNetworkEventController(WebsiteEventController):
             if not partner or partner not in event.network_id.sudo().member_ids:
                 return request.render('membership_network.event_membership_required', {
                     'event': event,
-                    'network': event.network_id,
+                    'network': event.network_id.sudo(),
                     'partner': partner,
                     'email': email,
                 })
