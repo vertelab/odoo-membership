@@ -42,7 +42,7 @@
         * Smart buttons and dedicated tabs on partner form
     """,
     'author': 'Vertel AB',
-    'website': 'https://vertel.se/apps/odoo-',
+    'website': 'https://vertel.se/apps/odoo-membership',
     'images': ['static/description/banner.png'],
     'license': 'AGPL-3',
     'depends': ["contacts", "event", "membership", "account", "report_glabels", "mass_mailing_event", "website_event"],
