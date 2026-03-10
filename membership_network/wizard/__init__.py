@@ -1,1 +1,1 @@
-from . import wizard_models
+from . import event_booking_table_wizard

@@ -20,14 +20,37 @@
             </xpath>
 
             <xpath expr="//group/group[//field[@name='vat']]" position="inside">
-                <field name="is_network" />
-                <field name="network_id" />
+                <!-- <field name="is_network" invisible="company_type != 'network'" /> -->
+                <field name="network_ids" invisible="company_type == 'network'" widget="many2many_tags"/>
             </xpath>
 
-            <xpath expr="//form/sheet[1]" position="before">
+            <!-- <xpath expr="//form/sheet[1]" position="before">
                 <header>
-                    <button name="action_create_network" type="object" class="btn btn-primary" invisible="not is_network or network_id" string="Create Network"/>
+                    <button name="action_create_network" type="object" class="btn btn-primary" invisible="company_type != 'network' or network_id" string="Create Network"/>
                 </header>
+            </xpath> -->
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_partner_membership_network_inherit">
+        <field name="name">res.partner.form.membership.network</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="membership.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='member_lines']//list//field[@name='membership_id']" position="after">
+                <field name="network_id"/>
+            </xpath>
+            <xpath expr="//field[@name='member_lines']//list//field[@name='account_invoice_id']" position="after">
+                <field name="date_from"/>
+                <field name="date_to"/>
+            </xpath>
+
+            <xpath expr="//field[@name='member_lines']//form//field[@name='membership_id']" position="after">
+                <field name="network_id"/>
+            </xpath>
+            <xpath expr="//field[@name='member_lines']//form//field[@name='account_invoice_id']" position="after">
+                <field name="date_from"/>
+                <field name="date_to"/>
             </xpath>
         </field>
     </record>

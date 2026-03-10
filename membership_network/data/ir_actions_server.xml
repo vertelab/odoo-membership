@@ -1,0 +1,14 @@
+<odoo>
+    <data>
+        <record id="action_server_join_network_membership" model="ir.actions.server">
+            <field name="name">Join Network Membership</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="binding_model_id" ref="base.model_res_partner"/>
+            <field name="binding_view_types">list,form</field>
+            <field name="state">code</field>
+            <field name="code">
+                records._server_action_join_membership()
+            </field>
+        </record>
+    </data>
+</odoo>

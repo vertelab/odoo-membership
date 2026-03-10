@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <record model="res.partner" id="partner_lika">
+            <field name="name">LIKA</field>
+            <field name="company_type">network</field>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+
+        <record model="res.partner" id="partner_lika_inner">
+            <field name="name">LIKA Inner</field>
+            <field name="company_type">network</field>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+
+        <record id="product_category_membership" model="product.category">
+            <field name="parent_id" ref="product.product_category_1"/>
+            <field name="name">Membership</field>
+        </record>
+
+        <record id="product_product_lika_silver_membership" model="product.product">
+            <field name="list_price">2000.0</field>
+            <field name="standard_price">2000.0</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="name">LIKA Silver</field>
+            <field name="description_sale" eval="False"/>
+            <field name="categ_id" ref="membership_network.product_category_membership"/>
+            <field name="type">service</field>
+            <field name="service_tracking">event</field>
+            <field name="membership" eval="True"/>
+            <field name="membership_date_from" eval="time.strftime('%Y-01-01')"/>
+            <field name="membership_date_to" eval="time.strftime('%Y-12-31')"/>
+        </record>
+
+        <record id="product_product_lika_gold_membership" model="product.product">
+            <field name="list_price">2500.0</field>
+            <field name="standard_price">2500.0</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="name">LIKA Gold</field>
+            <field name="description_sale" eval="False"/>
+            <field name="categ_id" ref="membership_network.product_category_membership"/>
+            <field name="type">service</field>
+            <field name="service_tracking">event</field>
+            <field name="membership" eval="True"/>
+            <field name="membership_date_from" eval="time.strftime('%Y-01-01')"/>
+            <field name="membership_date_to" eval="time.strftime('%Y-12-31')"/>
+        </record>
+
+         <record id="product_product_membership" model="membership.network">
+            <field name="name">LIKA</field>
+            <field name="network_partner_id" ref="membership_network.partner_lika"/>
+            <field name="product_ids" eval="[(4, ref('membership_network.product_product_lika_silver_membership')), (4, ref('membership_network.product_product_lika_gold_membership'))]"/>
+        </record>
+
+        <record id="product_product_sub_membership" model="membership.network">
+            <field name="name">LIKA Inner</field>
+            <field name="network_partner_id" ref="membership_network.partner_lika_inner"/>
+            <field name="product_ids" eval="[(4, ref('membership_network.product_product_lika_gold_membership'))]"/>
+            <field name="parent_id" ref="membership_network.product_product_membership"/>
+        </record>
+
+        <!-- membership_network.product_product_membership,membership_network.product_product_sub_membership -->
+
+        <record id="innebandy_event_type" model="event.type">
+            <field name="name">Innebandy</field>
+            <field name="default_timezone">America/Los_Angeles</field>
+        </record>
+
+        
+    </data>
+</odoo>

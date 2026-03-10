@@ -12,9 +12,36 @@ MAX_SESSIONS = 3
 class Event(models.Model):
     _inherit = 'event.event'
 
-    event_table_ids = fields.Many2many("event.booking.table", string="Tables")
-    network_id = fields.Many2one('membership.network', string='Network',
-        help='Link this event to a membership network to invite all members')
+    event_table_ids = fields.Many2many(
+        'event.booking.table',
+        string='Tables',
+        compute='_compute_event_table_ids',
+        readonly=False,
+        store=True,
+    )
+
+    network_id = fields.Many2one(
+        'membership.network',
+        string='Network',
+        compute='_compute_network_id',
+        readonly=False,
+        store=True,
+    )
+
+    members_only = fields.Boolean(string="Members Only")
+
+    @api.depends('event_type_id')
+    def _compute_network_id(self):
+        for event in self:
+            if event.event_type_id.network_id:
+                event.network_id = event.event_type_id.network_id
+
+    @api.depends('event_type_id')
+    def _compute_event_table_ids(self):
+        for event in self:
+            if event.event_type_id.event_table_ids:
+                event.event_table_ids = event.event_type_id.event_table_ids
+
     session_count = fields.Integer(
         string='Number of Sessions',
         default=2,
@@ -63,9 +90,52 @@ class Event(models.Model):
         registrations_with_partners.write(clear_values)
         
         # Assign tables to each registration
-        for registration in registrations_with_partners:
-            self.assign_tables_to_registration(registration)
-        
+        # for registration in registrations_with_partners:
+        #     self.assign_tables_to_registration(registration)
+
+        forbidden_pairs = self._build_forbidden_pairs()
+
+        table_assignments = {
+            i: {table.id: [] for table in self.event_table_ids}
+            for i in range(1, MAX_SESSIONS + 1)
+        }
+        current_companions = {}
+
+        # Session-first: complete session 1 for ALL before session 2
+        for session in range(1, self.session_count + 1):
+            for registration in registrations_with_partners:
+                partner = registration.partner_id
+
+                # Build already_assigned_tables from previous sessions
+                already_assigned_tables = set()
+                for prev_session in range(1, session):
+                    field_name = f'reserved_table_{prev_session}_id'
+                    prev_table = getattr(registration, field_name, None)
+                    if prev_table:
+                        already_assigned_tables.add(prev_table.id)
+
+                best_table = self._find_best_table(
+                    partner=partner,
+                    session=session,
+                    forbidden_pairs=forbidden_pairs,
+                    current_companions=current_companions,
+                    table_assignments=table_assignments,
+                    already_assigned_tables=already_assigned_tables,
+                )
+
+                if best_table:
+                    self._assign_table_to_registration(registration, best_table, session)
+                    table_assignments[session][best_table.id].append(partner.id)
+
+                    if partner.id not in current_companions:
+                        current_companions[partner.id] = set()
+                    for occupant_id in table_assignments[session][best_table.id]:
+                        if occupant_id != partner.id:
+                            current_companions[partner.id].add(occupant_id)
+                            if occupant_id not in current_companions:
+                                current_companions[occupant_id] = set()
+                            current_companions[occupant_id].add(partner.id)
+            
         return {
             'type': 'ir.actions.client',
             'tag': 'display_notification',
@@ -181,8 +251,9 @@ class Event(models.Model):
         
         best_table = None
         min_conflicts = float('inf')
+        max_occupancy = -1
         
-        for table in self.event_table_ids:
+        for table in self.event_table_ids.sorted('name'):
             # Skip tables already assigned to this person in other sessions
             if table.id in already_assigned_tables:
                 continue
@@ -204,15 +275,18 @@ class Event(models.Model):
                 # Current event conflict (medium penalty - 5 points)
                 if occupant_id in current_companions.get(partner.id, set()):
                     conflicts += 5
+
+            occupancy = len(occupants)
             
             # Track best table
-            if conflicts < min_conflicts:
+            if conflicts < min_conflicts or (conflicts == min_conflicts and occupancy > max_occupancy):
                 min_conflicts = conflicts
+                max_occupancy = occupancy 
                 best_table = table
-            elif conflicts == min_conflicts and best_table:
-                # Tie-breaker: prefer less full table
-                if len(occupants) < len(table_assignments[session][best_table.id]):
-                    best_table = table
+            # elif conflicts == min_conflicts and best_table:
+            #     # Tie-breaker: prefer less full table
+            #     if len(occupants) < len(table_assignments[session][best_table.id]):
+            #         best_table = table
         
         # Fallback: if no table found (shouldn't happen), assign to least full table
         if not best_table:
@@ -235,32 +309,117 @@ class Event(models.Model):
         field_name = f'reserved_table_{session}_id'
         setattr(registration, field_name, table.id)
 
+    # def action_finalize_registrations(self):
+    #     self.ensure_one()
+
+    #     # We only care about people who were assigned a table and actually attended
+    #     attended_registrations = self.registration_ids.filtered(
+    #         lambda r: r.reserved_table_id and r.state == 'done'
+    #     )
+
+    #     # Group partners by table
+    #     seating_results = {}
+    #     for reg in attended_registrations:
+    #         table_id = reg.reserved_table_id.id
+    #         if table_id not in seating_results:
+    #             seating_results[table_id] = []
+    #         seating_results[table_id].append(reg.partner_id.id)
+
+    #     # Create the permanent history records
+    #     for table_id, partner_ids in seating_results.items():
+    #         self.env['event.booking.table.history'].create({
+    #             'name': f"{self.name} - Table {table_id}",
+    #             'event_id': self.id,
+    #             'table_id': table_id,
+    #             'partner_ids': [(6, 0, partner_ids)]
+    #         })
+
+    #     return True
+
     def action_finalize_registrations(self):
         self.ensure_one()
 
-        # We only care about people who were assigned a table and actually attended
         attended_registrations = self.registration_ids.filtered(
-            lambda r: r.reserved_table_id and r.state == 'done'
+            lambda r: r.state == 'done' and any(
+                getattr(r, f'reserved_table_{i}_id', None) for i in range(1, MAX_SESSIONS + 1)
+            )
         )
 
-        # Group partners by table
-        seating_results = {}
-        for reg in attended_registrations:
-            table_id = reg.reserved_table_id.id
-            if table_id not in seating_results:
-                seating_results[table_id] = []
-            seating_results[table_id].append(reg.partner_id.id)
+        for session in range(1, self.session_count + 1):
+            seating_results = {}
+            for reg in attended_registrations:
+                table = getattr(reg, f'reserved_table_{session}_id', None)
+                if not table:
+                    continue
+                if table.id not in seating_results:
+                    seating_results[table.id] = []
+                seating_results[table.id].append(reg.partner_id.id)
 
-        # Create the permanent history records
-        for table_id, partner_ids in seating_results.items():
-            self.env['event.booking.table.history'].create({
-                'name': f"{self.name} - Table {table_id}",
-                'event_id': self.id,
-                'table_id': table_id,
-                'partner_ids': [(6, 0, partner_ids)]
-            })
+            for table_id, partner_ids in seating_results.items():
+                self.env['event.booking.table.history'].create({
+                    'name': f"{self.name} - Session {session} - Table {table_id}",
+                    'event_id': self.id,
+                    'table_id': table_id,
+                    'partner_ids': [(6, 0, partner_ids)],
+                })
 
         return True
+
+
+    def _network_members(self):
+        if self.network_id and self.members_only:
+            return self.network_id.member_ids.filtered(lambda member: member.membership_state == 'invoiced').ids
+        else:
+            return self.network_id.member_ids.ids
+
+    def _create_network_registrations(self):
+        """Auto-register all network members for the event."""
+        partners = self.env['res.partner'].browse(self._network_members())
+        
+        for partner in partners:
+            # Skip if already registered
+            existing = self.env['event.registration'].search([
+                ('event_id', '=', self.id),
+                ('partner_id', '=', partner.id),
+            ], limit=1)
+            if existing:
+                continue
+
+            self.env['event.registration'].create({
+                'event_id': self.id,
+                'partner_id': partner.id,
+                'name': partner.name,
+                'email': partner.email,
+                'phone': partner.phone,
+                'state': 'open',
+            })
+
+    def action_invite_contacts(self):
+        self._create_network_registrations()
+
+        network_name = self.network_id.name or ''
+        body_arch = self.env['ir.ui.view']._render_template(
+            'membership_network.membership_network_default_template',
+            values={
+                'network_name': network_name,
+                'event_name': self.name,
+                'event_url': self.event_register_url,
+                'company_id': self.env.company,
+            }
+        )
+        return {
+            'name': 'Mass Mail Invitation',
+            'type': 'ir.actions.act_window',
+            'res_model': 'mailing.mailing',
+            'view_mode': 'form',
+            'target': 'current',
+            'context': {
+                'default_mailing_model_id': self.env.ref('base.model_res_partner').id,
+                'default_subject': _("You're invited to join %s!", network_name),
+                'default_mailing_domain': repr([('id', 'in', self._network_members())]),
+                'default_body_arch': body_arch,
+            },
+        }
 
 
 class EventRegistration(models.Model):
@@ -342,7 +501,7 @@ class EventRegistration(models.Model):
                     registration.partner_id = partner
             
             # Auto-assign tables if event has tables configured
-            if registration.event_id.event_table_ids and registration.partner_id:
-                registration.event_id.assign_tables_to_registration(registration)
+            # if registration.event_id.event_table_ids and registration.partner_id:
+            #     registration.event_id.assign_tables_to_registration(registration)
         
         return registrations

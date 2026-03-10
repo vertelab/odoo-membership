@@ -45,9 +45,11 @@
     'website': 'https://vertel.se/apps/odoo-',
     'images': ['static/description/banner.png'],
     'license': 'AGPL-3',
-    'depends': ["contacts", "event", "membership", "account", "report_glabels"],
+    'depends': ["contacts", "event", "membership", "account", "report_glabels", "mass_mailing_event"],
     'data': [
         'security/ir.model.access.csv',
+        'data/network_data.xml',
+        'data/ir_actions_server.xml',
         'views/membership_network_views.xml',
         'views/table_booking_views.xml',
         'views/table_booking_history_views.xml',
@@ -55,6 +57,8 @@
         'views/website_templates.xml',
         'views/res_partner_views.xml',
         'views/event_table_report.xml',
+        'views/themes_templates.xml',
+        'wizard/event_booking_table_wizard.xml'
     ],
     'demo': [],
     'application': False,

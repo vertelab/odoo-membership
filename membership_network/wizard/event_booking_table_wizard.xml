@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_create_tables_wizard_form" model="ir.ui.view">
+        <field name="name">event.create.tables.wizard.form</field>
+        <field name="model">event.booking.table.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Create Tables">
+                <group>
+                    <field name="prefix"/>
+                    <field name="number_of_tables"/>
+                    <field name="capacity"/>
+                </group>
+                <footer>
+                    <button name="action_create_tables"
+                            string="Create Tables"
+                            type="object"
+                            class="btn-primary"/>
+                    <button string="Cancel"
+                            class="btn-secondary"
+                            special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_create_tables_wizard" model="ir.actions.act_window">
+        <field name="name">Create Tables</field>
+        <field name="res_model">event.booking.table.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem
+        id="menu_create_tables_wizard"
+        name="Create Tables"
+        parent="event.menu_event_configuration"
+        action="action_create_tables_wizard"
+        sequence="200"/>
+
+</odoo>

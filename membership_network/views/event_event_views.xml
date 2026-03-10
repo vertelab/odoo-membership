@@ -10,15 +10,18 @@
                     <field name="event_table_ids" widget="many2many_tags"/>
                     <field name="session_count" invisible="not event_table_ids"/>
                 </field>
+                <field name="badge_format" position="before">
+                    <field name="members_only"/>
+                </field>
 
-<!--                <xpath expr="//button[last()]" position="after">-->
-<!--                    <button name="action_assign_tables"-->
-<!--                            class="btn btn-primary"-->
-<!--                            type="object"-->
-<!--                            string="Assign Tables (Bulk)"-->
-<!--                            invisible="not event_table_ids"-->
-<!--                            help="Intelligently assign tables for all sessions to all registrations"/>-->
-<!--                </xpath>-->
+               <xpath expr="//button[last()]" position="after">
+                    <button name="action_assign_tables"
+                            class="btn btn-primary"
+                            type="object"
+                            string="Assign Tables (Bulk)"
+                            invisible="not event_table_ids"
+                            help="Intelligently assign tables for all sessions to all registrations"/>
+                </xpath>
             </field>
         </record>
 
@@ -34,6 +37,18 @@
                         <field name="reserved_table_3_id"/>
                         <field name="network_name"/>
                     </group>
+                </xpath>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_event_type_form">
+            <field name="name">event type form</field>
+            <field name="model">event.type</field>
+            <field name="inherit_id" ref="event.view_event_type_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='tag_ids']" position="after">
+                    <field name="event_table_ids" widget="many2many_tags"/>
+                    <field name="network_id"/>
                 </xpath>
             </field>
         </record>
