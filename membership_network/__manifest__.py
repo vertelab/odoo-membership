@@ -45,7 +45,7 @@
     'website': 'https://vertel.se/apps/odoo-membership',
     'images': ['static/description/banner.png'],
     'license': 'AGPL-3',
-    'depends': ["contacts", "event", "membership", "account", "report_glabels", "mass_mailing_event", "website_event"],
+    'depends': ["contacts", "event", "membership", "account", "report_glabels", "mass_mailing_event", "website_event", "event_attendee_badges"],
     'data': [
         'security/ir.model.access.csv',
         'data/network_data.xml',
