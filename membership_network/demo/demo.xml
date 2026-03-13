@@ -1,30 +1,74 @@
 <odoo>
     <data>
-<!--
-          <record id="object0" model="scaffold_test.scaffold_test">
-            <field name="name">Object 0</field>
-            <field name="value">0</field>
-          </record>
+        <record id="membership_partner_1" model="res.partner">
+            <field name="name">Acme AB</field>
+            <field name="is_company">1</field>
+            <field name="street">Mjölbyvägen 77</field>
+            <field name="city">Mjölby</field>
+            <field name="zip">595 77</field>
+            <field name="country_id" ref="base.se"/>
+            <field name="email">acme_ab@mjolby.se</field>
+            <field name="phone">+46 14 25 38 29</field>
+            <field name="website">http://www.acme-se.se</field>
+            <field name="image_1920" type="base64" file="base/static/img/res_partner_2-image.png"/>
+        </record>
 
-          <record id="object1" model="scaffold_test.scaffold_test">
-            <field name="name">Object 1</field>
-            <field name="value">10</field>
-          </record>
+        <record id="membership_partner_2" model="res.partner">
+            <field name="name">Blomsterimport AB</field>
+            <field name="is_company" eval="True"/>
+            <field name="image_1920" type="base64" file="event/static/src/img/partner_bloem.png"/>
+            <field name="street">Kungsgatan 55</field>
+            <field name="zip">111 22</field>
+            <field name="city">Stockholm</field>
+            <field name="country_id" ref="base.se"/>
+            <field name="phone">+46 8 12345678</field>
+            <field name="mobile">+46 70 87654321</field>
+            <field name="email">blomster@exempel.se</field>
+            <field name="website">www.blomster-exempel.se</field>
+        </record>
 
-          <record id="object2" model="scaffold_test.scaffold_test">
-            <field name="name">Object 2</field>
-            <field name="value">20</field>
-          </record>
+        <record id="membership_partner_3" model="res.partner">
+            <field name="name">Trähandlare i Östergötland AB</field>
+            <field name="is_company" eval="True"/>
+            <field name="image_1920" type="base64" file="event/static/src/img/partner_tree_dealers.png"/>
+            <field name="street">Industrigatan 995</field>
+            <field name="zip">595 91</field>
+            <field name="city">Mjölby</field>
+            <field name="country_id" ref="base.se"/>
+            <field name="phone">+46 14 123 4567</field>
+            <field name="mobile">+46 70 765 4321</field>
+            <field name="email">tra@exempel.se</field>
+            <field name="website">www.tra-exempel.se</field>
+        </record>
 
-          <record id="object3" model="scaffold_test.scaffold_test">
-            <field name="name">Object 3</field>
-            <field name="value">30</field>
-          </record>
+        <record id="membership_partner_4" model="res.partner">
+            <field name="name">Pterocarpus Möbel AB</field>
+            <field name="is_company" eval="True"/>
+            <field name="image_1920" type="base64" file="event/static/src/img/partner_pterocarpus.png"/>
+            <field name="street">Hamngatan 68</field>
+            <field name="zip">211 22</field>
+            <field name="city">Malmö</field>
+            <field name="country_id" ref="base.se"/>
+            <field name="phone">+46 40 1234 5678</field>
+            <field name="mobile">+46 70 8765 4321</field>
+            <field name="email">pterocarpus@exempel.se</field>
+            <field name="website">www.pterocarpus-exempel.se</field>
+        </record>
 
-          <record id="object4" model="scaffold_test.scaffold_test">
-            <field name="name">Object 4</field>
-            <field name="value">40</field>
-          </record>
--->
+        <record id="membership_partner_5" model="res.partner">
+            <field name="city">Mjölby</field>
+            <field name="country_id" ref="base.se"/>
+            <field name="email">openwood@exempel.se</field>
+            <field name="image_1920" file="base/static/img/partner_open_wood.png" type="base64"/>
+            <field name="is_company" eval="True"/>
+            <field name="mobile">+46 14 987 65 21</field>
+            <field name="name">ÖppenTrä AB</field>
+            <field name="phone">+46 14 987 65 21</field>
+            <field name="street">Industrivägen 1</field>
+            <field name="website">www.opentra-exempel.se</field>
+            <field name="zip">595 23</field>
+        </record>
+
+
     </data>
 </odoo>

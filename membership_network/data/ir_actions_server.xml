@@ -7,7 +7,9 @@
             <field name="binding_view_types">list,form</field>
             <field name="state">code</field>
             <field name="code">
-                records._server_action_join_membership()
+action = records._server_action_join_membership()
+if action:
+    raise_action = action
             </field>
         </record>
     </data>

@@ -1,13 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="view_product_template_form_inherit_membership_network" model="ir.ui.view">
-        <field name="name">product.template.form.inherit.membership.network</field>
+    <record model="ir.ui.view" id="membership_products_form_rolling_inherit">
+        <field name="name">membership.products.form.rolling.inherit</field>
         <field name="model">product.template</field>
         <field name="inherit_id" ref="membership.membership_products_form"/>
         <field name="arch" type="xml">
-            <field name="membership_date_to" position="after">
-                <field name="membership_network_id" invisible="not membership"/>
-            </field>
+            <xpath expr="//group[@name='membership_details']/label[@for='membership_date_from']" position="before">
+                <field name="is_rolling" widget="boolean_toggle"/>
+                <label for="membership_duration" string="Duration" invisible="not is_rolling"/>
+                <div class="o_row" invisible="not is_rolling">
+                    <field name="membership_duration" required="is_rolling" nolabel="1"/>
+                    <field name="membership_duration_unit" required="is_rolling" nolabel="1"/>
+                </div>
+            </xpath>
+            <xpath expr="//label[@for='membership_date_from']" position="attributes">
+                <attribute name="invisible">is_rolling</attribute>
+            </xpath>
+            <xpath expr="//div[hasclass('o_row')][field[@name='membership_date_from']]" position="attributes">
+                <attribute name="invisible">is_rolling</attribute>
+                <attribute name="required">not is_rolling</attribute>
+            </xpath>
         </field>
     </record>
 </odoo>

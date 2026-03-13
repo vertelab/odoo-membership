@@ -21,6 +21,12 @@
                             string="Assign Tables (Bulk)"
                             invisible="not event_table_ids"
                             help="Intelligently assign tables for all sessions to all registrations"/>
+
+                        <!-- <button name="action_finalize_registrations"
+                            class="btn btn-primary"
+                            type="object"
+                            string="Finalize Registration"
+                            help="Intelligently assign tables for all sessions to all registrations"/> -->
                 </xpath>
             </field>
         </record>
@@ -31,13 +37,15 @@
             <field name="inherit_id" ref="event.view_event_registration_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//group/group[last()]" position="after">
-                    <group string="Reserved Tables" name="reserved_tables" groups="base.group_no_one">
-                        <field name="reserved_table_1_id"/>
-                        <field name="reserved_table_2_id"/>
-                        <field name="reserved_table_3_id"/>
-                        <field name="network_name"/>
+                    <group string="Session Tables" name="session_tables" groups="base.group_no_one">
+                        <field name="session_1_table_id"/>
+                        <field name="session_2_table_id"/>
+                        <field name="session_3_table_id"/>
                     </group>
                 </xpath>
+                <field name="date_closed" position="after">
+                    <field name="network_name"/>
+                </field>
             </field>
         </record>
 
@@ -49,6 +57,7 @@
                 <xpath expr="//field[@name='tag_ids']" position="after">
                     <field name="event_table_ids" widget="many2many_tags"/>
                     <field name="network_id"/>
+                    <field name="mass_mailing_template_id"/>
                 </xpath>
             </field>
         </record>

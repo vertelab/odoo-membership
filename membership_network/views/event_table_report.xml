@@ -17,7 +17,7 @@
             <field name="state">code</field>
             <field name="code">
 # Get all registrations with partners and table assignments
-registrations = records.registration_ids.filtered(lambda r: r.partner_id and (r.reserved_table_1_id or r.reserved_table_2_id or r.reserved_table_3_id))
+registrations = records.registration_ids.filtered(lambda r: r.partner_id and (r.session_1_table_id or r.session_2_table_id or r.session_3_table_id))
 
 if not registrations:
     raise UserError("No table assignments found for this event.")

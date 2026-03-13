@@ -2,6 +2,7 @@ from odoo import api, fields, models, tools
 
 class MembershipNetwork(models.Model):
     _name = 'membership.network'
+    # _mailing_enabled = True
     _description = 'Membership Network'
 
     name = fields.Char(string='Name', required=True)

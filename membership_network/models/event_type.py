@@ -11,3 +11,4 @@ class EventType(models.Model):
     event_table_ids = fields.Many2many("event.booking.table", string="Tables")
     network_id = fields.Many2one('membership.network', string='Network',
         help='Link this event to a membership network to invite all members')
+    mass_mailing_template_id = fields.Many2one('ir.ui.view', domain="[('mass_mailing_template', '=', True)]")

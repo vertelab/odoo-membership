@@ -4,3 +4,8 @@ from . import res_partner
 from . import membership_network
 from . import event_type
 from . import membership
+from . import product_template
+from . import account_move
+from . import event_registration
+from . import ir_ui_view
+from . import mailing

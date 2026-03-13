@@ -5,6 +5,12 @@ class MembershipLine(models.Model):
 
     network_id = fields.Many2one('membership.network', string='Network')
 
+    associate_member_id = fields.Many2one(
+        'res.partner',
+        string='Associate Member',
+        help='The company or partner who covered this membership fee.',
+    )
+
     @api.depends(
         'account_invoice_id.state',
         'account_invoice_id.amount_residual',
