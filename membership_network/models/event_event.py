@@ -269,22 +269,28 @@ class Event(models.Model):
         setattr(registration, field_name, table.id)
 
     def _network_members(self):
+        members = self.network_id.member_ids.filtered(
+            lambda m: not m.is_company and m.company_type != 'network'
+        )
         if self.network_id and self.members_only:
-            return self.network_id.member_ids.filtered(
-                lambda member: member.membership_state == 'invoiced'
-            ).ids
-        return self.network_id.member_ids.ids
+            members = members.filtered(
+                lambda m: m.membership_state in ['paid', 'invoiced']
+            )
+        return members.ids
 
-    def _create_network_registrations(self):
+    def create_network_registrations(self):
         partners = self.env['res.partner'].browse(self._network_members())
+
+        existing_partner_ids = set(self.env['event.registration'].search([
+            ('event_id', '=', self.id),
+            ('partner_id', 'in', partners.ids),
+        ]).mapped('partner_id').ids)
+
+        vals_list = []
         for partner in partners:
-            existing = self.env['event.registration'].search([
-                ('event_id', '=', self.id),
-                ('partner_id', '=', partner.id),
-            ], limit=1)
-            if existing:
+            if partner.id in existing_partner_ids:
                 continue
-            self.env['event.registration'].create({
+            vals_list.append({
                 'event_id': self.id,
                 'partner_id': partner.id,
                 'name': partner.name,
@@ -293,35 +299,16 @@ class Event(models.Model):
                 'state': 'open',
             })
 
-    # def action_invite_contacts(self):
-    #     # self._create_network_registrations()
-    #     network_name = self.network_id.name or ''
-    #     body_arch = self.env['ir.ui.view']._render_template(
-    #         'membership_network.membership_network_default_template',
-    #         values={
-    #             'network_name': network_name,
-    #             'event_name': self.name,
-    #             'event_url': self.event_register_url,
-    #             'company_id': self.env.company,
-    #         }
-    #     )
-    #     return {
-    #         'name': 'Mass Mail Invitation',
-    #         'type': 'ir.actions.act_window',
-    #         'res_model': 'mailing.mailing',
-    #         'view_mode': 'form',
-    #         'target': 'current',
-    #         'context': {
-    #             'default_mailing_model_id': self.env.ref('base.model_res_partner').id,
-    #             'default_subject': _("You're invited to join %s!", network_name),
-    #             'default_mailing_domain': repr([('id', 'in', self._network_members())]),
-    #             'default_body_arch': body_arch,
-    #         },
-    #     }
+        if vals_list:
+            self.env['event.registration'].with_context(
+                mail_create_nolog=True,
+                mail_create_nosubscribe=True,
+                mail_notrack=True,
+                no_mail=True,
+            ).create(vals_list)
+
 
     def action_invite_contacts(self):
-        network_name = self.network_id.name or ''
-
         if self.network_id and self.members_only:
             mailing_domain = [
                 ('network_ids', 'in', self.network_id.id),
@@ -335,16 +322,11 @@ class Event(models.Model):
         body_arch = self.env['ir.ui.view']._render_template(
             'membership_network.membership_network_default_template',
             values={
-                'network_name': network_name,
-                'event_name': self.name,
-                'event_url': self.event_register_url,
-                'company_id': self.env.company,
-                'company_logo': 'data:image/png;base64,' + (
-                    self.env.company.logo.decode('utf-8')
-                    if isinstance(self.env.company.logo, bytes) else self.env.company.logo or ''
-                ),
+                'ref_object': self,
+                'company_id': self.env.company
             }
         )
+
         return {
             'name': 'Mass Mail Invitation',
             'type': 'ir.actions.act_window',
@@ -355,9 +337,8 @@ class Event(models.Model):
                 'default_mailing_model_id': self.env.ref('base.model_res_partner').id,
                 'default_subject': _("You're invited to %s!", self.name),
                 'default_mailing_domain': repr(mailing_domain),
+                'default_ref_object': f'event.event,{self.id}',
                 'default_body_arch': body_arch,
-                'default_ref_id': f'event.event,{self.id}',
+                'default_body_html': body_arch,
             },
         }
-
-

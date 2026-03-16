@@ -14,22 +14,21 @@ class CreateTablesWizard(models.TransientModel):
             ('name', 'ilike', self.prefix)
         ])
 
-        start = 1
-        if existing:
-            numbers = []
-            for table in existing:
-                match = re.search(r'(\d+)$', table.name)
-                if match:
-                    numbers.append(int(match.group(1)))
-            start = max(numbers) + 1 if numbers else 1
+        numbers = []
+        for table in existing:
+            match = re.search(r'(\d+)$', table.name)
+            if match:
+                numbers.append(int(match.group(1)))
+        start = max(numbers) + 1 if numbers else 1
 
         tables = []
         for i in range(self.number_of_tables):
+            number = start + i
             tables.append({
-                'name': f"{self.prefix} {start + i}",
+                'name': f"{self.prefix} {number}",
                 'capacity': self.capacity,
+                'code': str(number),
             })
-
         self.env['event.booking.table'].create(tables)
 
         return {
@@ -37,7 +36,7 @@ class CreateTablesWizard(models.TransientModel):
             'tag': 'display_notification',
             'params': {
                 'title': _('Tables Created'),
-                'message': _(f'{self.number_of_tables} tables created successfully.'),
+                'message': _('%s tables created successfully.') % self.number_of_tables,
                 'type': 'success',
                 'sticky': False,
             }

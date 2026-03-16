@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="email_designer_themes" inherit_id="mass_mailing.email_designer_themes">
+        <xpath expr="." position="inside">
+            <div data-name="event_mail" title="Membership Event Mail 1" data-layout-styles="background-color: rgb(255, 255, 255) !important;" data-img="/mass_mailing/static/src/img/theme_imgs/basic_thumb" data-images-info='{"logo": {"format": "png"}'>
+                <t t-call="membership_network.membership_network_default_template"/>
+            </div>
+        </xpath>
+    </template>
+</odoo>

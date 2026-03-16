@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="event_table_assignment_glabel" model="ir.actions.report">
+            <field name="name">Table Assignment Labels</field>
+            <field name="report_name">Table Assignment Labels</field>
+            <field name="model">event.registration</field>
+            <field name="report_type">qweb-glabels</field>
+            <field name="glabels_template" type="base64" file="membership_network/reports/event_registration_glabel.glabels" />
+        </record>
+    </data>
+</odoo>

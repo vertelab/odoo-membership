@@ -48,24 +48,31 @@
     'depends': [
         "contacts", "event", "membership", "account", 
         "report_glabels", "mass_mailing_event", "website_event", 
-        "event_attendee_badges"
+        "event_attendee_badges", "event_partner_foodallergy"
     ],
     'data': [
         'security/ir.model.access.csv',
+
         'data/network_data.xml',
         'data/ir_actions_server.xml',
+        'data/ir_actions_report.xml',
+
         'views/membership_network_views.xml',
         'views/table_booking_views.xml',
-        'views/table_booking_history_views.xml',
+        # 'views/table_booking_history_views.xml',
         'views/event_event_views.xml',
         'views/website_templates.xml',
         'views/product_views.xml',
         'views/res_partner_views.xml',
-        'views/event_table_report.xml',
+        # 'views/event_table_report.xml',
         'views/themes_templates.xml',
         'views/ir_ui_view.xml',
+        'views/mailing_view.xml',
+        # 'views/snippets_themes.xml',
+
         'wizard/event_booking_table_wizard.xml',
         'wizard/membership_invoice_views.xml',
+
         'demo/demo.xml'
     ],
     'demo': [

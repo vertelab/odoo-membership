@@ -12,5 +12,35 @@ if action:
     raise_action = action
             </field>
         </record>
+
+        <record id="action_server_mark_attended" model="ir.actions.server">
+            <field name="name">Mark as Attended</field>
+            <field name="model_id" ref="event.model_event_registration"/>
+            <field name="binding_model_id" ref="event.model_event_registration"/>
+            <field name="binding_view_types">list</field>
+            <field name="state">code</field>
+            <field name="code">
+        action = records.action_set_done()
+            </field>
+        </record>
+
+        <record id="action_print_table_assignments_from_event" model="ir.actions.server">
+            <field name="name">Print Table Assignment Labels</field>
+            <field name="model_id" ref="event.model_event_event"/>
+            <field name="binding_model_id" ref="event.model_event_event"/>
+            <field name="binding_type">action</field>
+            <field name="state">code</field>
+            <field name="code">
+# Get all registrations with partners and table assignments
+registrations = records.registration_ids.filtered(lambda r: r.partner_id and (r.session_1_table_id or r.session_2_table_id or r.session_3_table_id))
+
+if not registrations:
+    raise UserError("No table assignments found for this event.")
+
+# Call the report on registrations
+action = env.ref('membership_network.event_table_assignment_glabel').report_action(registrations)
+            </field>
+        </record>
+
     </data>
 </odoo>

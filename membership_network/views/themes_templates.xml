@@ -22,7 +22,7 @@
                         <div class="col-lg-4"/>
                         <div class="col-lg-4" style="text-align: center;">
                             <a t-att-href="(company_id.website) or '#'" style="text-decoration:none;" target="_blank">
-                                <img border="0" t-att-src="company_logo" style="height:auto; max-width:100%;" width="180" class="img-fluid"/>
+                                <img t-if="company_id.logo" border="0" t-att-src="image_data_uri(company_id.logo)" style="height:auto;max-width:100%;" />
                             </a>
                         </div>
                         <div class="col-lg-4" style="text-align: right;"/>
@@ -31,16 +31,17 @@
             </div>
             <div class="s_text_block o_mail_snippet_general pt40 pb16" style="padding-left: 15px; padding-right: 15px; margin-top: 20px;">
                 <div class="container s_allow_columns">
-                    <h2>You're invited to <t t-out="event_name"/>!</h2>
-                    <p><br/>
-                        Dear ${object.name},
-                        <br/><br/>
-                        You are invited to attend ${ref.name} <strong><t t-out="event_name"/></strong>.
-                        As a valued member of <strong><t t-out="network_name"/></strong>,
+                    <p>
+                        <h2>You're invited to <t t-esc="ref_object.name"/>!</h2>
+                    </p>
+
+                    <p>
+                        You are invited to attend <strong><t t-esc="ref_object.name"/></strong>.
+                        As a valued member of <strong><t t-out="ref_object.network_id.name"/></strong>,
                         we would love to see you there.
                     </p>
                     <p style="text-align: center;">
-                        <a role="button" t-att-href="event_url" target="_blank" class="btn btn-primary">REGISTER NOW</a>
+                        <a role="button" t-att-href="ref_object.event_register_url" target="_blank" class="btn btn-primary">REGISTER NOW</a>
                     </p>
                 </div>
             </div>

@@ -1,5 +1,8 @@
+import logging
 import random
 from odoo import models, fields, api, _
+
+_logger = logging.getLogger(__name__)
 
 MAX_SESSIONS = 3
 
@@ -61,7 +64,6 @@ class ResPartner(models.Model):
         self.is_company = (self.company_type == 'company')
 
     def _get_people_met(self):
-        """Return a recordset of unique partners this partner has shared a table with."""
         self.ensure_one()
         met_ids = set()
 
@@ -89,15 +91,49 @@ class ResPartner(models.Model):
         for partner in self:
             partner.people_met_count = len(partner._get_people_met())
 
+    # def action_view_people_met(self):
+    #     self.ensure_one()
+    #     people_met = self._get_people_met()
+    #     return {
+    #         'name': 'People Met',
+    #         'type': 'ir.actions.act_window',
+    #         'res_model': 'res.partner',
+    #         'view_mode': 'list,form',
+    #         'domain': [('id', 'in', people_met.ids)],
+    #     }
+
     def action_view_people_met(self):
         self.ensure_one()
-        people_met = self._get_people_met()
+        met_registration_ids = []
+
+        past_regs = self.env['event.registration'].search([
+            ('partner_id', '=', self.id),
+            ('state', '=', 'done'),
+        ])
+
+        for reg in past_regs:
+            for session in range(1, MAX_SESSIONS + 1):
+                table = getattr(reg, f'session_{session}_table_id', None)
+                if not table:
+                    continue
+                same_table = self.env['event.registration'].search([
+                    ('event_id', '=', reg.event_id.id),
+                    ('state', '=', 'done'),
+                    ('partner_id', '!=', self.id),
+                    (f'session_{session}_table_id', '=', table.id),
+                ])
+                met_registration_ids.extend(same_table.ids)
+
         return {
             'name': 'People Met',
             'type': 'ir.actions.act_window',
-            'res_model': 'res.partner',
+            'res_model': 'event.registration',
             'view_mode': 'list,form',
-            'domain': [('id', 'in', people_met.ids)],
+            'domain': [('id', 'in', met_registration_ids)],
+            'context': {
+                'create': False,
+                'search_default_group_event': 1,
+            },
         }
 
     # def _server_action_join_membership(self):
