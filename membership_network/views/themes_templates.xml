@@ -31,18 +31,18 @@
             </div>
             <div class="s_text_block o_mail_snippet_general pt40 pb16" style="padding-left: 15px; padding-right: 15px; margin-top: 20px;">
                 <div class="container s_allow_columns">
-                    <p>
+                    <!-- <p>
                         <h2>You're invited to <t t-esc="ref_object.name"/>!</h2>
-                    </p>
+                    </p> -->
 
-                    <p>
+                    <!-- <p>
                         You are invited to attend <strong><t t-esc="ref_object.name"/></strong>.
                         As a valued member of <strong><t t-out="ref_object.network_id.name"/></strong>,
                         we would love to see you there.
                     </p>
                     <p style="text-align: center;">
                         <a role="button" t-att-href="ref_object.event_register_url" target="_blank" class="btn btn-primary">REGISTER NOW</a>
-                    </p>
+                    </p> -->
                 </div>
             </div>
             <div class="s_hr pt16 pb16" data-snippet="s_hr" data-name="Separator">

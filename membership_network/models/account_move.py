@@ -71,51 +71,63 @@ class AccountMoveLine(models.Model):
     def _get_membership_network_id(self):
         return self.env.context.get('membership_network_id')
 
-    def _fix_membership_lines(self, lines):
-        """
-        After super() creates membership lines with default Odoo logic,
-        update them with:
-        - correct rolling or static dates
-        - join_date
-        - associate_member_id
-        - network_id
-        All values come from context set by the wizard.
-        """
-        join_date = self._get_membership_join_date()
-        associate_member_id = self._get_membership_associate_member_id()
-        network_id = self._get_membership_network_id()
+    # def _fix_membership_lines(self, lines):
+    #     """
+    #     Ensures membership lines exist for membership products and updates them.
+    #     """
+    #     join_date = self._get_membership_join_date()
+    #     associate_member_id = self._get_membership_associate_member_id()
+    #     network_id = self._get_membership_network_id()
 
-        to_process = lines.filtered(
-            lambda l: l.move_id.move_type == 'out_invoice' and l.product_id.membership
-        )
-        if not to_process:
-            return
+    #     to_process = lines.filtered(
+    #         lambda l: l.move_id.move_type == 'out_invoice' and l.product_id.membership
+    #     )
+    #     if not to_process:
+    #         return
 
-        membership_lines = self.env['membership.membership_line'].search([
-            ('account_invoice_line', 'in', to_process.ids)
-        ])
+    #     for line in to_process:
+    #         ml = self.env['membership.membership_line'].search([
+    #             ('account_invoice_line', '=', line.id)
+    #         ], limit=1)
+            
+    #         date_from, date_to = _compute_membership_dates(line, join_date)
+    #         vals = {
+    #             'partner': line.move_id.partner_id.id,
+    #             'membership_id': line.product_id.id,
+    #             'member_price': line.price_unit,
+    #             'date_from': date_from,
+    #             'date_to': date_to,
+    #             'account_invoice_line': line.id,
+    #         }
+    #         if join_date:
+    #             vals['date'] = join_date
+    #         if associate_member_id:
+    #             vals['associate_member_id'] = associate_member_id
+    #         if network_id:
+    #             vals['network_id'] = network_id
+            
+    #         if ml:
+    #             ml.write(vals)
+    #         else:
+    #             self.env['membership.membership_line'].create(vals)
 
-        for ml in membership_lines:
-            date_from, date_to = _compute_membership_dates(ml.account_invoice_line, join_date)
-            vals = {
-                'date_from': date_from,
-                'date_to': date_to,
-            }
-            if join_date:
-                vals['date'] = join_date
-            if associate_member_id:
-                vals['associate_member_id'] = associate_member_id
-            if network_id:
-                vals['network_id'] = network_id
-            ml.write(vals)
+    #         # Post and Send invoice automatically if network settings allow it
+    #         if network_id:
+    #             network = self.env['membership.network'].browse(network_id)
+    #             if network.send_invoices_automatically:
+    #                 move = line.move_id
+    #                 if move.state == 'draft':
+    #                     move.action_post()
+    #                 # Trigger the send action (non-blocking if possible)
+    #                 move.action_invoice_sent()
 
-    def write(self, vals):
-        res = super().write(vals)
-        self._fix_membership_lines(self)
-        return res
+    # def write(self, vals):
+    #     res = super().write(vals)
+    #     self._fix_membership_lines(self)
+    #     return res
 
-    @api.model_create_multi
-    def create(self, vals_list):
-        lines = super().create(vals_list)
-        self._fix_membership_lines(lines)
-        return lines
+    # @api.model_create_multi
+    # def create(self, vals_list):
+    #     lines = super().create(vals_list)
+    #     self._fix_membership_lines(lines)
+    #     return lines

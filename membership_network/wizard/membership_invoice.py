@@ -25,14 +25,14 @@ class MembershipInvoice(models.TransientModel):
     # Onchange
     # -------------------------------------------------------------------------
 
-    @api.onchange('product_id')
-    def _onchange_product_network(self):
-        self.network_id = False
-        if self.product_id:
-            networks = self.env['membership.network'].search([
-                ('product_ids', 'in', self.product_id.id)
-            ])
-            return {'domain': {'network_id': [('id', 'in', networks.ids)]}}
+    # @api.onchange('product_id')
+    # def _onchange_product_network(self):
+    #     self.network_id = False
+    #     if self.product_id:
+    #         networks = self.env['membership.network'].search([
+    #             ('product_ids', 'in', self.product_id.id)
+    #         ])
+    #         return {'domain': {'network_id': [('id', 'in', networks.ids)]}}
 
     @api.onchange('associate_member_id')
     def _onchange_associate_member(self):

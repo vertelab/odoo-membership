@@ -20,6 +20,11 @@
                 <attribute name="invisible">is_rolling</attribute>
                 <attribute name="required">not is_rolling</attribute>
             </xpath>
+            <xpath expr="//div[hasclass('o_row')][field[@name='membership_date_from']]" position="after">
+                <div class="alert alert-info" role="alert" invisible="is_rolling or not membership" colspan="2" style="margin-top: 10px;">
+                    Note: For static memberships, remember to update the duration dates (From/To) before the current period expires to ensure continuous membership availability.
+                </div>
+            </xpath>
         </field>
     </record>
 </odoo>

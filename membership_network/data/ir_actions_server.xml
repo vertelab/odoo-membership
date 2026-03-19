@@ -42,5 +42,61 @@ action = env.ref('membership_network.event_table_assignment_glabel').report_acti
             </field>
         </record>
 
+        <!-- Server Action for Renewing Expired Memberships -->
+        <record id="action_server_renew_memberships" model="ir.actions.server">
+            <field name="name">Renew Expired Memberships</field>
+            <field name="model_id" ref="membership_network.model_membership_network"/>
+            <field name="binding_model_id" ref="membership_network.model_membership_network"/>
+            <field name="binding_view_types">list,form</field>
+            <field name="state">code</field>
+            <field name="code">
+records.action_cron_renew_memberships()
+            </field>
+        </record>
+
+        <!-- Server Action for Renewing Expired Memberships (on Membership Line) -->
+        <record id="action_server_renew_membership_line" model="ir.actions.server">
+            <field name="name">Renew Membership</field>
+            <field name="model_id" ref="membership.model_membership_membership_line"/>
+            <field name="binding_model_id" ref="membership.model_membership_membership_line"/>
+            <field name="binding_view_types">list,form</field>
+            <field name="state">code</field>
+            <field name="code">
+records.action_renew_membership()
+            </field>
+        </record>
+
+        <!-- Server Action to Send Invoice (on Membership Line) -->
+        <record id="action_server_send_invoice" model="ir.actions.server">
+            <field name="name">Send Invoice</field>
+            <field name="model_id" ref="membership.model_membership_membership_line"/>
+            <field name="binding_model_id" ref="membership.model_membership_membership_line"/>
+            <field name="binding_view_types">list,form</field>
+            <field name="state">code</field>
+            <field name="code">
+records.action_send_invoice()
+            </field>
+        </record>
+
+        <!-- Cron Job for Renewing Memberships -->
+        <record id="ir_cron_renew_memberships" model="ir.cron">
+            <field name="name">Membership: Renew Expired Memberships</field>
+            <field name="model_id" ref="membership_network.model_membership_network"/>
+            <field name="state">code</field>
+            <field name="code">model.action_cron_renew_memberships()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+        </record>
+
+        <!-- Cron Job for Expiration Reminders -->
+        <record id="ir_cron_membership_expiration_reminder" model="ir.cron">
+            <field name="name">Membership: Send Expiration Reminders</field>
+            <field name="model_id" ref="membership.model_membership_membership_line"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_send_expiration_reminders()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+        </record>
+
     </data>
 </odoo>

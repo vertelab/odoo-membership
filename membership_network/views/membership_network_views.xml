@@ -28,6 +28,11 @@
                                 <span class="o_stat_text">Active Members</span>
                             </div>
                         </button>
+                        <button name="action_view_membership_lines" type="object" class="oe_stat_button" icon="fa-list">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">Membership Lines</span>
+                            </div>
+                        </button>
                     </div>
                     <group>
                         <group>
@@ -68,8 +73,20 @@
                                 </list>
                             </field>
                         </page>
+                        <page string="Settings" name="settings">
+                            <group>
+                                <group string="Renewals &amp; Invoicing">
+                                    <field name="send_invoices_automatically"/>
+                                </group>
+                                <group string="Notifications">
+                                    <field name="days_before_expiration"/>
+                                    <field name="mail_template_id"/>
+                                </group>
+                            </group>
+                        </page>
                     </notebook>
                 </sheet>
+                <chatter/>
             </form>
         </field>
     </record>
@@ -137,4 +154,51 @@
               parent="membership.menu_association"
               action="action_membership_network"
               sequence="10"/>
+
+    <record id="view_membership_line_search" model="ir.ui.view">
+        <field name="name">membership.membership_line.search.network</field>
+        <field name="model">membership.membership_line</field>
+        <field name="arch" type="xml">
+            <search string="Membership Lines">
+                <field name="partner"/>
+                <field name="membership_id"/>
+                <field name="network_id"/>
+                <field name="invoice_state"/>
+                <group expand="0" string="Group By">
+                    <filter string="Partner" name="partner" context="{'group_by': 'partner'}"/>
+                    <filter string="Membership" name="membership" context="{'group_by': 'membership_id'}"/>
+                    <filter string="Network" name="network" context="{'group_by': 'network_id'}"/>
+                    <filter string="Membership Status" name="state" context="{'group_by': 'state'}"/>
+                    <filter string="Invoice Status" name="invoice_state" context="{'group_by': 'invoice_state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_membership_line_list" model="ir.ui.view">
+        <field name="name">membership.membership_line.list.network</field>
+        <field name="model">membership.membership_line</field>
+        <field name="arch" type="xml">
+            <list string="Membership Lines">
+                <field name="partner"/>
+                <field name="membership_id"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="state" string="Membership Status" widget="badge" 
+                       decoration-info="state == 'waiting'" 
+                       decoration-success="state in ['invoiced', 'paid', 'free']"
+                       decoration-warning="state == 'old'"
+                       decoration-danger="state == 'canceled'"/>
+                <field name="invoice_state" widget="badge"
+                       decoration-info="invoice_state == 'draft'"
+                       decoration-success="invoice_state == 'posted'"
+                       decoration-danger="invoice_state == 'cancel'"/>
+                <field name="invoice_payment_state" widget="badge"
+                       decoration-success="invoice_payment_state == 'paid'"
+                       decoration-warning="invoice_payment_state in ['not_paid', 'partial']"/>
+                <field name="network_id"/>
+                <field name="account_invoice_id"/>
+            </list>
+        </field>
+    </record>
 </odoo>

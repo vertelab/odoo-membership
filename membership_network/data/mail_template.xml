@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <!-- Email template for minutes of meeting report -->
+    <data noupdate="1">
+        <record id="email_template_membership_expiration_reminder" model="mail.template">
+            <field name="name">Membership: Expiration Reminder</field>
+            <field name="model_id" ref="membership.model_membership_membership_line"/>
+            <field name="subject">Your membership in {{ object.network_id.name }} is expiring soon</field>
+            <field name="email_from">{{ (object.network_id.network_partner_id.email_formatted or user.email_formatted) }}</field>
+            <field name="email_to">{{ object.partner.email_formatted }}</field>
+            <field name="description">Sent to members before their membership expires</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                        Hello <t t-out="object.partner.name or ''">Member</t>,
+                        <br/><br/>
+                        This is a friendly reminder that your membership in <strong><t t-out="object.network_id.name or 'our network'"/></strong> is set to expire on <strong><t t-out="object.date_to or ''"/></strong>.
+                        <br/><br/>
+                        To ensure uninterrupted access to your benefits, please ensure your renewal is processed.
+                        <t t-if="object.account_invoice_id">
+                            You can find your renewal invoice attached or in your portal.
+                        </t>
+                        <br/><br/>
+                        Best regards,
+                        <br/>
+                        <t t-out="object.network_id.name or 'Membership Team'"/>
+                    </p>
+                </div>
+            </field>
+            <field name="lang">{{ object.partner.lang }}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+    </data>
+</odoo>

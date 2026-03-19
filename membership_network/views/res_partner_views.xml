@@ -31,6 +31,11 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='member_lines']//list//field[@name='membership_id']" position="after">
                 <field name="network_id"/>
+                <field name="state" widget="badge" 
+                       decoration-info="state == 'waiting'" 
+                       decoration-success="state in ['invoiced', 'free', 'paid']"
+                       decoration-warning="state == 'old'"
+                       decoration-danger="state == 'canceled'"/>
             </xpath>
             <xpath expr="//field[@name='member_lines']//list//field[@name='state']" position="after">
                 <field name="associate_member_id"/>
@@ -41,6 +46,7 @@
             </xpath>
             <xpath expr="//field[@name='member_lines']//form//field[@name='membership_id']" position="after">
                 <field name="network_id"/>
+                <field name="state"/>
             </xpath>
             <xpath expr="//field[@name='member_lines']//form//field[@name='account_invoice_id']" position="after">
                 <field name="date_from"/>
