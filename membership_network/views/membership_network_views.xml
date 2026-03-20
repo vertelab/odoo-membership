@@ -30,6 +30,9 @@
                         </button>
                         <button name="action_view_membership_lines" type="object" class="oe_stat_button" icon="fa-list">
                             <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_value">
+                                    <field name="membership_line_count" nolabel="1"/>
+                                </span>
                                 <span class="o_stat_text">Membership Lines</span>
                             </div>
                         </button>
@@ -170,6 +173,7 @@
                     <filter string="Network" name="network" context="{'group_by': 'network_id'}"/>
                     <filter string="Membership Status" name="state" context="{'group_by': 'state'}"/>
                     <filter string="Invoice Status" name="invoice_state" context="{'group_by': 'invoice_state'}"/>
+                    <filter string="Invoice Payment Status" name="invoice_payment_state" context="{'group_by': 'invoice_payment_state'}"/>
                 </group>
             </search>
         </field>

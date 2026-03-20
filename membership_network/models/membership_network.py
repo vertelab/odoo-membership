@@ -30,16 +30,17 @@ class MembershipNetwork(models.Model):
     mail_template_id = fields.Many2one('mail.template', string='Expiration Reminder Template', 
         domain=[('model_id.model', '=', 'membership.membership_line')],
         help="Email template sent to remind members about expiration.")
-    # def _compute_members(self):
-    #     for network in self:
-    #         if network.product_ids:
-    #             # Get all membership lines for this product
-    #             member_lines = self.env['membership.membership_line'].search([
-    #                 ('membership_id', 'in', network.product_ids.ids)
-    #             ])
-    #             network.member_ids = member_lines.mapped('partner')
-    #         else:
-    #             network.member_ids = self.env['res.partner']
+    
+    membership_line_count = fields.Integer(
+        compute='_compute_membership_line_count',
+        string='Membership Lines',
+    )
+
+    def _compute_membership_line_count(self):
+        for network in self:
+            network.membership_line_count = self.env['membership.membership_line'].search_count([
+                ('network_id', '=', network.id),
+            ])
 
     def _compute_members(self):
         for network in self:
@@ -70,50 +71,105 @@ class MembershipNetwork(models.Model):
             'search_view_id': self.env.ref('membership_network.view_membership_line_search').id,
             'context': {
                 'default_network_id': self.id,
-                'search_default_state': 1,
+                'search_default_invoice_payment_state': 1,
             },
         }
 
-    def action_cron_renew_memberships(self):
-        """
-        Cron job and server action to renew static memberships.
-        """
+    @api.model
+    def _cron_renew_memberships(self):
+        """Called by the cron job — runs across all networks."""
+        all_networks = self.search([])
+        all_networks.action_renew_memberships()
+
+    def action_renew_memberships(self):
+        """Operates on self (selected networks). Used by server action and cron."""
         today = date.today()
-        # Look for all products that are memberships, NOT rolling, and have a future date range.
-        products = self.env['product.product'].search([
+
+        static_products = self.env['product.product'].search([
             ('membership', '=', True),
             ('is_rolling', '=', False),
-            ('membership_date_to', '>=', today),
+            ('membership_date_from', '!=', False),
+            ('membership_date_to', '!=', False),
         ])
-        
-        for product in products:
-            networks = self.search([('product_ids', 'in', product.id)])
+        for product in static_products:
+            networks = self.filtered(lambda n: product in n.product_ids)
             for network in networks:
-                # Find expired lines where the end date is BEFORE the product's new end date
-                expired_lines = self.env['membership.membership_line'].search([
+                expired_lines_domain = [
                     ('membership_id', '=', product.id),
                     ('network_id', '=', network.id),
                     ('date_to', '<', product.membership_date_to),
                     ('state', 'in', ['old', 'canceled']),
-                ])
-                
-                # Filter to only those partners who DON'T have any current or future line for this product+network
-                partners_to_renew = expired_lines.mapped('partner').filtered(
-                    lambda p: not p.free_member and not self.env['membership.membership_line'].search_count([
-                        ('partner', '=', p.id),
-                        ('membership_id', '=', product.id),
-                        ('network_id', '=', network.id),
-                        ('date_to', '>=', product.membership_date_to),
-                        ('state', 'not in', ['canceled']),
-                    ])
+                ]
+                existing_domain = [
+                    ('membership_id', '=', product.id),
+                    ('network_id', '=', network.id),
+                    ('date_to', '>=', product.membership_date_to),
+                    ('state', 'not in', ['canceled']),
+                ]
+                self._renew_and_send(
+                    network=network,
+                    product=product,
+                    expired_lines_domain=expired_lines_domain,
+                    existing_domain=existing_domain,
+                    context_vals={
+                        'membership_network_id': network.id,
+                        'membership_join_date': product.membership_date_from,
+                    },
                 )
 
-                if partners_to_renew:
-                    partners_to_renew.with_context(
-                        membership_network_id=network.id,
-                        membership_join_date=product.membership_date_from,
-                    ).create_membership_invoice(
-                        product=product,
-                        amount=product.list_price
-                    )
+        rolling_products = self.env['product.product'].search([
+            ('membership', '=', True),
+            ('is_rolling', '=', True),
+        ])
+        for product in rolling_products:
+            networks = self.filtered(lambda n: product in n.product_ids)
+            for network in networks:
+                expired_lines_domain = [
+                    ('membership_id', '=', product.id),
+                    ('network_id', '=', network.id),
+                    ('date_to', '<', today),
+                    ('state', 'in', ['old', 'canceled']),
+                ]
+                existing_domain = [
+                    ('membership_id', '=', product.id),
+                    ('network_id', '=', network.id),
+                    ('date_to', '>=', today),
+                    ('state', 'not in', ['canceled']),
+                ]
+                self._renew_and_send(
+                    network=network,
+                    product=product,
+                    expired_lines_domain=expired_lines_domain,
+                    existing_domain=existing_domain,
+                    context_vals={
+                        'membership_network_id': network.id,
+                    },
+                )
+
         return True
+
+    def _renew_and_send(self, network, product, expired_lines_domain, existing_domain, context_vals):
+        """Find expired partners, create renewal invoices, and send if configured."""
+        expired_lines = self.env['membership.membership_line'].search(expired_lines_domain)
+        partners_to_renew = expired_lines.mapped('partner').filtered(
+            lambda p: not p.free_member and not self.env['membership.membership_line'].search_count([
+                ('partner', '=', p.id),
+                *existing_domain,
+            ])
+        )
+        if not partners_to_renew:
+            return
+
+        invoices = partners_to_renew.with_context(**context_vals).create_membership_invoice(
+            product=product,
+            amount=product.list_price,
+        )
+
+        if network.send_invoices_automatically:
+            invoices.action_post()
+            membership_lines = self.env['membership.membership_line'].search([
+                ('account_invoice_id', 'in', invoices.ids),
+                ('network_id', '=', network.id),
+            ])
+            if membership_lines:
+                membership_lines._send_invoice_automatically()

@@ -1,6 +1,10 @@
+import logging
 from odoo import models, fields, api, _
 from datetime import date
 from dateutil.relativedelta import relativedelta
+
+_logger = logging.getLogger(__name__)
+
 
 class MembershipLine(models.Model):
     _inherit = 'membership.membership_line'
@@ -82,32 +86,65 @@ class MembershipLine(models.Model):
         """
         Server action to send the associated invoice of a membership line.
         """
-        for line in self:
-            invoice = line.account_invoice_id
-            if invoice and invoice.state == 'posted':
-                invoice.action_invoice_sent()
-        return True
+        
+        invoices = self.filtered(
+            lambda membership: membership.invoice_payment_state == 'not_paid' and membership.invoice_state == 'posted'
+        ).mapped('account_invoice_id')
+
+        _logger.debug(f"{invoices}, {len(invoices)}")
+
+        if invoices:
+            return {
+                'name': _("Print & Send"),
+                'type': 'ir.actions.act_window',
+                'view_mode': 'form',
+                'res_model': 'account.move.send.wizard' if len(invoices) == 1 else 'account.move.send.batch.wizard',
+                'target': 'new',
+                'context': {
+                    'active_model': 'account.move',
+                    'active_ids': invoices.ids,
+                },
+            }
+
+        # for line in self:
+        #     invoice = line.account_invoice_id
+        #     if invoice and invoice.state == 'posted':
+        #         return invoice.action_invoice_sent()
+        # return True
 
     @api.model
     def _cron_send_expiration_reminders(self):
-        """
-        Cron job to send expiration reminders for memberships.
-        """
         today = date.today()
-        # Find all networks that have a reminder template and days set
         networks = self.env['membership.network'].search([
             ('mail_template_id', '!=', False),
             ('days_before_expiration', '>', 0)
         ])
-        
         for network in networks:
             reminder_date = today + relativedelta(days=network.days_before_expiration)
-            # Find lines expiring on exactly that day
             lines_to_remind = self.search([
                 ('network_id', '=', network.id),
                 ('date_to', '=', reminder_date),
-                ('state', 'in', ['paid', 'invoiced', 'free'])
+                ('state', 'in', ['paid', 'invoiced', 'free']),
             ])
             for line in lines_to_remind:
                 network.mail_template_id.send_mail(line.id, force_send=True)
         return True
+
+    def action_confirm_invoices(self):
+        invoices = self.filtered(
+            lambda l: l.invoice_state == 'draft'
+        ).mapped('account_invoice_id')
+        if invoices:
+            invoices.action_post()
+
+    def _send_invoice_automatically(self):
+        """Send invoices directly without wizard, for automated/cron context."""
+        invoices = self.filtered(
+            lambda l: l.invoice_payment_state == 'not_paid' and l.invoice_state == 'posted'
+        ).mapped('account_invoice_id')
+
+        if invoices:
+            self.env['account.move.send']._generate_and_send_invoices(
+                invoices,
+                allow_fallback_pdf=True,
+            )

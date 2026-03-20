@@ -1,0 +1,153 @@
+<odoo>
+    <data>
+
+        <!-- Add membership breadcrumb -->
+        <template id="portal_my_home_menu_membership" name="Portal layout: membership menu entries"
+                  inherit_id="portal.portal_breadcrumbs" priority="30">
+            <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+                <li t-if="page_name == 'membership'" class="breadcrumb-item active">
+                    Memberships
+                </li>
+            </xpath>
+        </template>
+
+        <!-- Add membership entry to portal home -->
+        <template id="portal_my_home_membership" name="Memberships"
+                  inherit_id="portal.portal_my_home" customize_show="True" priority="30">
+            <xpath expr="//div[hasclass('o_portal_docs')]" position="before">
+                <t t-set="portal_client_category_enable" t-value="True"/>
+            </xpath>
+            <div id="portal_client_category" position="inside">
+                <t t-call="portal.portal_docs_entry">
+                    <t t-set="icon" t-value="'/membership_network/static/src/img/membership.svg'"/>
+                    <t t-set="title">Memberships</t>
+                    <t t-set="url" t-value="'/my/memberships'"/>
+                    <t t-set="text">View your membership details and invoices</t>
+                    <t t-set="placeholder_count" t-value="'membership_count'"/>
+                </t>
+            </div>
+        </template>
+
+        <!-- Membership list page -->
+        <template id="portal_my_memberships" name="My Memberships">
+            <t t-call="portal.portal_layout">
+                <t t-set="breadcrumbs_searchbar" t-value="True"/>
+                <t t-call="portal.portal_searchbar">
+                    <t t-set="title">Memberships</t>
+                </t>
+                <t t-if="not membership_lines">
+                    <p class="alert alert-warning">
+                        There are currently no memberships for your account.
+                    </p>
+                </t>
+                <t t-if="membership_lines" t-call="portal.portal_table">
+                    <thead>
+                        <tr class="active">
+                            <th>Network</th>
+                            <th>Product</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Membership Status</th>
+                            <th>Invoice</th>
+                            <th>Invoice Status</th>
+                            <th class="text-end pe-3">Payment</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="membership_lines" t-as="line">
+                            <tr>
+                                <td><span t-field="line.network_id.name"/></td>
+                                <td><span t-field="line.membership_id.name"/></td>
+                                <td><span t-field="line.date_from"/></td>
+                                <td><span t-field="line.date_to"/></td>
+                                <td><span t-field="line.state"/></td>
+                                <td>
+                                    <t t-if="line.account_invoice_id">
+                                        <a t-att-href="line.account_invoice_id.get_portal_url()">
+                                            <t t-if="line.account_invoice_id.name and line.account_invoice_id.name != '/'">
+                                                <t t-out="line.account_invoice_id.name"/>
+                                            </t>
+                                            <em t-else="">Draft Invoice</em>
+                                        </a>
+                                    </t>
+                                    <t t-else="">-</t>
+                                </td>
+                                <td><span t-field="line.invoice_state"/></td>
+                                <td class="text-end pe-3">
+                                    <t t-if="line.account_invoice_id">
+                                        <a t-att-href="line.account_invoice_id.get_portal_url()">
+                                            <t t-if="line.invoice_payment_state == 'paid'">
+                                                <span class="badge rounded-pill text-bg-success">
+                                                    <i class="fa fa-fw fa-check"/> Paid
+                                                </span>
+                                            </t>
+                                            <t t-elif="line.invoice_payment_state == 'not_paid'">
+                                                <span class="badge rounded-pill text-bg-info">
+                                                    <i class="fa fa-fw fa-clock-o"/> Waiting for Payment
+                                                </span>
+                                            </t>
+                                            <t t-elif="line.invoice_payment_state == 'partial'">
+                                                <span class="badge rounded-pill text-bg-warning">
+                                                    <i class="fa fa-fw fa-clock-o"/> Partially Paid
+                                                </span>
+                                            </t>
+                                            <t t-else="">
+                                                <span class="badge rounded-pill text-bg-secondary">
+                                                    <span t-field="line.invoice_payment_state"/>
+                                                </span>
+                                            </t>
+                                        </a>
+                                    </t>
+                                    <t t-else="">-</t>
+                                </td>
+                                <td>
+                                    <t t-if="line.invoice_state == 'posted' and line.invoice_payment_state == 'not_paid'">
+                                        <button type="button"
+                                                class="btn btn-sm btn-danger"
+                                                data-bs-toggle="modal"
+                                                t-att-data-bs-target="'#cancelModal' + str(line.id)">
+                                            Cancel
+                                        </button>
+                                        <!-- Confirmation Modal -->
+                                        <div class="modal fade"
+                                            t-att-id="'cancelModal' + str(line.id)"
+                                            tabindex="-1"
+                                            role="dialog">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Cancel Membership</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"/>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <p>Are you sure you want to cancel your membership for
+                                                            <strong t-field="line.membership_id.name"/>
+                                                            in <strong t-field="line.network_id.name"/>?
+                                                        </p>
+                                                        <p class="text-muted small">
+                                                            This will cancel your invoice and notify the network administrator.
+                                                        </p>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                            Keep Membership
+                                                        </button>
+                                                        <a t-attf-href="/my/memberships/#{line.id}/cancel"
+                                                        class="btn btn-danger">
+                                                            Yes, Cancel
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </t>
+                                </td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>
