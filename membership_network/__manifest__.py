@@ -23,24 +23,32 @@
 #
 {
     'name': 'Membership: Network',
-    'version': '1.0',
-    'summary': 'Membership Network - allows partners to be members of multiple networks/clubs',
+    'version': '18.0.1.0.0',
+    'summary': 'Membership Network - allows partners to be members of multiple networks/clubs.',
     'category': 'Human Resources', # Technical Settings|Localization|Payroll Localization|Account Charts|User types|Invoicing|Sales|Human Resources|Operations|Marketing|Manufacturing|Website|Theme|Administration|Appraisals|Sign|Helpdesk|Administration|Extra Rights|Other Extra Rights|
-    'description': """
-        Membership Network Module
-        =========================
-        
-        This module extends Odoo's core membership functionality by allowing partners 
-        to be members of multiple networks/clubs simultaneously.
-        
-        Features:
-        ---------
-        * Create multiple membership networks/clubs
-        * Link networks to membership products
-        * Track partner memberships in multiple networks
-        * Each network membership has its own state, dates, and invoices
-        * Smart buttons and dedicated tabs on partner form
-    """,
+    'description': '''
+Network
+=======
+
+    This module extends Odoo's core membership functionality by allowing partners 
+            to be members of multiple networks/clubs simultaneously.
+
+    Features:
+            ---------
+            * Create multiple membership networks/clubs
+            * Link networks to membership products
+            * Track partner memberships in multiple networks
+            * Each network membership has its own state, dates, and invoices
+            * Smart buttons and dedicated tabs on partner form
+
+    Features:
+
+        - Web integration: Exposes HTTP endpoints for external systems.
+        - Automation: Scheduled jobs: Membership: Renew Expired Memberships, Membership: Send Expiration Reminders.
+        - Guided Wizards: Step-by-step dialogs for data entry.
+        - UI Integration: Extends 12 view(s) in the Odoo interface.
+        - Extends Odoo: Builds on account.move, account.move.line, event.booking.table, event.booking.table.history.
+    ''',
     'author': 'Vertel AB',
     'website': 'https://vertel.se/apps/odoo-membership/membership_network',
     'images': ['static/description/banner.png'],
